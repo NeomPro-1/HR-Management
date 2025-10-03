@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useFormState } from "react-dom";
+import { useState, useActionState } from "react";
 import { Upload, Loader2, User, Mail, Phone, Wrench, Briefcase, GraduationCap, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,9 +21,8 @@ const initialState: State = {
 };
 
 export function ResumeParser() {
-  const [state, formAction] = useFormState(parseResumeAction, initialState);
+  const [state, formAction, isPending] = useActionState(parseResumeAction, initialState);
   const [fileName, setFileName] = useState("");
-  const [isPending, setIsPending] = useState(false);
   const [formKey, setFormKey] = useState(Date.now());
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,16 +33,17 @@ export function ResumeParser() {
       setFileName("");
     }
   };
-  
-  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      setIsPending(true);
-      const formData = new FormData(event.currentTarget);
-      await formAction(formData);
-      setIsPending(false);
-      setFormKey(Date.now()); // Reset form
-      setFileName("");
+
+  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const formData = new FormData(event.currentTarget);
+    formAction(formData);
+    // Reset form fields after submission
+    if (event.currentTarget) {
+      event.currentTarget.reset();
+    }
+    setFileName("");
   };
+
 
   return (
     <div className="grid lg:grid-cols-3 gap-8 items-start">
@@ -54,7 +53,7 @@ export function ResumeParser() {
           <CardDescription>Upload a resume to automatically extract candidate information.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form key={formKey} onSubmit={handleFormSubmit} className="space-y-6">
+          <form key={formKey} action={formAction} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="resume">Upload Resume</Label>
               <div className="relative">
@@ -87,6 +86,7 @@ export function ResumeParser() {
             <div className="flex items-center justify-center h-full py-20">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
+
           )}
           {state.data && !isPending && (
             <div className="space-y-6">
