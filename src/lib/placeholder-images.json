@@ -1,3 +1,64 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "user-avatar",
+      "description": "Default user avatar",
+      "imageUrl": "https://images.unsplash.com/photo-1517462964-21fdcec3f25b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cGVyc29uJTIwZmFjZXxlbnwwfHx8fDE3NTk0ODc5Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person face"
+    },
+    {
+      "id": "emp1-avatar",
+      "description": "Employee 1 avatar",
+      "imageUrl": "https://images.unsplash.com/photo-1594369428909-cf575675ca9a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3b21hbiUyMGZhY2V8ZW58MHx8fHwxNzU5NDQxNjY2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman face"
+    },
+    {
+      "id": "emp2-avatar",
+      "description": "Employee 2 avatar",
+      "imageUrl": "https://images.unsplash.com/photo-1583692331507-fc0bd348695d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYW4lMjBmYWNlfGVufDB8fHx8MTc1OTQ1NTc5M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man face"
+    },
+    {
+      "id": "emp3-avatar",
+      "description": "Employee 3 avatar",
+      "imageUrl": "https://images.unsplash.com/photo-1544717304-a2db4a7b16ee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx3b21hbiUyMGZhY2V8ZW58MHx8fHwxNzU5NDQxNjY2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman face"
+    },
+    {
+      "id": "emp4-avatar",
+      "description": "Employee 4 avatar",
+      "imageUrl": "https://images.unsplash.com/photo-1611608822772-43a28a830759?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtYW4lMjBmYWNlfGVufDB8fHx8MTc1OTQ1NTc5M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man face"
+    },
+    {
+      "id": "emp5-avatar",
+      "description": "Employee 5 avatar",
+      "imageUrl": "https://images.unsplash.com/photo-1594369428909-cf575675ca9a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3b21hbiUyMGZhY2V8ZW58MHx8fHwxNzU5NDQxNjY2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman face"
+    },
+    {
+      "id": "leave-avatar-1",
+      "description": "Leave request avatar 1",
+      "imageUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMGZhY2V8ZW58MHx8fHwxNzU5NDQxNjY2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman face"
+    },
+    {
+      "id": "leave-avatar-2",
+      "description": "Leave request avatar 2",
+      "imageUrl": "https://images.unsplash.com/photo-1583692331507-fc0bd348695d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYW4lMjBmYWNlfGVufDB8fHx8MTc1OTQ1NTc5M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man face"
+    },
+    {
+      "id": "leave-avatar-3",
+      "description": "Leave request avatar 3",
+      "imageUrl": "https://images.unsplash.com/photo-1679611978819-f10168367155?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx3b21hbiUyMGZhY2V8ZW58MHx8fHwxNzU5NDQxNjY2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman face"
+    },
+    {
+      "id": "leave-avatar-4",
+      "description": "Leave request avatar 4",
+      "imageUrl": "https://images.unsplash.com/photo-1619182597083-17bda72c1d56?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtYW4lMjBmYWNlfGVufDB8fHx8MTc1OTQ1NTc5M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man face"
+    }
+  ]
 }
