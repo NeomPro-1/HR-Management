@@ -71,7 +71,7 @@ export default function EmployeesPage() {
                   </Badge>
                 </TableCell>
                 <TableCell className="hidden lg:table-cell">
-                  {new Date(employee.joiningDate).toLocaleDate-string()}
+                  {new Date(employee.joiningDate).toLocaleDateString()}
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
