@@ -63,7 +63,7 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="border-t border-sidebar-border p-2">
+      <SidebarFooter className="border-t border-sidebar-border p-2 mt-auto">
         <SidebarMenu>
           <SidebarMenuItem>
             <Link href="#">
