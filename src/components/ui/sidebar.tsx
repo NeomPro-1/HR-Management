@@ -1,4 +1,5 @@
 
+
 "use client"
 
 import * as React from "react"
@@ -725,13 +726,13 @@ SidebarMenuSubItem.displayName = "SidebarMenuSubItem"
 
 const SidebarMenuSubButton = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<typeof Slot> & {
+  React.HTMLAttributes<HTMLDivElement> & {
     size?: "sm" | "md"
     isActive?: boolean
   }
 >(({ size = "md", isActive, className, ...props }, ref) => {
   return (
-    <Slot
+    <div
       ref={ref}
       data-sidebar="menu-sub-button"
       data-size={size}
