@@ -45,12 +45,12 @@ const hrmNavItems = [
     { href: '/hr/designations', label: 'Designations' },
     { href: '/hr/admin-attendance', label: 'Admin Attendance' },
     { href: '/hr/employee-attendance', label: 'Employee Attendance' },
-    { href: '#', label: 'Biometric Attendance' },
-    { href: '#', label: 'Office Loan' },
-    { href: '#', label: 'Personal Loan' },
-    { href: '#', label: 'Admin Leave' },
-    { href: '#', label: 'Employee Leave' },
-    { href: '/hr/settings', label: 'Holidays' },
+    { href: '#-biometric-attendance', label: 'Biometric Attendance' },
+    { href: '#-office-loan', label: 'Office Loan' },
+    { href: '#-personal-loan', label: 'Personal Loan' },
+    { href: '#-admin-leave', label: 'Admin Leave' },
+    { href: '#-employee-leave', label: 'Employee Leave' },
+    { href: '/hr/holidays', label: 'Holidays' },
 ];
 
 export function AppSidebar() {
@@ -104,12 +104,12 @@ export function AppSidebar() {
                   <SidebarMenuSub>
                     {hrmNavItems.map((item) => (
                       <li key={`${item.href}-${item.label}`}>
-                          <SidebarMenuSubButton asChild isActive={pathname === item.href}>
-                            <Link href={item.href}>
+                          <Link href={item.href}>
+                            <SidebarMenuSubButton isActive={pathname === item.href}>
                                 <ArrowRight className="w-3 h-3" />
                                 <span>{item.label}</span>
-                            </Link>
-                          </SidebarMenuSubButton>
+                            </SidebarMenuSubButton>
+                          </Link>
                       </li>
                     ))}
                   </SidebarMenuSub>
