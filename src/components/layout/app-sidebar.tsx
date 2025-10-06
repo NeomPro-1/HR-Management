@@ -59,10 +59,14 @@ export function AppSidebar() {
   const isHRSectionActive = pathname.startsWith('/hr');
 
   const getHrefForItem = (label: string) => {
-    if (label === 'Employee Dashboard') {
-      return '/hr/employee-dashboard';
+    switch (label) {
+        case 'Employee Dashboard':
+            return '/hr/employee-dashboard';
+        case 'Employee':
+            return '/hr/employee';
+        default:
+            return '/hr/settings';
     }
-    return '/hr/settings';
   };
 
   return (
@@ -111,7 +115,7 @@ export function AppSidebar() {
                     {hrmNavItems.map((item) => (
                       <li key={item.label}>
                           <Link href={getHrefForItem(item.label)}>
-                            <SidebarMenuSubButton isActive={pathname.startsWith(item.href)}>
+                            <SidebarMenuSubButton isActive={pathname.startsWith(getHrefForItem(item.label)) && getHrefForItem(item.label) !== '/hr/settings' || pathname === getHrefForItem(item.label)}>
                                 <ArrowRight className="w-3 h-3" />
                                 <span>{item.label}</span>
                             </SidebarMenuSubButton>
@@ -128,7 +132,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <Link href="/hr/settings">
-              <SidebarMenuButton tooltip={{ children: 'Settings', side: 'right' }}>
+              <SidebarMenuButton tooltip={{ children: 'Settings', side: 'right' }} isActive={pathname.startsWith('/hr/settings')}>
                 <Settings />
                 <span>Settings</span>
               </SidebarMenuButton>
