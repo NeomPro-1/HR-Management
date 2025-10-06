@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Search, Bell } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 function getPageTitle(pathname: string) {
   const segment = pathname.split('/').pop() || 'dashboard';
@@ -43,6 +44,7 @@ export function AppHeader() {
             className="w-full rounded-lg bg-secondary pl-8"
           />
         </div>
+        <ThemeToggle />
         <Button variant="ghost" size="icon" className="rounded-full">
           <Bell className="h-5 w-5" />
           <span className="sr-only">Toggle notifications</span>
