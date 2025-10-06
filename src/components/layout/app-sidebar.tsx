@@ -58,6 +58,13 @@ export function AppSidebar() {
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
   const isHRSectionActive = pathname.startsWith('/hr');
 
+  const getHrefForItem = (label: string) => {
+    if (label === 'Employee Dashboard') {
+      return '/hr/employee-dashboard';
+    }
+    return '/hr/settings';
+  };
+
   return (
     <>
       <SidebarHeader>
@@ -102,13 +109,13 @@ export function AppSidebar() {
                 <CollapsibleContent asChild>
                   <SidebarMenuSub>
                     {hrmNavItems.map((item) => (
-                      <li key={item.href}>
-                        <Link href={'/hr/settings'}>
-                          <SidebarMenuSubButton isActive={pathname.startsWith(item.href)}>
-                              <ArrowRight className="w-3 h-3" />
-                              <span>{item.label}</span>
-                          </SidebarMenuSubButton>
-                        </Link>
+                      <li key={item.label}>
+                          <Link href={getHrefForItem(item.label)}>
+                            <SidebarMenuSubButton isActive={pathname.startsWith(item.href)}>
+                                <ArrowRight className="w-3 h-3" />
+                                <span>{item.label}</span>
+                            </SidebarMenuSubButton>
+                          </Link>
                       </li>
                     ))}
                   </SidebarMenuSub>
@@ -120,7 +127,7 @@ export function AppSidebar() {
       <SidebarFooter className="border-t border-sidebar-border p-2 mt-auto">
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link href="#">
+            <Link href="/hr/settings">
               <SidebarMenuButton tooltip={{ children: 'Settings', side: 'right' }}>
                 <Settings />
                 <span>Settings</span>
