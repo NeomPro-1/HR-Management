@@ -46,8 +46,6 @@ const hrmNavItems = [
     { href: '/hr/admin-attendance', label: 'Admin Attendance' },
     { href: '/hr/employee-attendance', label: 'Employee Attendance' },
     { href: '#-biometric-attendance', label: 'Biometric Attendance' },
-    { href: '#-office-loan', label: 'Office Loan' },
-    { href: '#-personal-loan', label: 'Personal Loan' },
     { href: '#-admin-leave', label: 'Admin Leave' },
     { href: '#-employee-leave', label: 'Employee Leave' },
     { href: '/hr/holidays', label: 'Holidays' },
