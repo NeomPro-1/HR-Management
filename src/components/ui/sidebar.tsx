@@ -730,7 +730,7 @@ const SidebarMenuSubButton = React.forwardRef<
     size?: "sm" | "md"
     isActive?: boolean
   }
->(({ size = "md", isActive, className, ...props }, ref) => {
+>(({ size = "md", isActive, className, children, ...props }, ref) => {
   return (
     <div
       ref={ref}
@@ -746,7 +746,9 @@ const SidebarMenuSubButton = React.forwardRef<
         className
       )}
       {...props}
-    />
+    >
+      {children}
+    </div>
   )
 })
 SidebarMenuSubButton.displayName = "SidebarMenuSubButton"
