@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { employees } from "@/lib/placeholder-data";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-IN', {
@@ -22,6 +22,7 @@ const formatCurrency = (amount: number) => {
 export default function PayrollPage() {
   const [selectedMonth, setSelectedMonth] = useState('July 2024');
   const [isProcessing, setIsProcessing] = useState(false);
+  const { toast } = useToast();
 
   const totalPayroll = employees.reduce((sum, emp) => sum + (emp.salary || 0), 0);
 
@@ -49,7 +50,7 @@ export default function PayrollPage() {
             <CardDescription>Review and process monthly payroll for your team.</CardDescription>
         </div>
         <div className="flex items-center gap-2 mt-4 md:mt-0">
-            <Select defaultValue="july-2024" onValueChange={setSelectedMonth}>
+            <Select defaultValue="july-2024" onValueChange={(value) => setSelectedMonth(value === 'july-2024' ? 'July 2024' : value === 'june-2024' ? 'June 2024' : 'May 2024')}>
                 <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Select Month" />
                 </SelectTrigger>
@@ -60,7 +61,7 @@ export default function PayrollPage() {
                 </SelectContent>
             </Select>
             <Button onClick={handleRunPayroll} disabled={isProcessing}>
-                {isProcessing ? 'Processing...' : `Run Payroll for ${selectedMonth}`}
+                {isProcessing ? 'Processing...' : `Run Payroll`}
             </Button>
         </div>
       </CardHeader>
