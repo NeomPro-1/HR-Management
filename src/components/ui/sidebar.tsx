@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -724,16 +725,13 @@ SidebarMenuSubItem.displayName = "SidebarMenuSubItem"
 
 const SidebarMenuSubButton = React.forwardRef<
   HTMLAnchorElement,
-  React.ComponentProps<"a"> & {
-    asChild?: boolean
+  React.ComponentProps<typeof Slot> & {
     size?: "sm" | "md"
     isActive?: boolean
   }
->(({ asChild = false, size = "md", isActive, className, ...props }, ref) => {
-  const Comp = asChild ? Slot : "a"
-
+>(({ size = "md", isActive, className, ...props }, ref) => {
   return (
-    <Comp
+    <Slot
       ref={ref}
       data-sidebar="menu-sub-button"
       data-size={size}
