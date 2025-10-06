@@ -58,17 +58,6 @@ export function AppSidebar() {
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
   const isHRSectionActive = pathname.startsWith('/hr');
 
-  const getHrefForItem = (label: string) => {
-    switch (label) {
-        case 'Employee Dashboard':
-            return '/hr/employee-dashboard';
-        case 'Employee':
-            return '/hr/employee';
-        default:
-            return '/hr/settings';
-    }
-  };
-
   return (
     <>
       <SidebarHeader>
@@ -113,9 +102,9 @@ export function AppSidebar() {
                 <CollapsibleContent asChild>
                   <SidebarMenuSub>
                     {hrmNavItems.map((item) => (
-                      <li key={item.label}>
-                          <Link href={getHrefForItem(item.label)}>
-                            <SidebarMenuSubButton isActive={pathname.startsWith(getHrefForItem(item.label)) && getHrefForItem(item.label) !== '/hr/settings' || pathname === getHrefForItem(item.label)}>
+                      <li key={item.href}>
+                          <Link href={item.href}>
+                            <SidebarMenuSubButton isActive={pathname === item.href}>
                                 <ArrowRight className="w-3 h-3" />
                                 <span>{item.label}</span>
                             </SidebarMenuSubButton>
