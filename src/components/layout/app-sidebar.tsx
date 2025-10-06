@@ -24,7 +24,6 @@ import {
   useSidebar,
   SidebarMenuSub,
   SidebarMenuSubButton,
-  SidebarMenuSkeleton,
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -61,11 +60,6 @@ export function AppSidebar() {
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
   const isHRSectionActive = pathname.startsWith('/hr');
 
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
   return (
     <>
       <SidebarHeader>
@@ -79,18 +73,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent className="p-2">
         <SidebarMenu>
-          {!mounted && (
-            <>
-              <SidebarMenuItem><SidebarMenuSkeleton showIcon /></SidebarMenuItem>
-              <SidebarMenuItem><SidebarMenuSkeleton showIcon /></SidebarMenuItem>
-              <SidebarMenuItem><SidebarMenuSkeleton showIcon /></SidebarMenuItem>
-              <SidebarMenuItem><SidebarMenuSkeleton showIcon /></SidebarMenuItem>
-              <SidebarMenuItem><SidebarMenuSkeleton showIcon /></SidebarMenuItem>
-              <SidebarMenuItem><SidebarMenuSkeleton showIcon /></SidebarMenuItem>
-              <SidebarMenuItem><SidebarMenuSkeleton showIcon /></SidebarMenuItem>
-            </>
-          )}
-          {mounted && navItems.map((item) => (
+          {navItems.map((item) => (
             <SidebarMenuItem key={item.href}>
               <Link href={item.href}>
                 <SidebarMenuButton
@@ -103,7 +86,7 @@ export function AppSidebar() {
               </Link>
             </SidebarMenuItem>
           ))}
-          {mounted && <Collapsible asChild defaultOpen={isHRSectionActive}>
+          <Collapsible asChild defaultOpen={isHRSectionActive}>
             <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
                     <SidebarMenuButton
@@ -133,7 +116,7 @@ export function AppSidebar() {
                   </SidebarMenuSub>
                 </CollapsibleContent>
             </SidebarMenuItem>
-          </Collapsible>}
+          </Collapsible>
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border p-2 mt-auto">
