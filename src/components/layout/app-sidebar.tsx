@@ -11,6 +11,7 @@ import {
   Settings,
   Users,
   ShieldHalf,
+  ArrowRight,
 } from 'lucide-react';
 import {
   SidebarContent,
@@ -36,8 +37,19 @@ const navItems = [
   { href: '/payroll', icon: CircleDollarSign, label: 'Payroll' },
 ];
 
-const hrNavItems = [
-  { href: '/hr/settings', label: 'Settings' },
+const hrmNavItems = [
+    { href: '/hr/employee-dashboard', label: 'Employee Dashboard' },
+    { href: '/hr/employee', label: 'Employee' },
+    { href: '/hr/employee-details', label: 'Employee Details' },
+    { href: '/hr/designations', label: 'Designations' },
+    { href: '/hr/admin-attendance', label: 'Admin Attendance' },
+    { href: '/hr/employee-attendance', label: 'Employee Attendance' },
+    { href: '/hr/biometric-attendance', label: 'Biometric Attendance' },
+    { href: '/hr/office-loan', label: 'Office Loan' },
+    { href: '/hr/personal-loan', label: 'Personal Loan' },
+    { href: '/hr/admin-leave', label: 'Admin Leave' },
+    { href: '/hr/employee-leave', label: 'Employee Leave' },
+    { href: '/hr/holidays', label: 'Holidays' },
 ];
 
 export function AppSidebar() {
@@ -77,22 +89,23 @@ export function AppSidebar() {
                 <CollapsibleTrigger asChild>
                     <SidebarMenuButton
                         isActive={isHRSectionActive}
-                        tooltip={{ children: 'HR Management', side: 'right' }}
+                        tooltip={{ children: 'HRM Apps', side: 'right' }}
                         className="justify-between"
                         isDropdown
                     >
                         <div className="flex items-center gap-2">
-                            <ShieldHalf />
-                            <span>HR Management</span>
+                            <Users />
+                            <span>HRM Apps</span>
                         </div>
                     </SidebarMenuButton>
                 </CollapsibleTrigger>
                 <CollapsibleContent asChild>
                   <SidebarMenuSub>
-                    {hrNavItems.map((item) => (
+                    {hrmNavItems.map((item) => (
                       <li key={item.href}>
-                        <Link href={item.href}>
+                        <Link href={'/hr/settings'}>
                           <SidebarMenuSubButton isActive={pathname.startsWith(item.href)}>
+                              <ArrowRight className="w-3 h-3" />
                               <span>{item.label}</span>
                           </SidebarMenuSubButton>
                         </Link>
