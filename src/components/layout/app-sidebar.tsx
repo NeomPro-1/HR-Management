@@ -108,10 +108,8 @@ export function AppSidebar() {
                       <li key={`${item.href}-${item.label}`}>
                           <Link href={item.href} asChild>
                             <SidebarMenuSubButton isActive={pathname === item.href}>
-                              <>
-                                <ArrowRight className="w-3 h-3" />
-                                <span>{item.label}</span>
-                              </>
+                              <ArrowRight className="w-3 h-3" />
+                              <span>{item.label}</span>
                             </SidebarMenuSubButton>
                           </Link>
                       </li>
@@ -148,3 +146,5 @@ export function AppSidebar() {
     </>
   );
 }
+
+    
