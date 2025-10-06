@@ -724,7 +724,7 @@ const SidebarMenuSubItem = React.forwardRef<
 SidebarMenuSubItem.displayName = "SidebarMenuSubItem"
 
 const SidebarMenuSubButton = React.forwardRef<
-  HTMLAnchorElement,
+  HTMLDivElement,
   React.ComponentProps<typeof Slot> & {
     size?: "sm" | "md"
     isActive?: boolean
@@ -776,5 +776,3 @@ export {
   SidebarTrigger,
   useSidebar,
 }
-
-    
