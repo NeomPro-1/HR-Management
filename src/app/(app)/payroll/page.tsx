@@ -44,14 +44,14 @@ export default function PayrollPage() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between">
+      <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <CardTitle>Payroll Management</CardTitle>
             <CardDescription>Review and process monthly payroll for your team.</CardDescription>
         </div>
-        <div className="flex items-center gap-2 mt-4 md:mt-0">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
             <Select defaultValue="july-2024" onValueChange={(value) => setSelectedMonth(value === 'july-2024' ? 'July 2024' : value === 'june-2024' ? 'June 2024' : 'May 2024')}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full sm:w-[180px]">
                     <SelectValue placeholder="Select Month" />
                 </SelectTrigger>
                 <SelectContent>
@@ -60,7 +60,7 @@ export default function PayrollPage() {
                     <SelectItem value="may-2024">May 2024</SelectItem>
                 </SelectContent>
             </Select>
-            <Button onClick={handleRunPayroll} disabled={isProcessing}>
+            <Button onClick={handleRunPayroll} disabled={isProcessing} className="w-full sm:w-auto">
                 {isProcessing ? 'Processing...' : `Run Payroll`}
             </Button>
         </div>
@@ -70,7 +70,7 @@ export default function PayrollPage() {
             <TableHeader>
                 <TableRow>
                     <TableHead>Employee</TableHead>
-                    <TableHead>Role</TableHead>
+                    <TableHead className="hidden sm:table-cell">Role</TableHead>
                     <TableHead className="text-right">Monthly Salary</TableHead>
                 </TableRow>
             </TableHeader>
@@ -85,11 +85,11 @@ export default function PayrollPage() {
                                 </Avatar>
                                 <div>
                                     <div className="font-medium">{employee.name}</div>
-                                    <div className="text-sm text-muted-foreground">{employee.email}</div>
+                                    <div className="text-sm text-muted-foreground hidden sm:inline">{employee.email}</div>
                                 </div>
                             </div>
                         </TableCell>
-                        <TableCell>{employee.role}</TableCell>
+                        <TableCell className="hidden sm:table-cell">{employee.role}</TableCell>
                         <TableCell className="text-right font-medium">{formatCurrency(employee.salary || 0)}</TableCell>
                     </TableRow>
                 ))}
