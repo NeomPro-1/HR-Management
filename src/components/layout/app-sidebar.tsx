@@ -44,12 +44,12 @@ const hrmNavItems = [
     { href: '/hr/designations', label: 'Designations' },
     { href: '/hr/admin-attendance', label: 'Admin Attendance' },
     { href: '/hr/employee-attendance', label: 'Employee Attendance' },
-    { href: '/hr/biometric-attendance', label: 'Biometric Attendance' },
-    { href: '/hr/office-loan', label: 'Office Loan' },
-    { href: '/hr/personal-loan', label: 'Personal Loan' },
-    { href: '/hr/admin-leave', label: 'Admin Leave' },
-    { href: '/hr/employee-leave', label: 'Employee Leave' },
-    { href: '/hr/holidays', label: 'Holidays' },
+    { href: '#', label: 'Biometric Attendance' },
+    { href: '#', label: 'Office Loan' },
+    { href: '#', label: 'Personal Loan' },
+    { href: '#', label: 'Admin Leave' },
+    { href: '#', label: 'Employee Leave' },
+    { href: '#', label: 'Holidays' },
 ];
 
 export function AppSidebar() {
