@@ -27,6 +27,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -49,7 +50,7 @@ const hrmNavItems = [
     { href: '#', label: 'Personal Loan' },
     { href: '#', label: 'Admin Leave' },
     { href: '#', label: 'Employee Leave' },
-    { href: '#', label: 'Holidays' },
+    { href: '/hr/settings', label: 'Holidays' },
 ];
 
 export function AppSidebar() {
@@ -103,11 +104,12 @@ export function AppSidebar() {
                   <SidebarMenuSub>
                     {hrmNavItems.map((item) => (
                       <li key={item.href}>
-                          <Link href={item.href} passHref legacyBehavior>
-                            <SidebarMenuSubButton isActive={pathname === item.href}>
-                                <ArrowRight className="w-3 h-3" />
-                                <span>{item.label}</span>
-                            </SidebarMenuSubButton>
+                          <Link href={item.href} className={cn(
+                              "flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sidebar-foreground/80 outline-none ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground text-sm group-data-[collapsible=icon]:hidden",
+                              pathname === item.href && "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                          )}>
+                              <ArrowRight className="w-3 h-3" />
+                              <span>{item.label}</span>
                           </Link>
                       </li>
                     ))}
