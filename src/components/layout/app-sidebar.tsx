@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -22,12 +23,14 @@ import {
   useSidebar,
   SidebarMenuSub,
   SidebarMenuSubButton,
+  SidebarMenuSkeleton,
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { Settings } from 'lucide-react';
+import React from 'react';
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -57,6 +60,11 @@ export function AppSidebar() {
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
   const isHRSectionActive = pathname.startsWith('/hr');
 
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <>
       <SidebarHeader>
@@ -70,7 +78,18 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent className="p-2">
         <SidebarMenu>
-          {navItems.map((item) => (
+          {!mounted && (
+            <>
+              <SidebarMenuSkeleton showIcon />
+              <SidebarMenuSkeleton showIcon />
+              <SidebarMenuSkeleton showIcon />
+              <SidebarMenuSkeleton showIcon />
+              <SidebarMenuSkeleton showIcon />
+              <SidebarMenuSkeleton showIcon />
+              <SidebarMenuSkeleton showIcon />
+            </>
+          )}
+          {mounted && navItems.map((item) => (
             <SidebarMenuItem key={item.href}>
               <Link href={item.href}>
                 <SidebarMenuButton
@@ -83,7 +102,7 @@ export function AppSidebar() {
               </Link>
             </SidebarMenuItem>
           ))}
-          <Collapsible asChild defaultOpen={isHRSectionActive}>
+          {mounted && <Collapsible asChild defaultOpen={isHRSectionActive}>
             <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
                     <SidebarMenuButton
@@ -113,7 +132,7 @@ export function AppSidebar() {
                   </SidebarMenuSub>
                 </CollapsibleContent>
             </SidebarMenuItem>
-          </Collapsible>
+          </Collapsible>}
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border p-2 mt-auto">
