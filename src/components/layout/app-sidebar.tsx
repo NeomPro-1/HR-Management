@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -104,7 +105,7 @@ export function AppSidebar() {
                   <SidebarMenuSub>
                     {hrmNavItems.map((item) => (
                       <li key={`${item.href}-${item.label}`}>
-                          <Link href={item.href}>
+                          <Link href={item.href} asChild>
                             <SidebarMenuSubButton isActive={pathname === item.href}>
                                 <ArrowRight className="w-3 h-3" />
                                 <span>{item.label}</span>
