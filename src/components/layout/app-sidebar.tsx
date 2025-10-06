@@ -91,7 +91,7 @@ export function AppSidebar() {
                   <SidebarMenuSub>
                     {hrNavItems.map((item) => (
                       <li key={item.href}>
-                        <Link href={item.href} passHref legacyBehavior>
+                        <Link href={item.href}>
                           <SidebarMenuSubButton isActive={pathname.startsWith(item.href)}>
                               <span>{item.label}</span>
                           </SidebarMenuSubButton>
