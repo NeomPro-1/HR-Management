@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -80,13 +81,13 @@ export function AppSidebar() {
         <SidebarMenu>
           {!mounted && (
             <>
-              <SidebarMenuSkeleton showIcon />
-              <SidebarMenuSkeleton showIcon />
-              <SidebarMenuSkeleton showIcon />
-              <SidebarMenuSkeleton showIcon />
-              <SidebarMenuSkeleton showIcon />
-              <SidebarMenuSkeleton showIcon />
-              <SidebarMenuSkeleton showIcon />
+              <SidebarMenuItem><SidebarMenuSkeleton showIcon /></SidebarMenuItem>
+              <SidebarMenuItem><SidebarMenuSkeleton showIcon /></SidebarMenuItem>
+              <SidebarMenuItem><SidebarMenuSkeleton showIcon /></SidebarMenuItem>
+              <SidebarMenuItem><SidebarMenuSkeleton showIcon /></SidebarMenuItem>
+              <SidebarMenuItem><SidebarMenuSkeleton showIcon /></SidebarMenuItem>
+              <SidebarMenuItem><SidebarMenuSkeleton showIcon /></SidebarMenuItem>
+              <SidebarMenuItem><SidebarMenuSkeleton showIcon /></SidebarMenuItem>
             </>
           )}
           {mounted && navItems.map((item) => (
@@ -120,14 +121,14 @@ export function AppSidebar() {
                 <CollapsibleContent asChild>
                   <SidebarMenuSub>
                     {hrmNavItems.map((item) => (
-                      <li key={`${item.href}-${item.label}`}>
+                      <SidebarMenuItem key={`${item.href}-${item.label}`}>
                         <Link href={item.href}>
                             <SidebarMenuSubButton isActive={pathname === item.href}>
                                 <ArrowRight className="h-3 w-3" />
                                 <span>{item.label}</span>
                             </SidebarMenuSubButton>
                         </Link>
-                      </li>
+                      </SidebarMenuItem>
                     ))}
                   </SidebarMenuSub>
                 </CollapsibleContent>
