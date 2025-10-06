@@ -10,6 +10,7 @@ import {
   MessageCircle,
   Settings,
   Users,
+  ShieldHalf,
 } from 'lucide-react';
 import {
   SidebarContent,
@@ -18,9 +19,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
+  useSidebar,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -31,9 +36,15 @@ const navItems = [
   { href: '/payroll', icon: CircleDollarSign, label: 'Payroll' },
 ];
 
+const hrNavItems = [
+  { href: '/hr/settings', label: 'Settings' },
+];
+
 export function AppSidebar() {
   const pathname = usePathname();
+  const { open } = useSidebar();
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
+  const isHRSectionActive = pathname.startsWith('/hr');
 
   return (
     <>
@@ -61,6 +72,36 @@ export function AppSidebar() {
               </Link>
             </SidebarMenuItem>
           ))}
+          <Collapsible asChild defaultOpen={isHRSectionActive}>
+            <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                    <SidebarMenuButton
+                        isActive={isHRSectionActive}
+                        tooltip={{ children: 'HR Management', side: 'right' }}
+                        className="justify-between"
+                        isDropdown
+                    >
+                        <div className="flex items-center gap-2">
+                            <ShieldHalf />
+                            <span>HR Management</span>
+                        </div>
+                    </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent asChild>
+                  <SidebarMenuSub>
+                    {hrNavItems.map((item) => (
+                      <li key={item.href}>
+                        <Link href={item.href}>
+                          <SidebarMenuSubButton isActive={pathname.startsWith(item.href)}>
+                              <span>{item.label}</span>
+                          </SidebarMenuSubButton>
+                        </Link>
+                      </li>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+            </SidebarMenuItem>
+          </Collapsible>
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border p-2 mt-auto">
