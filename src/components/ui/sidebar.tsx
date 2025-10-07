@@ -1,9 +1,4 @@
 
-
-
-
-
-
 "use client"
 
 import * as React from "react"
@@ -740,11 +735,11 @@ const SidebarMenuSubButton = React.forwardRef<
     isActive?: boolean
   }
 >(({ size = "md", isActive, className, children, ...props }, ref) => {
-    const [isMounted, setIsMounted] = React.useState(false)
+  const [isMounted, setIsMounted] = React.useState(false)
 
-    React.useEffect(() => {
-        setIsMounted(true)
-    }, [])
+  React.useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   return (
     <div

@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import Link from 'next/link';
@@ -24,13 +23,14 @@ import {
   useSidebar,
   SidebarMenuSub,
   SidebarMenuSubButton,
+  SidebarMenuSkeleton,
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { Settings } from 'lucide-react';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -48,7 +48,7 @@ const hrmNavItems = [
     { href: '/hr/designations', label: 'Designations' },
     { href: '/hr/admin-attendance', label: 'Admin Attendance' },
     { href: '/hr/employee-attendance', label: 'Employee Attendance' },
-    { href: '#-biometric-attendance', label: 'Biometric Attendance' },
+    { href: '/hr/biometric-attendance', label: 'Biometric Attendance' },
     { href: '#-admin-leave', label: 'Admin Leave' },
     { href: '#-employee-leave', label: 'Employee Leave' },
     { href: '/hr/holidays', label: 'Holidays' },
@@ -59,6 +59,38 @@ export function AppSidebar() {
   const { open } = useSidebar();
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
   const isHRSectionActive = pathname.startsWith('/hr');
+
+  // Hydration fix
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <>
+        <SidebarHeader>
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-primary">
+              <path d="M15.5 12a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-1.5 0a2 2 0 1 0-4 0 2 2 0 0 0 4 0Z" />
+              <path d="M12 4a8 8 0 1 1 0 16 4 4 0 0 0 0-8 4 4 0 0 0 0-8Zm0 1.5a6.5 6.5 0 1 0 0 13 2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0-5 6.5 6.5 0 0 0 0-3Z" />
+            </svg>
+            <h1 className="text-xl font-bold font-headline text-sidebar-foreground">SynergyHR</h1>
+          </Link>
+        </SidebarHeader>
+        <SidebarContent className="p-2">
+          <SidebarMenu>
+            {[...Array(7)].map((_, i) => (
+                <SidebarMenuItem key={i}>
+                    <SidebarMenuSkeleton showIcon />
+                </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarContent>
+      </>
+    );
+  }
+
 
   return (
     <>
