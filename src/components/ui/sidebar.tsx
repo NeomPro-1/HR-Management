@@ -549,7 +549,7 @@ const SidebarMenuButton = React.forwardRef<
   (
     {
       asChild = false,
-      isActive: isActiveProp,
+      isActive,
       variant = "default",
       size = "default",
       isDropdown = false,
@@ -562,12 +562,6 @@ const SidebarMenuButton = React.forwardRef<
   ) => {
     const Comp = asChild ? Slot : "button"
     const { isMobile, state } = useSidebar()
-    const [isActive, setIsActive] = React.useState(false);
-
-    React.useEffect(() => {
-        setIsActive(!!isActiveProp);
-    }, [isActiveProp]);
-
 
     const button = (
       <Comp
@@ -677,6 +671,7 @@ const SidebarMenuSkeleton = React.forwardRef<
   const [width, setWidth] = React.useState("75%");
 
   React.useEffect(() => {
+    // Randomize client-side only after hydration
     setWidth(`${Math.floor(Math.random() * 25) + 50}%`);
   }, []);
 
@@ -736,13 +731,7 @@ const SidebarMenuSubButton = React.forwardRef<
     size?: "sm" | "md"
     isActive?: boolean
   }
->(({ size = "md", isActive: isActiveProp, className, children, ...props }, ref) => {
-    const [isActive, setIsActive] = React.useState(false);
-
-    React.useEffect(() => {
-        setIsActive(!!isActiveProp);
-    }, [isActiveProp]);
-
+>(({ size = "md", isActive, className, children, ...props }, ref) => {
   return (
     <div
       ref={ref}
@@ -791,5 +780,3 @@ export {
   SidebarTrigger,
   useSidebar,
 }
-
-    
