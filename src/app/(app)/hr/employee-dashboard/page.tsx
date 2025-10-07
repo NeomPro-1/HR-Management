@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { DashboardStats } from "@/components/dashboard/dashboard-stats";
-import { AttendanceChart } from "@/components/dashboard/attendance-chart";
-import { LeaveRequests } from "@/components/dashboard/leave-requests";
-import { HeadcountChart } from "@/components/dashboard/headcount-chart";
+import { DashboardStats } from "@/components/hr-dashboard/dashboard-stats";
+import { AttendanceChart } from "@/components/hr-dashboard/attendance-chart";
+import { LeaveRequests } from "@/components/hr-dashboard/leave-requests";
+import { HeadcountChart } from "@/components/hr-dashboard/headcount-chart";
 
 export default function EmployeeDashboardPage() {
   return (
