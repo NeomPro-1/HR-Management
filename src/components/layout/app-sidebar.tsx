@@ -45,7 +45,6 @@ const DynamicSidebarMenuSkeleton = dynamic(() => import('@/components/ui/sidebar
 
 const navItems = [
   { href: '/employees', icon: Users, label: 'Employees' },
-  { href: '/attendance', icon: CalendarCheck, label: 'Attendance' },
   { href: '/recruitment', icon: Briefcase, label: 'Recruitment' },
   { href: '/helpdesk', icon: MessageCircle, label: 'Helpdesk' },
   { href: '/payroll', icon: CircleDollarSign, label: 'Payroll' },
