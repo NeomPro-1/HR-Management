@@ -112,19 +112,6 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent className="p-2">
         <SidebarMenu>
-          {navItems.map((item) => (
-            <SidebarMenuItem key={item.href}>
-              <Link href={item.href}>
-                <SidebarMenuButton
-                  isActive={pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/')}
-                  tooltip={{ children: item.label, side: 'right' }}
-                >
-                  <item.icon />
-                  <span>{item.label}</span>
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
-          ))}
           <Collapsible asChild defaultOpen={isHRSectionActive}>
             <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
@@ -156,6 +143,19 @@ export function AppSidebar() {
                 </CollapsibleContent>
             </SidebarMenuItem>
           </Collapsible>
+          {navItems.map((item) => (
+            <SidebarMenuItem key={item.href}>
+              <Link href={item.href}>
+                <SidebarMenuButton
+                  isActive={pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/')}
+                  tooltip={{ children: item.label, side: 'right' }}
+                >
+                  <item.icon />
+                  <span>{item.label}</span>
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+          ))}
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border p-2 mt-auto">
