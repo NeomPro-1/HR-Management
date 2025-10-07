@@ -12,6 +12,14 @@ import {
   Users,
   ShieldHalf,
   ArrowRight,
+  Fingerprint,
+  UserCheck,
+  CalendarClock,
+  CalendarDays,
+  UserCog,
+  ClipboardUser,
+  BookUser,
+  FileText,
 } from 'lucide-react';
 import {
   SidebarContent,
@@ -46,16 +54,16 @@ const navItems = [
 ];
 
 const hrmNavItems = [
-    { href: '/hr/employee-dashboard', label: 'Employee Dashboard' },
-    { href: '/hr/employee', label: 'Employee' },
-    { href: '/hr/employee-details', label: 'Employee Details' },
-    { href: '/hr/designations', label: 'Designations' },
-    { href: '/hr/admin-attendance', label: 'Admin Attendance' },
-    { href: '/hr/employee-attendance', label: 'Employee Attendance' },
-    { href: '/hr/biometric-attendance', label: 'Biometric Attendance' },
-    { href: '/hr/admin-leave', label: 'Admin Leave' },
-    { href: '/hr/employee-leave', label: 'Employee Leave' },
-    { href: '/hr/holidays', label: 'Holidays' },
+    { href: '/hr/employee-dashboard', label: 'Employee Dashboard', icon: LayoutDashboard },
+    { href: '/hr/employee', label: 'Employee', icon: Users },
+    { href: '/hr/employee-details', label: 'Employee Details', icon: ClipboardUser },
+    { href: '/hr/designations', label: 'Designations', icon: UserCog },
+    { href: '/hr/admin-attendance', label: 'Admin Attendance', icon: UserCheck },
+    { href: '/hr/employee-attendance', label: 'Employee Attendance', icon: CalendarClock },
+    { href: '/hr/biometric-attendance', label: 'Biometric Attendance', icon: Fingerprint },
+    { href: '/hr/admin-leave', label: 'Admin Leave', icon: BookUser },
+    { href: '/hr/employee-leave', label: 'Employee Leave', icon: FileText },
+    { href: '/hr/holidays', label: 'Holidays', icon: CalendarDays },
 ];
 
 export function AppSidebar() {
@@ -143,7 +151,7 @@ export function AppSidebar() {
                       <SidebarMenuItem key={`${item.href}-${item.label}`}>
                         <Link href={item.href}>
                             <SidebarMenuSubButton isActive={pathname === item.href}>
-                                <ArrowRight className="h-3 w-3" />
+                                <item.icon className="h-4 w-4" />
                                 <span>{item.label}</span>
                             </SidebarMenuSubButton>
                         </Link>
