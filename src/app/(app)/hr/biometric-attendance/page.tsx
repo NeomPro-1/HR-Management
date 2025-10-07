@@ -1,6 +1,7 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { PlusCircle, MoreHorizontal, Download, RefreshCw } from "lucide-react";
+
+'use client';
+
+import * as React from 'react';
 import {
   Table,
   TableBody,
@@ -9,126 +10,182 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
-const devices = [
-  { id: "ZD-101", name: "Main Entrance", status: "Online", lastSync: "2 minutes ago" },
-  { id: "ZD-102", name: "Cafeteria", status: "Online", lastSync: "5 minutes ago" },
-  { id: "ZD-103", name: "Warehouse", status: "Offline", lastSync: "2 hours ago" },
+type AttendanceStatus = "On Time" | "Late" | "Early" | "Absent";
+
+const getImg = (id: string) => PlaceHolderImages.find(p => p.id === id)?.imageUrl || '';
+
+const attendanceData = [
+    { id: "EMP-001", name: "John Smith", avatar: getImg("emp1-avatar"), date: "25 Apr 2025", clockIn: "09:00 AM", clockOut: "06:00 PM", status: "On Time" as AttendanceStatus },
+    { id: "EMP-002", name: "Sarah Johnson", avatar: getImg("emp2-avatar"), date: "25 Apr 2025", clockIn: "09:15 AM", clockOut: "06:05 PM", status: "Late" as AttendanceStatus },
+    { id: "EMP-003", name: "Michael Chen", avatar: getImg("emp3-avatar"), date: "25 Apr 2025", clockIn: "08:55 AM", clockOut: "05:50 PM", status: "Early" as AttendanceStatus },
+    { id: "EMP-004", name: "Emily Wilson", avatar: getImg("emp4-avatar"), date: "25 Apr 2025", clockIn: "-", clockOut: "-", status: "Absent" as AttendanceStatus },
+    { id: "EMP-005", name: "David Kim", avatar: getImg("emp5-avatar"), date: "25 Apr 2025", clockIn: "09:02 AM", clockOut: "06:01 PM", status: "On Time" as AttendanceStatus },
+    { id: "EMP-006", name: "Jessica Martinez", avatar: getImg("leave-avatar-1"), date: "25 Apr 2025", clockIn: "09:00 AM", clockOut: "06:00 PM", status: "On Time" as AttendanceStatus },
+    { id: "EMP-007", name: "Robert Taylor", avatar: getImg("leave-avatar-2"), date: "25 Apr 2025", clockIn: "09:20 AM", clockOut: "06:15 PM", status: "Late" as AttendanceStatus },
+    { id: "EMP-008", name: "Lisa Anderson", avatar: getImg("leave-avatar-3"), date: "25 Apr 2025", clockIn: "08:50 AM", clockOut: "05:45 PM", status: "Early" as AttendanceStatus },
+    { id: "EMP-009", name: "Daniel Brown", avatar: getImg("leave-avatar-4"), date: "25 Apr 2025", clockIn: "09:05 AM", clockOut: "06:00 PM", status: "On Time" as AttendanceStatus },
+    { id: "EMP-010", name: "Amanda Lee", avatar: getImg("user-avatar"), date: "25 Apr 2025", clockIn: "-", clockOut: "-", status: "Absent" as AttendanceStatus },
 ];
 
-const attendanceLogs = [
-  { logId: "L001", empId: "EMP001", name: "Alisha Sharma", device: "Main Entrance", timestamp: "2024-07-25 09:01:15 AM", type: "Check-in" },
-  { logId: "L002", empId: "EMP002", name: "Rohan Verma", device: "Main Entrance", timestamp: "2024-07-25 09:03:22 AM", type: "Check-in" },
-  { logId: "L003", empId: "EMP004", name: "Amit Patel", device: "Cafeteria", timestamp: "2024-07-25 01:15:45 PM", type: "Check-in" },
-  { logId: "L004", empId: "EMP001", name: "Alisha Sharma", device: "Main Entrance", timestamp: "2024-07-25 06:05:30 PM", type: "Check-out" },
-];
+const getStatusVariant = (status: AttendanceStatus) => {
+    switch (status) {
+        case "On Time":
+            return "default";
+        case "Late":
+            return "secondary";
+        case "Absent":
+            return "destructive";
+        case "Early":
+            return "outline";
+        default:
+            return "default";
+    }
+};
+
+const getStatusClass = (status: AttendanceStatus) => {
+    switch (status) {
+        case "On Time":
+            return "bg-green-500/20 text-green-700 border-green-500/30";
+        case "Late":
+            return "bg-orange-500/20 text-orange-700 border-orange-500/30";
+        case "Absent":
+            return "bg-red-500/20 text-red-700 border-red-500/30";
+        case "Early":
+            return "bg-blue-500/20 text-blue-700 border-blue-500/30";
+        default:
+            return "";
+    }
+}
 
 
 export default function BiometricAttendancePage() {
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <CardTitle>Biometric Devices</CardTitle>
-            <CardDescription>Manage and monitor your attendance hardware.</CardDescription>
-          </div>
-          <Button>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Add Device
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Device Name</TableHead>
-                <TableHead className="hidden sm:table-cell">Device ID</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="hidden sm:table-cell">Last Sync</TableHead>
-                <TableHead><span className="sr-only">Actions</span></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {devices.map((d) => (
-                <TableRow key={d.id}>
-                  <TableCell className="font-medium">{d.name}</TableCell>
-                  <TableCell className="hidden sm:table-cell">{d.id}</TableCell>
-                  <TableCell>
-                    <Badge variant={d.status === "Online" ? "default" : "destructive"}>{d.status}</Badge>
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell">{d.lastSync}</TableCell>
-                  <TableCell className="text-right">
-                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button size="icon" variant="ghost">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View Logs</DropdownMenuItem>
-                        <DropdownMenuItem>Sync Now</DropdownMenuItem>
-                        <DropdownMenuItem>Settings</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <CardTitle>Real-time Attendance Log</CardTitle>
-            <CardDescription>Live feed of punches from all biometric devices.</CardDescription>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline">
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Refresh
-            </Button>
-            <Button>
-                <Download className="mr-2 h-4 w-4" />
-                Export Logs
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead>Employee</TableHead>
-                    <TableHead>Device</TableHead>
-                    <TableHead>Timestamp</TableHead>
-                    <TableHead>Type</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {attendanceLogs.map((log) => (
-                    <TableRow key={log.logId}>
-                        <TableCell>
-                            <div className="font-medium">{log.name}</div>
-                            <div className="text-sm text-muted-foreground">{log.empId}</div>
-                        </TableCell>
-                        <TableCell>{log.device}</TableCell>
-                        <TableCell>{new Date(log.timestamp).toLocaleString('en-IN')}</TableCell>
-                        <TableCell>{log.type}</TableCell>
-                    </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </div>
-  );
+    return (
+        <Card>
+            <CardHeader>
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div>
+                        <CardTitle className="text-2xl">April 2025 Attendance</CardTitle>
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                        <Button variant="outline">Export as CSV</Button>
+                        <Button>Request Sync</Button>
+                    </div>
+                </div>
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mt-4">
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground">Show</span>
+                        <Select defaultValue="10">
+                            <SelectTrigger className="w-[70px]">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="10">10</SelectItem>
+                                <SelectItem value="25">25</SelectItem>
+                                <SelectItem value="50">50</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <span className="text-sm text-muted-foreground">entries</span>
+                    </div>
+                    <div className="w-full md:w-auto">
+                        <Input placeholder="Search..." className="w-full md:w-64" />
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="p-0">
+                <Table>
+                    <TableHeader className="bg-muted/50">
+                        <TableRow>
+                            <TableHead>ID</TableHead>
+                            <TableHead>Employee</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Clock In</TableHead>
+                            <TableHead>Clock Out</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Action</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {attendanceData.map((entry) => (
+                            <TableRow key={entry.id}>
+                                <TableCell className="font-medium text-muted-foreground">{entry.id}</TableCell>
+                                <TableCell>
+                                    <div className="flex items-center gap-3">
+                                        <Avatar className="h-8 w-8">
+                                            <AvatarImage src={entry.avatar} alt={entry.name} data-ai-hint="person face" />
+                                            <AvatarFallback>{entry.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <span className="font-medium">{entry.name}</span>
+                                    </div>
+                                </TableCell>
+                                <TableCell>{entry.date}</TableCell>
+                                <TableCell>{entry.clockIn}</TableCell>
+                                <TableCell>{entry.clockOut}</TableCell>
+                                <TableCell>
+                                    <Badge variant={getStatusVariant(entry.status)} className={cn("font-semibold", getStatusClass(entry.status))}>
+                                        {entry.status}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex gap-1">
+                                         <Button variant="ghost" size="icon" className="text-blue-500 hover:text-blue-700">
+                                            <Pencil className="h-4 w-4" />
+                                        </Button>
+                                        <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700">
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
+            <CardFooter className="flex items-center justify-between py-4">
+                <div className="text-sm text-muted-foreground">
+                    Showing 1 to 10 of 26 entries
+                </div>
+                <Pagination>
+                    <PaginationContent>
+                        <PaginationItem>
+                            <PaginationPrevious href="#" />
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationLink href="#" isActive>1</PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationLink href="#">2</PaginationLink>
+                        </PaginationItem>
+                         <PaginationItem>
+                            <PaginationLink href="#">3</PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationNext href="#" />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+            </CardFooter>
+        </Card>
+    );
 }
+
