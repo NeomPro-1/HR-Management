@@ -31,6 +31,12 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { cn } from '@/lib/utils';
 import { Settings } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+
+const DynamicSidebarMenuSkeleton = dynamic(() => import('@/components/ui/sidebar').then(mod => mod.SidebarMenuSkeleton), {
+  ssr: false,
+});
+
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -82,7 +88,7 @@ export function AppSidebar() {
           <SidebarMenu>
             {[...Array(7)].map((_, i) => (
                 <SidebarMenuItem key={i}>
-                    <SidebarMenuSkeleton showIcon />
+                    <DynamicSidebarMenuSkeleton showIcon />
                 </SidebarMenuItem>
             ))}
           </SidebarMenu>
