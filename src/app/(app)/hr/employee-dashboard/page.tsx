@@ -1,22 +1,35 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { DashboardStats } from "@/components/dashboard/dashboard-stats";
+import { AttendanceChart } from "@/components/dashboard/attendance-chart";
+import { LeaveRequests } from "@/components/dashboard/leave-requests";
 import { HeadcountChart } from "@/components/dashboard/headcount-chart";
 
 export default function EmployeeDashboardPage() {
   return (
     <div className="space-y-6">
-       <Card>
-        <CardHeader>
-          <CardTitle>Employee Dashboard</CardTitle>
-          <CardDescription>
-            Central hub for HR to monitor workforce metrics.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-            <DashboardStats />
-        </CardContent>
-      </Card>
-       <Card>
+      <DashboardStats />
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="col-span-4">
+          <CardHeader>
+            <CardTitle>Attendance Overview</CardTitle>
+            <CardDescription>Daily attendance for the last 7 days.</CardDescription>
+          </CardHeader>
+          <CardContent className="pl-2">
+            <AttendanceChart />
+          </CardContent>
+        </Card>
+        <Card className="col-span-4 lg:col-span-3">
+          <CardHeader>
+            <CardTitle>Recent Leave Requests</CardTitle>
+            <CardDescription>A summary of recent leave submissions.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <LeaveRequests />
+          </CardContent>
+        </Card>
+      </div>
+      <div className="grid gap-6 md:grid-cols-2">
+         <Card>
           <CardHeader>
             <CardTitle>Department Headcount</CardTitle>
             <CardDescription>Distribution of employees across departments.</CardDescription>
@@ -25,6 +38,21 @@ export default function EmployeeDashboardPage() {
             <HeadcountChart />
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Upcoming Payroll</CardTitle>
+            <CardDescription>Next payroll cycle is on July 31, 2024.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex h-full items-center justify-center">
+              <div className="text-center">
+                <p className="text-4xl font-bold">₹ 12,50,000</p>
+                <p className="text-sm text-muted-foreground">Estimated Total Payout</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
