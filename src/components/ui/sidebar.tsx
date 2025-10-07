@@ -549,7 +549,7 @@ const SidebarMenuButton = React.forwardRef<
   (
     {
       asChild = false,
-      isActive = false,
+      isActive: isActiveProp = false,
       variant = "default",
       size = "default",
       isDropdown = false,
@@ -562,18 +562,18 @@ const SidebarMenuButton = React.forwardRef<
   ) => {
     const Comp = asChild ? Slot : "button"
     const { isMobile, state } = useSidebar()
-    const [isMounted, setIsMounted] = React.useState(false)
+    const [isActive, setIsActive] = React.useState(isActiveProp);
 
     React.useEffect(() => {
-        setIsMounted(true)
-    }, [])
+        setIsActive(isActiveProp);
+    }, [isActiveProp]);
 
     const button = (
       <Comp
         ref={ref}
         data-sidebar="menu-button"
         data-size={size}
-        data-active={isMounted && isActive}
+        data-active={isActive}
         className={cn(sidebarMenuButtonVariants({ variant, size, isDropdown }), className)}
         {...props}
       >
@@ -629,7 +629,7 @@ const SidebarMenuAction = React.forwardRef<
       ref={ref}
       data-sidebar="menu-action"
       className={cn(
-        "absolute right-1 top-1.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 peer-hover/menu-button:text-sidebar-accent-foreground [&>svg]:size-4 [&>svg]:shrink-0",
+        "absolute right-1 top-1.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 peer-hover/menu-button:text-sidebar-accent-foreground peer-data-[active=true]/menu-button:text-sidebar-accent-foreground",
         // Increases the hit area of the button on mobile.
         "after:absolute after:-inset-2 after:md:hidden",
         "peer-data-[size=sm]/menu-button:top-1",
@@ -729,19 +729,19 @@ const SidebarMenuSubButton = React.forwardRef<
     size?: "sm" | "md"
     isActive?: boolean
   }
->(({ size = "md", isActive, className, children, ...props }, ref) => {
-    const [isMounted, setIsMounted] = React.useState(false);
+>(({ size = "md", isActive: isActiveProp, className, children, ...props }, ref) => {
+    const [isActive, setIsActive] = React.useState(isActiveProp);
 
     React.useEffect(() => {
-        setIsMounted(true);
-    }, []);
+        setIsActive(isActiveProp);
+    }, [isActiveProp]);
 
   return (
     <div
       ref={ref}
       data-sidebar="menu-sub-button"
       data-size={size}
-      data-active={isMounted && isActive}
+      data-active={isActive}
       className={cn(
         "flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sidebar-foreground/80 outline-none ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground",
         "data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground data-[active=true]:font-medium",
