@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Briefcase,
-  CalendarCheck,
   CircleDollarSign,
   LayoutDashboard,
   MessageCircle,
@@ -44,7 +43,6 @@ const DynamicSidebarMenuSkeleton = dynamic(() => import('@/components/ui/sidebar
 
 
 const navItems = [
-  { href: '/employees', icon: Users, label: 'Employees' },
   { href: '/recruitment', icon: Briefcase, label: 'Recruitment' },
   { href: '/helpdesk', icon: MessageCircle, label: 'Helpdesk' },
   { href: '/payroll', icon: CircleDollarSign, label: 'Payroll' },
