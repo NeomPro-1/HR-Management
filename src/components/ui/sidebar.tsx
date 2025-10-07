@@ -549,7 +549,7 @@ const SidebarMenuButton = React.forwardRef<
   (
     {
       asChild = false,
-      isActive: isActiveProp = false,
+      isActive: isActiveProp,
       variant = "default",
       size = "default",
       isDropdown = false,
@@ -562,11 +562,12 @@ const SidebarMenuButton = React.forwardRef<
   ) => {
     const Comp = asChild ? Slot : "button"
     const { isMobile, state } = useSidebar()
-    const [isActive, setIsActive] = React.useState(isActiveProp);
+    const [isActive, setIsActive] = React.useState(false);
 
     React.useEffect(() => {
-        setIsActive(isActiveProp);
+        setIsActive(!!isActiveProp);
     }, [isActiveProp]);
+
 
     const button = (
       <Comp
@@ -730,10 +731,10 @@ const SidebarMenuSubButton = React.forwardRef<
     isActive?: boolean
   }
 >(({ size = "md", isActive: isActiveProp, className, children, ...props }, ref) => {
-    const [isActive, setIsActive] = React.useState(isActiveProp);
+    const [isActive, setIsActive] = React.useState(false);
 
     React.useEffect(() => {
-        setIsActive(isActiveProp);
+        setIsActive(!!isActiveProp);
     }, [isActiveProp]);
 
   return (
