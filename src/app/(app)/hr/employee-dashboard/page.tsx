@@ -1,9 +1,11 @@
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { DashboardStats } from "@/components/dashboard/dashboard-stats";
+import { HeadcountChart } from "@/components/dashboard/headcount-chart";
 
 export default function EmployeeDashboardPage() {
   return (
     <div className="space-y-6">
-      <Card>
+       <Card>
         <CardHeader>
           <CardTitle>Employee Dashboard</CardTitle>
           <CardDescription>
@@ -11,11 +13,18 @@ export default function EmployeeDashboardPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center h-64 border-2 border-dashed rounded-lg">
-            <p className="text-muted-foreground">Dashboard content coming soon...</p>
-          </div>
+            <DashboardStats />
         </CardContent>
       </Card>
+       <Card>
+          <CardHeader>
+            <CardTitle>Department Headcount</CardTitle>
+            <CardDescription>Distribution of employees across departments.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <HeadcountChart />
+          </CardContent>
+        </Card>
     </div>
   );
 }

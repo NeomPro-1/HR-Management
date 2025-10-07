@@ -23,7 +23,6 @@ import {
   useSidebar,
   SidebarMenuSub,
   SidebarMenuSubButton,
-  SidebarMenuSkeleton,
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -55,8 +54,8 @@ const hrmNavItems = [
     { href: '/hr/admin-attendance', label: 'Admin Attendance' },
     { href: '/hr/employee-attendance', label: 'Employee Attendance' },
     { href: '/hr/biometric-attendance', label: 'Biometric Attendance' },
-    { href: '#-admin-leave', label: 'Admin Leave' },
-    { href: '#-employee-leave', label: 'Employee Leave' },
+    { href: '/hr/admin-leave', label: 'Admin Leave' },
+    { href: '/hr/employee-leave', label: 'Employee Leave' },
     { href: '/hr/holidays', label: 'Holidays' },
 ];
 
