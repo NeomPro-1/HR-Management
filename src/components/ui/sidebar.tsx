@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -664,11 +663,11 @@ SidebarMenuBadge.displayName = "SidebarMenuBadge"
 
 const SidebarMenuSkeleton = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"div"> & {
+  React.HTMLAttributes<HTMLDivElement> & {
     showIcon?: boolean
   }
 >(({ className, showIcon = false, ...props }, ref) => {
-  const [width, setWidth] = React.useState("75%");
+  const [width, setWidth] = React.useState<string>("75%");
 
   React.useEffect(() => {
     // Randomize client-side only after hydration
