@@ -674,6 +674,12 @@ const SidebarMenuSkeleton = React.forwardRef<
     showIcon?: boolean
   }
 >(({ className, showIcon = false, ...props }, ref) => {
+  const [width, setWidth] = React.useState("75%");
+
+  React.useEffect(() => {
+    setWidth(`${Math.floor(Math.random() * 25) + 50}%`);
+  }, []);
+
   return (
     <div
       ref={ref}
@@ -692,7 +698,7 @@ const SidebarMenuSkeleton = React.forwardRef<
         data-sidebar="menu-skeleton-text"
         style={
           {
-            "--skeleton-width": "75%",
+            "--skeleton-width": width,
           } as React.CSSProperties
         }
       />
@@ -785,3 +791,5 @@ export {
   SidebarTrigger,
   useSidebar,
 }
+
+    
