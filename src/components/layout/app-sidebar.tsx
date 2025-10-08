@@ -71,10 +71,16 @@ const payrollNavItems = [
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const { open } = useSidebar();
+  const { open, isMobile, setOpenMobile } = useSidebar();
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
   const isHRSectionActive = pathname.startsWith('/hr');
   const isPayrollSectionActive = pathname.startsWith('/payroll');
+  
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }
 
   // Hydration fix
   const [mounted, setMounted] = useState(false);
@@ -140,7 +146,7 @@ export function AppSidebar() {
                   <SidebarMenuSub>
                     {hrmNavItems.map((item) => (
                       <SidebarMenuItem key={`${item.href}-${item.label}`}>
-                        <Link href={item.href}>
+                        <Link href={item.href} onClick={handleLinkClick}>
                             <SidebarMenuSubButton isActive={pathname === item.href}>
                                 <item.icon className="h-4 w-4" />
                                 <span>{item.label}</span>
@@ -154,7 +160,7 @@ export function AppSidebar() {
           </Collapsible>
           {navItems.map((item) => (
             <SidebarMenuItem key={item.href}>
-              <Link href={item.href}>
+              <Link href={item.href} onClick={handleLinkClick}>
                 <SidebarMenuButton
                   isActive={pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/')}
                   tooltip={{ children: item.label, side: 'right' }}
@@ -184,7 +190,7 @@ export function AppSidebar() {
                   <SidebarMenuSub>
                     {payrollNavItems.map((item) => (
                       <SidebarMenuItem key={`${item.href}-${item.label}`}>
-                        <Link href={item.href}>
+                        <Link href={item.href} onClick={handleLinkClick}>
                             <SidebarMenuSubButton isActive={pathname === item.href}>
                                 <item.icon className="h-4 w-4" />
                                 <span>{item.label}</span>
@@ -201,7 +207,7 @@ export function AppSidebar() {
       <SidebarFooter className="border-t border-sidebar-border p-2 mt-auto">
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link href="/hr/settings">
+            <Link href="/hr/settings" onClick={handleLinkClick}>
               <SidebarMenuButton tooltip={{ children: 'Settings', side: 'right' }} isActive={pathname.startsWith('/hr/settings')}>
                 <Settings />
                 <span>Settings</span>
@@ -209,7 +215,7 @@ export function AppSidebar() {
             </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <Link href="#">
+            <Link href="#" onClick={handleLinkClick}>
               <SidebarMenuButton tooltip={{ children: 'Profile', side: 'right' }}>
                 <Avatar className="h-7 w-7">
                   {userAvatar && <AvatarImage src={userAvatar.imageUrl} alt="User Avatar" data-ai-hint={userAvatar.imageHint}/>}
