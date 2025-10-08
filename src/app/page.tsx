@@ -46,11 +46,11 @@ export default function LandingPage() {
     <div className="flex-1">
       {/* Hero Section */}
       <section className="container grid grid-cols-1 gap-12 items-center py-12 md:py-24">
-        <div className="flex flex-col items-center gap-6">
-          <h1 className="text-4xl font-bold tracking-tighter text-center md:text-5xl lg:text-6xl font-headline">
+        <div className="flex flex-col items-center gap-6 text-center">
+          <h1 className="text-4xl font-bold tracking-tighter md:text-5xl lg:text-6xl font-headline">
             The All-in-One Platform for Modern HR & Payroll
           </h1>
-          <p className="max-w-[600px] text-muted-foreground md:text-xl text-center">
+          <p className="max-w-[600px] text-muted-foreground md:text-xl">
             From AI-powered recruitment to seamless payroll, SynergyHR integrates everything you need to manage your workforce, all in one powerful dashboard.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
@@ -150,28 +150,6 @@ export default function LandingPage() {
                 </Card>
               );
             })}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
-        <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
-          <div className="space-y-3">
-            <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">
-              Ready to Transform Your HR?
-            </h2>
-            <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Join thousands of companies who trust SynergyHR to manage their workforce. Get started today.
-            </p>
-          </div>
-          <div className="mx-auto w-full max-w-sm space-y-2">
-             <Link href="/signup" className={buttonVariants({ size: "lg", className: "w-full" })}>
-              Sign Up for Free
-            </Link>
-            <p className="text-xs text-muted-foreground">
-              No credit card required.
-            </p>
           </div>
         </div>
       </section>
