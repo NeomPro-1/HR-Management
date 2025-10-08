@@ -22,7 +22,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
       setLoading(true);
       const timer = setTimeout(() => {
         setLoading(false);
-      }, 2000);
+      }, 1000); // Reduced preloader time
 
       return () => {
         clearTimeout(timer);
@@ -37,7 +37,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
     }
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 2000);
+    }, 1000); // Reduced preloader time
     return () => clearTimeout(timer);
   }, []);
 
@@ -46,18 +46,18 @@ export default function AppLayout({ children }: PropsWithChildren) {
     <SidebarProvider>
       <Sidebar collapsible="icon" variant="sidebar">
         <AppSidebar />
-        <SidebarInset className="flex-1">
+        <SidebarInset className="flex-1 flex flex-col">
           {loading && <Preloader />}
-          <div className={loading ? 'hidden' : 'flex flex-col w-full'}>
-            <AppHeader />
-            <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-              {children}
-            </main>
-          </div>
+          {!loading && (
+            <div className='flex flex-col w-full h-full'>
+              <AppHeader />
+              <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+                {children}
+              </main>
+            </div>
+          )}
         </SidebarInset>
       </Sidebar>
     </SidebarProvider>
   );
 }
-
-    
