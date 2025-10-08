@@ -85,7 +85,7 @@ export default function HREmployeesPage() {
                 </div>
                  <div>
                   <div className="text-muted-foreground">Joining Date</div>
-                  <div>{new Date(employee.joiningDate).toLocaleDateString()}</div>
+                  <div>{employee.joiningDate}</div>
                 </div>
               </div>
             </div>
@@ -93,66 +93,64 @@ export default function HREmployeesPage() {
         </div>
 
         {/* Desktop View */}
-        <div className="hidden md:block overflow-x-auto">
-            <Table className="hidden md:table">
-            <TableHeader>
-                <TableRow>
-                <TableHead>Employee</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Joining Date</TableHead>
-                <TableHead>
-                    <span className="sr-only">Actions</span>
-                </TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {employees.map((employee) => (
-                <TableRow key={employee.id}>
-                    <TableCell>
-                    <div className="flex items-center gap-3">
-                        <Avatar>
-                        <AvatarImage src={employee.avatar} alt={employee.name} data-ai-hint="person face" />
-                        <AvatarFallback>{employee.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <div className="font-medium">{employee.name}</div>
-                            <div className="text-sm text-muted-foreground">{employee.email}</div>
-                        </div>
+        <Table className="hidden md:table">
+        <TableHeader>
+            <TableRow>
+            <TableHead>Employee</TableHead>
+            <TableHead>Department</TableHead>
+            <TableHead>Role</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Joining Date</TableHead>
+            <TableHead>
+                <span className="sr-only">Actions</span>
+            </TableHead>
+            </TableRow>
+        </TableHeader>
+        <TableBody>
+            {employees.map((employee) => (
+            <TableRow key={employee.id}>
+                <TableCell>
+                <div className="flex items-center gap-3">
+                    <Avatar>
+                    <AvatarImage src={employee.avatar} alt={employee.name} data-ai-hint="person face" />
+                    <AvatarFallback>{employee.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <div className="font-medium">{employee.name}</div>
+                        <div className="text-sm text-muted-foreground">{employee.email}</div>
                     </div>
-                    </TableCell>
-                    <TableCell>{employee.department}</TableCell>
-                    <TableCell>{employee.role}</TableCell>
-                    <TableCell>
-                    <Badge variant={employee.status === "Active" ? "default" : "secondary"}>
-                        {employee.status}
-                    </Badge>
-                    </TableCell>
-                    <TableCell>
-                    {new Date(employee.joiningDate).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                        <Button aria-haspopup="true" size="icon" variant="ghost">
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Toggle menu</span>
-                        </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>View Profile</DropdownMenuItem>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    </TableCell>
-                </TableRow>
-                ))}
-            </TableBody>
-            </Table>
-        </div>
+                </div>
+                </TableCell>
+                <TableCell>{employee.department}</TableCell>
+                <TableCell>{employee.role}</TableCell>
+                <TableCell>
+                <Badge variant={employee.status === "Active" ? "default" : "secondary"}>
+                    {employee.status}
+                </Badge>
+                </TableCell>
+                <TableCell>
+                {new Date(employee.joiningDate).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                    <Button aria-haspopup="true" size="icon" variant="ghost">
+                        <MoreHorizontal className="h-4 w-4" />
+                        <span className="sr-only">Toggle menu</span>
+                    </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuItem>View Profile</DropdownMenuItem>
+                    <DropdownMenuItem>Edit</DropdownMenuItem>
+                    <DropdownMenuItem>Delete</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                </TableCell>
+            </TableRow>
+            ))}
+        </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );

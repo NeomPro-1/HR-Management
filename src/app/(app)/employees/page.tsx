@@ -85,7 +85,7 @@ export default function EmployeesPage() {
                 </div>
                  <div>
                   <div className="text-muted-foreground">Joining Date</div>
-                  <div>{new Date(employee.joiningDate).toLocaleDateString()}</div>
+                  <div>{employee.joiningDate}</div>
                 </div>
               </div>
             </div>

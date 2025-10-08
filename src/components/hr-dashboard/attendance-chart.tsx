@@ -17,6 +17,7 @@ export function AttendanceChart() {
   const [data, setData] = React.useState(initialData);
 
   React.useEffect(() => {
+    // Client-side only effect to prevent hydration mismatch
     setData([
       { name: "Mon", total: Math.floor(Math.random() * 100) + 80 },
       { name: "Tue", total: Math.floor(Math.random() * 100) + 80 },
