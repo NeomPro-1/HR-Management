@@ -61,7 +61,7 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-4 border-b border-border bg-background/80 px-4 backdrop-blur-sm lg:px-6">
-      <div className={cn("flex items-center gap-2", !isMobile && 'md:hidden')}>
+      <div className="flex items-center gap-2 md:hidden">
         <SidebarTrigger className={cn(showBackButton && "hidden")} />
          {showBackButton && (
           <Button
@@ -80,7 +80,6 @@ export function AppHeader() {
         <h1 className={cn(
           "text-lg font-semibold md:text-2xl font-headline",
           showBackButton && isMobile && "hidden",
-          showBackButton && !isMobile && "hidden md:block"
         )}>
           {pageTitle}
         </h1>
