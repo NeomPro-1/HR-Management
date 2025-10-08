@@ -1,3 +1,4 @@
+
 "use server";
 
 import { parseResume } from "@/ai/flows/resume-parsing";
@@ -6,6 +7,7 @@ import type { ParseResumeOutput } from "@/ai/flows/resume-parsing";
 type State = {
   data: ParseResumeOutput | null;
   error: string | null;
+  key?: number;
 };
 
 async function convertFileToDataUri(file: File): Promise<string> {
@@ -22,7 +24,7 @@ export async function parseResumeAction(
   const resumeFile = formData.get("resume") as File;
 
   if (!resumeFile || resumeFile.size === 0) {
-    return { data: null, error: "Please upload a resume file." };
+    return { data: null, error: "Please upload a resume file.", key: Date.now() };
   }
 
   try {
@@ -31,13 +33,13 @@ export async function parseResumeAction(
     const parsedData = await parseResume({ resumeDataUri });
 
     if (!parsedData) {
-        return { data: null, error: "Failed to parse resume. The AI model returned no data." };
+        return { data: null, error: "Failed to parse resume. The AI model returned no data.", key: Date.now() };
     }
 
-    return { data: parsedData, error: null };
+    return { data: parsedData, error: null, key: Date.now() };
   } catch (error) {
     console.error("Error parsing resume:", error);
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
-    return { data: null, error: `Failed to parse resume: ${errorMessage}` };
+    return { data: null, error: `Failed to parse resume: ${errorMessage}`, key: Date.now() };
   }
 }

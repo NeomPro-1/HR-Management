@@ -13,8 +13,10 @@ import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { PayslipPreview } from "@/components/payroll/payslip-preview";
 import type { PayslipData } from "@/lib/placeholder-data";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CreatePayslipPage() {
+    const { toast } = useToast();
     const [employee, setEmployee] = React.useState({ id: "EMP001", name: "Alisha Sharma" });
     const [payPeriod, setPayPeriod] = React.useState("2024-07");
 
@@ -57,6 +59,14 @@ export default function CreatePayslipPage() {
     const addDeduction = () => setDeductions([...deductions, { description: "", amount: "" }]);
     const removeDeduction = (index: number) => setDeductions(deductions.filter((_, i) => i !== index));
 
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        toast({
+            title: "Payslip Saved",
+            description: `The payslip for ${employee.name} for ${payPeriod} has been saved.`,
+        });
+    }
+
     const previewData: PayslipData = {
         id: "PREVIEW-001",
         employee: {
@@ -91,7 +101,7 @@ export default function CreatePayslipPage() {
                 <CardDescription>Generate a new payslip or edit an existing one for an employee.</CardDescription>
             </CardHeader>
             <CardContent>
-                <form className="space-y-8">
+                <form className="space-y-8" onSubmit={handleSubmit}>
                     <div className="grid md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <Label htmlFor="employee">Select Employee</Label>

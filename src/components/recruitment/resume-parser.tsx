@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useActionState } from "react";
+import { useState, useActionState, useEffect, useRef } from "react";
 import { Upload, Loader2, User, Mail, Phone, Wrench, Briefcase, GraduationCap, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,17 +14,27 @@ import { parseResumeAction } from "@/app/(app)/recruitment/actions";
 type State = {
   data: ParseResumeOutput | null;
   error: string | null;
+  key?: number;
 };
 
 const initialState: State = {
   data: null,
   error: null,
+  key: 0,
 };
 
 export function ResumeParser() {
   const [state, formAction, isPending] = useActionState(parseResumeAction, initialState);
   const [fileName, setFileName] = useState("");
-  const [formKey, setFormKey] = useState(Date.now());
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (state.key) {
+        formRef.current?.reset();
+        setFileName("");
+    }
+  }, [state.key]);
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -33,16 +43,6 @@ export function ResumeParser() {
     } else {
       setFileName("");
     }
-  };
-
-  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    const formData = new FormData(event.currentTarget);
-    formAction(formData);
-    // Reset form fields after submission
-    if (event.currentTarget) {
-      event.currentTarget.reset();
-    }
-    setFileName("");
   };
 
 
@@ -54,7 +54,7 @@ export function ResumeParser() {
           <CardDescription>Upload a resume to automatically extract candidate information.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form key={formKey} action={formAction} className="space-y-6">
+          <form ref={formRef} action={formAction} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="resume">Upload Resume</Label>
               <div className="relative">
@@ -72,7 +72,7 @@ export function ResumeParser() {
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Parse Resume
             </Button>
-            {state.error && <p className="text-sm text-destructive">{state.error}</p>}
+            {state.error && !isPending && <p className="text-sm text-destructive">{state.error}</p>}
           </form>
         </CardContent>
       </Card>
