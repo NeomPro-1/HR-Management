@@ -100,26 +100,28 @@ export default function PayslipPage() {
                         {/* Leave Summary */}
                         <div className="mb-6">
                             <h3 className="text-lg font-semibold mb-2">Leave Summary</h3>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Leave Type</TableHead>
-                                        <TableHead className="text-center">Opening</TableHead>
-                                        <TableHead className="text-center">Availed</TableHead>
-                                        <TableHead className="text-center">Closing</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {leaveSummary.map((leave, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell>{leave.type}</TableCell>
-                                            <TableCell className="text-center">{leave.opening}</TableCell>
-                                            <TableCell className="text-center">{leave.availed}</TableCell>
-                                            <TableCell className="text-center">{leave.closing}</TableCell>
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Leave Type</TableHead>
+                                            <TableHead className="text-center">Opening</TableHead>
+                                            <TableHead className="text-center">Availed</TableHead>
+                                            <TableHead className="text-center">Closing</TableHead>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {leaveSummary.map((leave, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell>{leave.type}</TableCell>
+                                                <TableCell className="text-center">{leave.opening}</TableCell>
+                                                <TableCell className="text-center">{leave.availed}</TableCell>
+                                                <TableCell className="text-center">{leave.closing}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
                         </div>
                         
                         {/* Net Pay */}

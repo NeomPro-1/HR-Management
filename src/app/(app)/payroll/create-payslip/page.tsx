@@ -122,12 +122,12 @@ export default function CreatePayslipPage() {
                             <h3 className="text-lg font-semibold mb-4 text-green-600">Earnings</h3>
                             <div className="space-y-4">
                                 {earnings.map((earning, index) => (
-                                    <div key={index} className="flex items-end gap-2">
-                                        <div className="grid flex-1 gap-1.5">
+                                    <div key={index} className="flex flex-wrap sm:flex-nowrap items-end gap-2">
+                                        <div className="grid flex-1 min-w-[150px] gap-1.5">
                                             <Label htmlFor={`earning-desc-${index}`}>Description</Label>
                                             <Input id={`earning-desc-${index}`} value={earning.description} onChange={e => handleEarningChange(index, 'description', e.target.value)} />
                                         </div>
-                                        <div className="grid w-32 gap-1.5">
+                                        <div className="grid w-full sm:w-32 gap-1.5">
                                             <Label htmlFor={`earning-amount-${index}`}>Amount</Label>
                                             <Input id={`earning-amount-${index}`} type="number" value={earning.amount} onChange={e => handleEarningChange(index, 'amount', e.target.value)} />
                                         </div>
@@ -146,12 +146,12 @@ export default function CreatePayslipPage() {
                             <h3 className="text-lg font-semibold mb-4 text-red-600">Deductions</h3>
                             <div className="space-y-4">
                                  {deductions.map((deduction, index) => (
-                                    <div key={index} className="flex items-end gap-2">
-                                        <div className="grid flex-1 gap-1.5">
+                                    <div key={index} className="flex flex-wrap sm:flex-nowrap items-end gap-2">
+                                        <div className="grid flex-1 min-w-[150px] gap-1.5">
                                             <Label htmlFor={`deduction-desc-${index}`}>Description</Label>
                                             <Input id={`deduction-desc-${index}`} value={deduction.description} onChange={e => handleDeductionChange(index, 'description', e.target.value)} />
                                         </div>
-                                        <div className="grid w-32 gap-1.5">
+                                        <div className="grid w-full sm:w-32 gap-1.5">
                                             <Label htmlFor={`deduction-amount-${index}`}>Amount</Label>
                                             <Input id={`deduction-amount-${index}`} type="number" value={deduction.amount} onChange={e => handleDeductionChange(index, 'amount', e.target.value)} />
                                         </div>
@@ -171,43 +171,45 @@ export default function CreatePayslipPage() {
                     
                     <div>
                         <h3 className="text-lg font-semibold mb-4">Leave Summary</h3>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Leave Type</TableHead>
-                                    <TableHead className="w-28">Opening</TableHead>
-                                    <TableHead className="w-28">Availed</TableHead>
-                                    <TableHead className="w-28">Closing</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {leaveSummary.map((leave, index) => (
-                                     <TableRow key={index}>
-                                        <TableCell>
-                                            <Input value={leave.type} onChange={e => handleLeaveChange(index, 'type', e.target.value)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Input type="number" value={leave.opening} onChange={e => handleLeaveChange(index, 'opening', e.target.value)} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Input type="number" value={leave.availed} onChange={e => handleLeaveChange(index, 'availed', e.target.value)} />
-                                        </TableCell>
-                                         <TableCell>
-                                            <Input type="number" value={leave.closing} onChange={e => handleLeaveChange(index, 'closing', e.target.value)} />
-                                        </TableCell>
-                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
+                        <div className="overflow-x-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="min-w-[200px]">Leave Type</TableHead>
+                                        <TableHead className="w-28">Opening</TableHead>
+                                        <TableHead className="w-28">Availed</TableHead>
+                                        <TableHead className="w-28">Closing</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {leaveSummary.map((leave, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell>
+                                                <Input value={leave.type} onChange={e => handleLeaveChange(index, 'type', e.target.value)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Input type="number" value={leave.opening} onChange={e => handleLeaveChange(index, 'opening', e.target.value)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Input type="number" value={leave.availed} onChange={e => handleLeaveChange(index, 'availed', e.target.value)} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Input type="number" value={leave.closing} onChange={e => handleLeaveChange(index, 'closing', e.target.value)} />
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
                     </div>
 
                     <Separator />
 
-                    <div className="flex justify-end gap-4">
-                        <Button variant="outline" type="button">Cancel</Button>
+                    <div className="flex flex-col sm:flex-row justify-end gap-4">
+                        <Button variant="outline" type="button" className="w-full sm:w-auto">Cancel</Button>
                         <Dialog>
                             <DialogTrigger asChild>
-                                <Button variant="outline" type="button">Preview</Button>
+                                <Button variant="outline" type="button" className="w-full sm:w-auto">Preview</Button>
                             </DialogTrigger>
                             <DialogContent className="max-w-4xl">
                                 <DialogHeader>
@@ -216,7 +218,7 @@ export default function CreatePayslipPage() {
                                 <PayslipPreview data={previewData} />
                             </DialogContent>
                         </Dialog>
-                        <Button type="submit">Save Payslip</Button>
+                        <Button type="submit" className="w-full sm:w-auto">Save Payslip</Button>
                     </div>
                 </form>
             </CardContent>
