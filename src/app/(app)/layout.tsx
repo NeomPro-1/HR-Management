@@ -46,7 +46,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
     <SidebarProvider>
       <Sidebar collapsible="icon" variant="sidebar">
         <AppSidebar />
-        <SidebarInset>
+        <SidebarInset className="flex-1">
           {loading && <Preloader />}
           <div className={loading ? 'hidden' : 'flex flex-col w-full'}>
             <AppHeader />
