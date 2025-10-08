@@ -11,11 +11,15 @@ export function Preloader({ loading }: PreloaderProps) {
   return (
     <div
       className={cn(
-        'fixed inset-x-0 top-0 h-1 z-[200] bg-transparent transition-opacity duration-300',
+        'fixed inset-0 z-[200] bg-background/80 backdrop-blur-sm flex items-center justify-center transition-opacity duration-500',
         loading ? 'opacity-100' : 'opacity-0 pointer-events-none'
       )}
     >
-      <div className="shimmer-bar h-full w-full" />
+      <div className="fingerprint-scanner">
+        <div className="fingerprint"></div>
+        <div className="scanner-line"></div>
+        <p className="scanner-text">Authenticating...</p>
+      </div>
     </div>
   );
 }
