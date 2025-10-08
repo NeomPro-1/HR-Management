@@ -13,8 +13,8 @@ import Link from "next/link";
 
 export default function SignupPage() {
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-10rem)]">
-        <Card className="mx-auto max-w-sm">
+    <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] p-4">
+        <Card className="mx-auto max-w-sm w-full">
         <CardHeader>
             <CardTitle className="text-xl">Sign Up</CardTitle>
             <CardDescription>
