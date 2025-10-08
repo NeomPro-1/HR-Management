@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { DashboardStats } from "@/components/hr-dashboard/dashboard-stats";
 import { AttendanceChart } from "@/components/hr-dashboard/attendance-chart";
@@ -8,8 +9,8 @@ export default function EmployeeDashboardPage() {
   return (
     <div className="space-y-6">
       <DashboardStats />
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
           <CardHeader>
             <CardTitle>Attendance Overview</CardTitle>
             <CardDescription>Daily attendance for the last 7 days.</CardDescription>
@@ -18,7 +19,7 @@ export default function EmployeeDashboardPage() {
             <AttendanceChart />
           </CardContent>
         </Card>
-        <Card className="col-span-4 lg:col-span-3">
+        <Card>
           <CardHeader>
             <CardTitle>Recent Leave Requests</CardTitle>
             <CardDescription>A summary of recent leave submissions.</CardDescription>
