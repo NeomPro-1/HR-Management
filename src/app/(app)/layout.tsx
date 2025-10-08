@@ -1,11 +1,32 @@
+
+'use client';
+
 import type { PropsWithChildren } from 'react';
 import { AppHeader } from '@/components/layout/app-header';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { Sidebar, SidebarInset } from '@/components/ui/sidebar';
+import { Preloader } from '@/components/layout/preloader';
+import * as React from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function AppLayout({ children }: PropsWithChildren) {
+  const pathname = usePathname();
+  const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [pathname]);
+
   return (
     <>
+      <Preloader loading={loading} />
       <Sidebar collapsible="icon" variant="sidebar">
         <AppSidebar />
       </Sidebar>
