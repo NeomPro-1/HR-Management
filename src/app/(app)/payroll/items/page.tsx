@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { employees } from "@/lib/placeholder-data";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
-import { CircleDollarSign, UserCheck, UserClock } from 'lucide-react';
+import { CircleDollarSign, UserCheck, UserCog } from 'lucide-react';
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-IN', {
@@ -33,7 +33,7 @@ export default function PayrollItemsPage() {
   const payrollStats = [
       { title: "Total Payroll", value: formatCurrency(totalPayroll), icon: <CircleDollarSign className="h-6 w-6 text-muted-foreground" /> },
       { title: "Employees Processed", value: employeesProcessed, icon: <UserCheck className="h-6 w-6 text-muted-foreground" /> },
-      { title: "Employees Pending", value: employeesPending, icon: <UserClock className="h-6 w-6 text-muted-foreground" /> },
+      { title: "Employees Pending", value: employeesPending, icon: <UserCog className="h-6 w-6 text-muted-foreground" /> },
   ];
 
   const handleRunPayroll = () => {
