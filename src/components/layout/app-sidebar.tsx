@@ -214,17 +214,6 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
-          <SidebarMenuItem>
-            <Link href="#" onClick={handleLinkClick}>
-              <SidebarMenuButton tooltip={{ children: 'Profile', side: 'right' }}>
-                <Avatar className="h-7 w-7">
-                  {userAvatar && <AvatarImage src={userAvatar.imageUrl} alt="User Avatar" data-ai-hint={userAvatar.imageHint}/>}
-                  <AvatarFallback>U</AvatarFallback>
-                </Avatar>
-                <span>Jane Doe</span>
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
     </>
