@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { PayslipPreview } from "@/components/payroll/payslip-preview";
 import type { PayslipData } from "@/lib/placeholder-data";
 import { useToast } from "@/hooks/use-toast";
+import { ClientOnly } from "@/components/client-only";
 
 export default function CreatePayslipPage() {
     const { toast } = useToast();
@@ -217,17 +218,19 @@ export default function CreatePayslipPage() {
 
                     <div className="flex flex-col sm:flex-row justify-end gap-4">
                         <Button variant="outline" type="button" className="w-full sm:w-auto">Cancel</Button>
-                        <Dialog>
-                            <DialogTrigger asChild>
-                                <Button variant="outline" type="button" className="w-full sm:w-auto">Preview</Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-4xl">
-                                <DialogHeader>
-                                <DialogTitle>Payslip Preview</DialogTitle>
-                                </DialogHeader>
-                                <PayslipPreview data={previewData} />
-                            </DialogContent>
-                        </Dialog>
+                        <ClientOnly>
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button variant="outline" type="button" className="w-full sm:w-auto">Preview</Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-4xl">
+                                    <DialogHeader>
+                                    <DialogTitle>Payslip Preview</DialogTitle>
+                                    </DialogHeader>
+                                    <PayslipPreview data={previewData} />
+                                </DialogContent>
+                            </Dialog>
+                        </ClientOnly>
                         <Button type="submit" className="w-full sm:w-auto">Save Payslip</Button>
                     </div>
                 </form>
