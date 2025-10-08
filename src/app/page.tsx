@@ -45,7 +45,7 @@ export default function LandingPage() {
   return (
     <div className="flex-1">
       {/* Hero Section */}
-      <section className="container grid lg:grid-cols-2 gap-12 items-center py-12 md:py-24">
+      <section className="container grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-12 md:py-24">
         <div className="flex flex-col items-start gap-6">
           <h1 className="text-4xl font-bold tracking-tighter md:text-5xl lg:text-6xl font-headline">
             The All-in-One Platform for Modern HR & Payroll
@@ -53,7 +53,7 @@ export default function LandingPage() {
           <p className="max-w-[600px] text-muted-foreground md:text-xl">
             From AI-powered recruitment to seamless payroll, SynergyHR integrates everything you need to manage your workforce, all in one powerful dashboard.
           </p>
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <Button asChild size="lg">
               <Link href="/signup">Get Started for Free</Link>
             </Button>
