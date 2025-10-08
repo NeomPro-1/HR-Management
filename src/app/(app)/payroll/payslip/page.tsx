@@ -27,7 +27,7 @@ export default function PayslipPage() {
                 <Card>
                     <CardContent className="p-6">
                         {/* Header */}
-                        <div className="flex justify-between items-start mb-6">
+                        <div className="flex flex-col sm:flex-row justify-between items-start mb-6 gap-4">
                             <div className="flex items-center gap-4">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-12 h-12 text-primary">
                                     <path d="M15.5 12a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-1.5 0a2 2 0 1 0-4 0 2 2 0 0 0 4 0Z" />
@@ -38,7 +38,7 @@ export default function PayslipPage() {
                                     <p className="text-sm text-muted-foreground">123 Business Bay, Bangalore, Karnataka, India</p>
                                 </div>
                             </div>
-                            <div className="text-right">
+                            <div className="text-left sm:text-right w-full sm:w-auto">
                                 <h1 className="text-2xl font-bold">Payslip</h1>
                                 <p className="text-muted-foreground">For {payPeriod}</p>
                             </div>
@@ -47,30 +47,32 @@ export default function PayslipPage() {
 
                         {/* Employee Info */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4 mb-6 text-sm">
-                            <div><strong className="text-muted-foreground">Employee ID:</strong> {employee.id}</div>
-                            <div><strong className="text-muted-foreground">Name:</strong> {employee.name}</div>
-                            <div><strong className="text-muted-foreground">Department:</strong> {employee.department}</div>
-                            <div><strong className="text-muted-foreground">Designation:</strong> {employee.designation}</div>
-                            <div><strong className="text-muted-foreground">Joining Date:</strong> {employee.joiningDate}</div>
-                            <div><strong className="text-muted-foreground">PAN:</strong> {employee.panNumber}</div>
-                            <div><strong className="text-muted-foreground">Bank:</strong> {paymentDetails.bankName}</div>
-                            <div><strong className="text-muted-foreground">Account No:</strong> {paymentDetails.accountNumber}</div>
+                            <div><strong className="text-muted-foreground block">Employee ID:</strong> {employee.id}</div>
+                            <div><strong className="text-muted-foreground block">Name:</strong> {employee.name}</div>
+                            <div><strong className="text-muted-foreground block">Department:</strong> {employee.department}</div>
+                            <div><strong className="text-muted-foreground block">Designation:</strong> {employee.designation}</div>
+                            <div><strong className="text-muted-foreground block">Joining Date:</strong> {employee.joiningDate}</div>
+                            <div><strong className="text-muted-foreground block">PAN:</strong> {employee.panNumber}</div>
+                            <div><strong className="text-muted-foreground block">Bank:</strong> {paymentDetails.bankName}</div>
+                            <div><strong className="text-muted-foreground block">Account No:</strong> {paymentDetails.accountNumber}</div>
                         </div>
 
                         {/* Earnings and Deductions */}
                         <div className="grid md:grid-cols-2 gap-8 mb-6">
                             <div>
                                 <h3 className="text-lg font-semibold mb-2 text-green-600 border-b pb-1">Earnings</h3>
-                                <Table>
-                                    <TableBody>
-                                        {earnings.map((item, index) => (
-                                            <TableRow key={index}>
-                                                <TableCell className="py-2">{item.description}</TableCell>
-                                                <TableCell className="text-right py-2">{formatCurrency(item.amount)}</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableBody>
+                                            {earnings.map((item, index) => (
+                                                <TableRow key={index}>
+                                                    <TableCell className="py-2">{item.description}</TableCell>
+                                                    <TableCell className="text-right py-2">{formatCurrency(item.amount)}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
                                 <div className="flex justify-between items-center mt-2 p-2 bg-muted rounded-md font-semibold">
                                     <span>Total Earnings</span>
                                     <span>{formatCurrency(totalEarnings)}</span>
@@ -78,16 +80,18 @@ export default function PayslipPage() {
                             </div>
                             <div>
                                 <h3 className="text-lg font-semibold mb-2 text-red-600 border-b pb-1">Deductions</h3>
-                                <Table>
-                                    <TableBody>
-                                        {deductions.map((item, index) => (
-                                            <TableRow key={index}>
-                                                <TableCell className="py-2">{item.description}</TableCell>
-                                                <TableCell className="text-right py-2">{formatCurrency(item.amount)}</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                <div className="overflow-x-auto">
+                                    <Table>
+                                        <TableBody>
+                                            {deductions.map((item, index) => (
+                                                <TableRow key={index}>
+                                                    <TableCell className="py-2">{item.description}</TableCell>
+                                                    <TableCell className="text-right py-2">{formatCurrency(item.amount)}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
                                  <div className="flex justify-between items-center mt-2 p-2 bg-muted rounded-md font-semibold">
                                     <span>Total Deductions</span>
                                     <span>{formatCurrency(totalDeductions)}</span>
@@ -125,7 +129,7 @@ export default function PayslipPage() {
                         </div>
                         
                         {/* Net Pay */}
-                        <div className="bg-primary/10 text-primary-foreground p-4 rounded-lg flex items-center justify-between">
+                        <div className="bg-primary/10 text-primary-foreground p-4 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                             <h3 className="text-lg font-bold text-primary">Net Pay</h3>
                             <p className="text-2xl font-bold text-primary">{formatCurrency(netSalary)}</p>
                         </div>

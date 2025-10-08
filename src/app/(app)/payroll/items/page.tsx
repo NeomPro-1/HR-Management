@@ -90,35 +90,37 @@ export default function PayrollItemsPage() {
             </div>
         </CardHeader>
         <CardContent>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Employee</TableHead>
-                        <TableHead className="hidden sm:table-cell">Role</TableHead>
-                        <TableHead className="text-right">Monthly Salary</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {employees.map(employee => (
-                        <TableRow key={employee.id}>
-                            <TableCell>
-                                <div className="flex items-center gap-3">
-                                    <Avatar className="h-9 w-9">
-                                        <AvatarImage src={employee.avatar} alt={employee.name} data-ai-hint="person face" />
-                                        <AvatarFallback>{employee.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <div className="font-medium">{employee.name}</div>
-                                        <div className="text-sm text-muted-foreground hidden sm:inline">{employee.email}</div>
-                                    </div>
-                                </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">{employee.role}</TableCell>
-                            <TableCell className="text-right font-medium">{formatCurrency(employee.salary || 0)}</TableCell>
+            <div className="overflow-x-auto">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Employee</TableHead>
+                            <TableHead className="hidden sm:table-cell">Role</TableHead>
+                            <TableHead className="text-right">Monthly Salary</TableHead>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                    </TableHeader>
+                    <TableBody>
+                        {employees.map(employee => (
+                            <TableRow key={employee.id}>
+                                <TableCell>
+                                    <div className="flex items-center gap-3">
+                                        <Avatar className="h-9 w-9">
+                                            <AvatarImage src={employee.avatar} alt={employee.name} data-ai-hint="person face" />
+                                            <AvatarFallback>{employee.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <div className="font-medium">{employee.name}</div>
+                                            <div className="text-sm text-muted-foreground hidden sm:inline">{employee.email}</div>
+                                        </div>
+                                    </div>
+                                </TableCell>
+                                <TableCell className="hidden sm:table-cell">{employee.role}</TableCell>
+                                <TableCell className="text-right font-medium">{formatCurrency(employee.salary || 0)}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
             <div className="flex justify-end items-center mt-6 pt-4 border-t">
                 <div className="text-right">
                     <p className="text-muted-foreground">Total Payroll for {selectedMonth}</p>
