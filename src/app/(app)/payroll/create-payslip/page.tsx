@@ -10,8 +10,14 @@ import { Separator } from "@/components/ui/separator";
 import { PlusCircle, Trash2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import React from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { PayslipPreview } from "@/components/payroll/payslip-preview";
+import type { PayslipData } from "@/lib/placeholder-data";
 
 export default function CreatePayslipPage() {
+    const [employee, setEmployee] = React.useState({ id: "EMP001", name: "Alisha Sharma" });
+    const [payPeriod, setPayPeriod] = React.useState("2024-07");
+
     const [earnings, setEarnings] = React.useState([
         { description: "Basic Salary", amount: "120000" },
         { description: "House Rent Allowance", amount: "20000" },
@@ -27,11 +33,56 @@ export default function CreatePayslipPage() {
         { type: "Earned Leave", opening: "15", availed: "5", closing: "10" },
     ]);
 
+    const handleEarningChange = (index: number, field: 'description' | 'amount', value: string) => {
+        const newEarnings = [...earnings];
+        newEarnings[index][field] = value;
+        setEarnings(newEarnings);
+    };
+
+    const handleDeductionChange = (index: number, field: 'description' | 'amount', value: string) => {
+        const newDeductions = [...deductions];
+        newDeductions[index][field] = value;
+        setDeductions(newDeductions);
+    };
+
+    const handleLeaveChange = (index: number, field: 'type' | 'opening' | 'availed' | 'closing', value: string) => {
+        const newLeaveSummary = [...leaveSummary];
+        newLeaveSummary[index][field] = value;
+        setLeaveSummary(newLeaveSummary);
+    };
+
     const addEarning = () => setEarnings([...earnings, { description: "", amount: "" }]);
     const removeEarning = (index: number) => setEarnings(earnings.filter((_, i) => i !== index));
     
     const addDeduction = () => setDeductions([...deductions, { description: "", amount: "" }]);
     const removeDeduction = (index: number) => setDeductions(deductions.filter((_, i) => i !== index));
+
+    const previewData: PayslipData = {
+        id: "PREVIEW-001",
+        employee: {
+            name: employee.name,
+            id: employee.id,
+            department: "Engineering", // Example data
+            designation: "Senior Frontend Developer", // Example data
+            joiningDate: "15 Aug 2021", // Example data
+            panNumber: "ABCDE1234F", // Example data
+        },
+        payPeriod: new Date(payPeriod).toLocaleString('default', { month: 'long', year: 'numeric' }),
+        payDate: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric'}),
+        earnings: earnings.map(e => ({...e, amount: parseFloat(e.amount) || 0})),
+        deductions: deductions.map(d => ({...d, amount: parseFloat(d.amount) || 0})),
+        leaveSummary: leaveSummary.map(l => ({
+            ...l,
+            opening: parseInt(l.opening) || 0,
+            availed: parseInt(l.availed) || 0,
+            closing: parseInt(l.closing) || 0,
+        })),
+        paymentDetails: {
+            bankName: "HDFC Bank", // Example data
+            accountNumber: "XXXX XXXX 1234", // Example data
+            paymentMode: "Bank Transfer", // Example data
+        },
+    };
 
     return (
         <Card className="max-w-5xl mx-auto">
@@ -44,20 +95,23 @@ export default function CreatePayslipPage() {
                     <div className="grid md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <Label htmlFor="employee">Select Employee</Label>
-                             <Select>
+                             <Select onValueChange={(value) => {
+                                 const [id, name] = value.split('|');
+                                 setEmployee({id, name});
+                             }} defaultValue={`${employee.id}|${employee.name}`}>
                                 <SelectTrigger id="employee">
                                     <SelectValue placeholder="Select an employee" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="emp001">Alisha Sharma (EMP001)</SelectItem>
-                                    <SelectItem value="emp002">Rohan Verma (EMP002)</SelectItem>
-                                    <SelectItem value="emp003">Priya Singh (EMP003)</SelectItem>
+                                    <SelectItem value="EMP001|Alisha Sharma">Alisha Sharma (EMP001)</SelectItem>
+                                    <SelectItem value="EMP002|Rohan Verma">Rohan Verma (EMP002)</SelectItem>
+                                    <SelectItem value="EMP003|Priya Singh">Priya Singh (EMP003)</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="pay-period">Pay Period</Label>
-                            <Input id="pay-period" type="month" defaultValue="2024-07" />
+                            <Input id="pay-period" type="month" value={payPeriod} onChange={(e) => setPayPeriod(e.target.value)} />
                         </div>
                     </div>
 
@@ -71,13 +125,13 @@ export default function CreatePayslipPage() {
                                     <div key={index} className="flex items-end gap-2">
                                         <div className="grid flex-1 gap-1.5">
                                             <Label htmlFor={`earning-desc-${index}`}>Description</Label>
-                                            <Input id={`earning-desc-${index}`} defaultValue={earning.description} />
+                                            <Input id={`earning-desc-${index}`} value={earning.description} onChange={e => handleEarningChange(index, 'description', e.target.value)} />
                                         </div>
                                         <div className="grid w-32 gap-1.5">
                                             <Label htmlFor={`earning-amount-${index}`}>Amount</Label>
-                                            <Input id={`earning-amount-${index}`} type="number" defaultValue={earning.amount} />
+                                            <Input id={`earning-amount-${index}`} type="number" value={earning.amount} onChange={e => handleEarningChange(index, 'amount', e.target.value)} />
                                         </div>
-                                        <Button variant="ghost" size="icon" className="text-muted-foreground" onClick={() => removeEarning(index)}>
+                                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground" onClick={() => removeEarning(index)}>
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </div>
@@ -95,13 +149,13 @@ export default function CreatePayslipPage() {
                                     <div key={index} className="flex items-end gap-2">
                                         <div className="grid flex-1 gap-1.5">
                                             <Label htmlFor={`deduction-desc-${index}`}>Description</Label>
-                                            <Input id={`deduction-desc-${index}`} defaultValue={deduction.description} />
+                                            <Input id={`deduction-desc-${index}`} value={deduction.description} onChange={e => handleDeductionChange(index, 'description', e.target.value)} />
                                         </div>
                                         <div className="grid w-32 gap-1.5">
                                             <Label htmlFor={`deduction-amount-${index}`}>Amount</Label>
-                                            <Input id={`deduction-amount-${index}`} type="number" defaultValue={deduction.amount} />
+                                            <Input id={`deduction-amount-${index}`} type="number" value={deduction.amount} onChange={e => handleDeductionChange(index, 'amount', e.target.value)} />
                                         </div>
-                                        <Button variant="ghost" size="icon" className="text-muted-foreground" onClick={() => removeDeduction(index)}>
+                                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground" onClick={() => removeDeduction(index)}>
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </div>
@@ -130,16 +184,16 @@ export default function CreatePayslipPage() {
                                 {leaveSummary.map((leave, index) => (
                                      <TableRow key={index}>
                                         <TableCell>
-                                            <Input defaultValue={leave.type} />
+                                            <Input value={leave.type} onChange={e => handleLeaveChange(index, 'type', e.target.value)} />
                                         </TableCell>
                                         <TableCell>
-                                            <Input type="number" defaultValue={leave.opening} />
+                                            <Input type="number" value={leave.opening} onChange={e => handleLeaveChange(index, 'opening', e.target.value)} />
                                         </TableCell>
                                         <TableCell>
-                                            <Input type="number" defaultValue={leave.availed} />
+                                            <Input type="number" value={leave.availed} onChange={e => handleLeaveChange(index, 'availed', e.target.value)} />
                                         </TableCell>
                                          <TableCell>
-                                            <Input type="number" defaultValue={leave.closing} />
+                                            <Input type="number" value={leave.closing} onChange={e => handleLeaveChange(index, 'closing', e.target.value)} />
                                         </TableCell>
                                      </TableRow>
                                 ))}
@@ -151,6 +205,17 @@ export default function CreatePayslipPage() {
 
                     <div className="flex justify-end gap-4">
                         <Button variant="outline" type="button">Cancel</Button>
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button variant="outline" type="button">Preview</Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-4xl">
+                                <DialogHeader>
+                                <DialogTitle>Payslip Preview</DialogTitle>
+                                </DialogHeader>
+                                <PayslipPreview data={previewData} />
+                            </DialogContent>
+                        </Dialog>
                         <Button type="submit">Save Payslip</Button>
                     </div>
                 </form>

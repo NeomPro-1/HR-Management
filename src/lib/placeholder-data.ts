@@ -185,7 +185,29 @@ export const employeeDetailData = {
   }
 };
 
-export const payslipData = {
+export type PayslipData = {
+    id: string;
+    employee: {
+        name: string;
+        id: string;
+        department: string;
+        designation: string;
+        joiningDate: string;
+        panNumber: string;
+    };
+    payPeriod: string;
+    payDate: string;
+    earnings: { description: string; amount: number }[];
+    deductions: { description: string; amount: number }[];
+    leaveSummary: { type: string; opening: number; availed: number; closing: number }[];
+    paymentDetails: {
+        bankName: string;
+        accountNumber: string;
+        paymentMode: string;
+    };
+};
+
+export const payslipData: PayslipData = {
     id: "PAYSLIP-001",
     employee: {
         name: "Alisha Sharma",
