@@ -11,7 +11,7 @@ export function Preloader({ loading }: PreloaderProps) {
   return (
     <div
       className={cn(
-        'fixed inset-0 z-[200] backdrop-blur-sm flex items-center justify-center transition-opacity duration-500',
+        'fixed inset-0 z-[200] bg-transparent backdrop-blur-sm flex items-center justify-center transition-opacity duration-500',
         loading ? 'opacity-100' : 'opacity-0 pointer-events-none'
       )}
     >
