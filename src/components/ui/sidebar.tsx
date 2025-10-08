@@ -199,7 +199,19 @@ const Sidebar = React.forwardRef<
     }
 
     if (!mounted) {
-        return null;
+        return <div className="group peer hidden md:block text-sidebar-foreground"
+            data-state="collapsed"
+            data-collapsible="icon"
+            data-variant={variant}
+            data-side={side}
+        >
+             <div
+              className={cn(
+                "duration-200 relative h-svh w-[--sidebar-width] bg-transparent transition-[width] ease-linear",
+                "group-data-[collapsible=icon]:w-[--sidebar-width-icon]"
+              )}
+            />
+        </div>;
     }
 
     if (isMobile) {

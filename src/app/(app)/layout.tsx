@@ -28,17 +28,17 @@ export default function AppLayout({ children }: PropsWithChildren) {
   return (
     <>
       <Preloader loading={loading} />
-        <ClientOnly>
-          <Sidebar collapsible="icon" variant="sidebar">
-            <AppSidebar />
-          </Sidebar>
-          <SidebarInset>
-            <AppHeader />
-            <main className="flex-1 overflow-y-auto p-4 lg:p-6 bg-background">
-              {!loading && children}
-            </main>
-          </SidebarInset>
-        </ClientOnly>
+      <ClientOnly>
+        <Sidebar collapsible="icon" variant="sidebar">
+          <AppSidebar />
+        </Sidebar>
+        <SidebarInset>
+          <AppHeader />
+          <main className="flex-1 overflow-y-auto p-4 lg:p-6 bg-background">
+            {!loading && children}
+          </main>
+        </SidebarInset>
+      </ClientOnly>
     </>
   );
 }

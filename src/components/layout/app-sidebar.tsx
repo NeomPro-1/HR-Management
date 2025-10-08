@@ -71,7 +71,7 @@ const payrollNavItems = [
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const { open, isMobile, setOpenMobile } = useSidebar();
+  const { isMobile, setOpenMobile } = useSidebar();
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
   const isHRSectionActive = pathname.startsWith('/hr');
   const isPayrollSectionActive = pathname.startsWith('/payroll');

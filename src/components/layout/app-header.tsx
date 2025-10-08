@@ -19,6 +19,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 function getPageTitle(pathname: string) {
   const segment = pathname.split('/').pop()?.replace(/-/g, ' ') || 'dashboard';
@@ -42,6 +43,7 @@ export function AppHeader() {
   const router = useRouter();
   const pageTitle = getPageTitle(pathname);
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
+  const isMobile = useIsMobile();
   const showBackButton = !topLevelPages.includes(pathname);
   
   const [mounted, setMounted] = React.useState(false);
@@ -59,7 +61,7 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-4 border-b border-border bg-background/80 px-4 backdrop-blur-sm lg:px-6">
-      <div className="flex items-center gap-2 md:hidden">
+      <div className={cn("flex items-center gap-2", !isMobile && 'md:hidden')}>
         <SidebarTrigger className={cn(showBackButton && "hidden")} />
          {showBackButton && (
           <Button
@@ -77,7 +79,8 @@ export function AppHeader() {
       <div className="flex-1 flex items-center gap-3">
         <h1 className={cn(
           "text-lg font-semibold md:text-2xl font-headline",
-          showBackButton && "hidden md:block"
+          showBackButton && isMobile && "hidden",
+          showBackButton && !isMobile && "hidden md:block"
         )}>
           {pageTitle}
         </h1>
