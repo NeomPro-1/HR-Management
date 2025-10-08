@@ -15,7 +15,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 500); // Shortened preloader time for better UX
+    }, 500); 
 
     return () => clearTimeout(timer);
   }, []);
@@ -26,14 +26,13 @@ export default function AppLayout({ children }: PropsWithChildren) {
       <Sidebar collapsible="icon" variant="sidebar">
         <AppSidebar />
         <SidebarInset className="flex-1 flex flex-col">
-          {loading && <Preloader />}
-          {!loading && (
-            <div className='flex flex-col w-full h-full'>
+          {loading ? <Preloader /> : (
+            <>
               <AppHeader />
               <main className="flex-1 overflow-y-auto p-4 lg:p-6">
                 {children}
               </main>
-            </div>
+            </>
           )}
         </SidebarInset>
       </Sidebar>
