@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { PropsWithChildren } from 'react';
@@ -17,7 +18,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
     return () => clearTimeout(timer);
   }, []);
 
-  // Prevent SSR mismatch
+  // Prevent SSR mismatch by returning null on the server.
   if (!mounted) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center">
