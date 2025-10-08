@@ -4,7 +4,6 @@ import './globals.css';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
-import { ClientOnly } from '@/components/client-only';
 
 export const metadata: Metadata = {
   title: 'SynergyHR',
@@ -33,15 +32,13 @@ export default function RootLayout({
       <body className="font-body antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
-          <ClientOnly>
             <SidebarProvider>
               {children}
             </SidebarProvider>
-          </ClientOnly>
           <Toaster />
         </ThemeProvider>
       </body>

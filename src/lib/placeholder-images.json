@@ -57,8 +57,20 @@
     {
       "id": "leave-avatar-4",
       "description": "Leave request avatar 4",
-      "imageUrl": "https://images.unsplash.com/photo-1619182597083-17bda72c1d56?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtYW4lMjBmYWNlfGVufDB8fHx8MTc1OTQ1NTc5M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1619182597083-17bda72c1d56?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtYW4lMjBmYWNlfGVufDB8fHx8MTc1OTQ1NTc5M3ww&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "man face"
+    },
+    {
+      "id": "landing-hero",
+      "description": "Hero image for landing page showing dashboard",
+      "imageUrl": "https://picsum.photos/seed/1/1200/800",
+      "imageHint": "dashboard interface"
+    },
+    {
+      "id": "landing-feature",
+      "description": "Feature image for landing page",
+      "imageUrl": "https://picsum.photos/seed/2/600/400",
+      "imageHint": "team collaboration"
     }
   ]
 }
