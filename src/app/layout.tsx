@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const isAppRoute = pathname.startsWith('/hr') || pathname.startsWith('/employees') || pathname.startsWith('/recruitment') || pathname.startsWith('/helpdesk') || pathname.startsWith('/payroll');
+  const isAppRoute = !['/login', '/signup', '/'].includes(pathname);
   
   if (isAppRoute) {
     return (
