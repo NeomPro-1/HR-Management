@@ -45,34 +45,39 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-4 border-b border-border bg-background/80 px-4 backdrop-blur-sm lg:px-6">
-      <SidebarTrigger className="md:hidden" />
-
-      <div className="flex-1 flex items-center gap-2">
+      <div className="flex items-center gap-2">
+        <SidebarTrigger className={cn("md:hidden", showBackButton && "hidden")} />
          {showBackButton && (
           <Button
             variant="ghost"
             size="icon"
             onClick={() => router.back()}
-            className="md:hidden"
+            className="md:hidden shrink-0"
           >
             <ChevronLeft className="h-5 w-5" />
             <span className="sr-only">Back</span>
           </Button>
         )}
-        <div className="flex items-center gap-3">
-            {showBackButton && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => router.back()}
-                className="hidden md:flex"
-              >
-                <ChevronLeft className="mr-1 h-4 w-4" />
-                Back
-              </Button>
-            )}
-            <h1 className={cn("text-lg font-semibold md:text-2xl font-headline", showBackButton && "hidden md:block")}>{pageTitle}</h1>
-        </div>
+      </div>
+
+      <div className="flex-1 flex items-center gap-3">
+        {showBackButton && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.back()}
+            className="hidden md:flex"
+          >
+            <ChevronLeft className="mr-1 h-4 w-4" />
+            Back
+          </Button>
+        )}
+        <h1 className={cn(
+          "text-lg font-semibold md:text-2xl font-headline", 
+          showBackButton && "hidden md:block"
+        )}>
+          {pageTitle}
+        </h1>
       </div>
 
       <div className="flex flex-1 items-center justify-end gap-2 md:gap-4">
