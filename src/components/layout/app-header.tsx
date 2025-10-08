@@ -18,6 +18,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
+import * as React from 'react';
 
 function getPageTitle(pathname: string) {
   const segment = pathname.split('/').pop()?.replace(/-/g, ' ') || 'dashboard';
@@ -42,6 +43,19 @@ export function AppHeader() {
   const pageTitle = getPageTitle(pathname);
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
   const showBackButton = !topLevelPages.includes(pathname);
+  
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+        <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-4 border-b border-border bg-background/80 px-4 backdrop-blur-sm lg:px-6">
+        {/* Render a skeleton or placeholder here if you want */}
+        </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-4 border-b border-border bg-background/80 px-4 backdrop-blur-sm lg:px-6">
