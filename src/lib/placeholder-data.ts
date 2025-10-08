@@ -1,3 +1,4 @@
+
 import { PlaceHolderImages } from './placeholder-images';
 
 const getImg = (id: string) => PlaceHolderImages.find(p => p.id === id)?.imageUrl || '';
@@ -192,8 +193,10 @@ export const payslipData = {
         department: "Engineering",
         designation: "Senior Frontend Developer",
         joiningDate: "15 Aug 2021",
+        panNumber: "ABCDE1234F",
     },
     payPeriod: "July 2024",
+    payDate: "31 July 2024",
     earnings: [
         { description: "Basic Salary", amount: 120000 },
         { description: "House Rent Allowance", amount: 20000 },
@@ -203,5 +206,14 @@ export const payslipData = {
         { description: "Income Tax", amount: 15000 },
         { description: "Provident Fund", amount: 8000 },
     ],
+    leaveSummary: [
+        { type: "Casual Leave", opening: 10, availed: 2, closing: 8 },
+        { type: "Sick Leave", opening: 12, availed: 1, closing: 11 },
+        { type: "Earned Leave", opening: 15, availed: 5, closing: 10 },
+    ],
+    paymentDetails: {
+        bankName: "HDFC Bank",
+        accountNumber: "XXXX XXXX 1234",
+        paymentMode: "Bank Transfer",
+    },
 };
-

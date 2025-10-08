@@ -1,10 +1,12 @@
 
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { payslipData } from "@/lib/placeholder-data";
-import { Printer } from "lucide-react";
+import { Printer, Save, Download, Send } from "lucide-react";
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-IN', {
@@ -14,114 +16,139 @@ const formatCurrency = (amount: number) => {
 };
 
 export default function PayslipPage() {
-    const { employee, payPeriod, earnings, deductions } = payslipData;
+    const { employee, payPeriod, payDate, earnings, deductions, leaveSummary, paymentDetails } = payslipData;
     const totalEarnings = earnings.reduce((sum, item) => sum + item.amount, 0);
     const totalDeductions = deductions.reduce((sum, item) => sum + item.amount, 0);
     const netSalary = totalEarnings - totalDeductions;
 
     return (
-        <Card className="max-w-4xl mx-auto">
-            <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div>
-                    <CardTitle>Payslip for {payPeriod}</CardTitle>
-                    <CardDescription>Generated for {employee.name} ({employee.id})</CardDescription>
-                </div>
-                <Button variant="outline">
-                    <Printer className="mr-2 h-4 w-4" />
-                    Print Payslip
-                </Button>
-            </CardHeader>
-            <CardContent>
-                <div className="grid md:grid-cols-2 gap-6 mb-6">
-                    <div>
-                        <h3 className="font-semibold mb-2">Company Details</h3>
-                        <p className="text-sm text-muted-foreground">SynergyHR Inc.</p>
-                        <p className="text-sm text-muted-foreground">123 Business Bay, Bangalore</p>
-                        <p className="text-sm text-muted-foreground">Karnataka, India</p>
-                    </div>
-                    <div className="md:text-right">
-                        <h3 className="font-semibold mb-2">Employee Details</h3>
-                        <p className="text-sm text-muted-foreground">Name: {employee.name}</p>
-                        <p className="text-sm text-muted-foreground">Department: {employee.department}</p>
-                        <p className="text-sm text-muted-foreground">Designation: {employee.designation}</p>
-                        <p className="text-sm text-muted-foreground">Joining Date: {employee.joiningDate}</p>
-                    </div>
-                </div>
+        <div className="grid lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-9">
+                <Card>
+                    <CardContent className="p-6">
+                        {/* Header */}
+                        <div className="flex justify-between items-start mb-6">
+                            <div className="flex items-center gap-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-12 h-12 text-primary">
+                                    <path d="M15.5 12a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-1.5 0a2 2 0 1 0-4 0 2 2 0 0 0 4 0Z" />
+                                    <path d="M12 4a8 8 0 1 1 0 16 4 4 0 0 0 0-8 4 4 0 0 0 0-8Zm0 1.5a6.5 6.5 0 1 0 0 13 2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0-5 6.5 6.5 0 0 0 0-3Z" />
+                                </svg>
+                                <div>
+                                    <h2 className="text-xl font-bold">SynergyHR Inc.</h2>
+                                    <p className="text-sm text-muted-foreground">123 Business Bay, Bangalore, Karnataka, India</p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <h1 className="text-2xl font-bold">Payslip</h1>
+                                <p className="text-muted-foreground">For {payPeriod}</p>
+                            </div>
+                        </div>
+                        <Separator className="mb-6"/>
 
-                <Separator className="my-6" />
+                        {/* Employee Info */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4 mb-6 text-sm">
+                            <div><strong className="text-muted-foreground">Employee ID:</strong> {employee.id}</div>
+                            <div><strong className="text-muted-foreground">Name:</strong> {employee.name}</div>
+                            <div><strong className="text-muted-foreground">Department:</strong> {employee.department}</div>
+                            <div><strong className="text-muted-foreground">Designation:</strong> {employee.designation}</div>
+                            <div><strong className="text-muted-foreground">Joining Date:</strong> {employee.joiningDate}</div>
+                            <div><strong className="text-muted-foreground">PAN:</strong> {employee.panNumber}</div>
+                            <div><strong className="text-muted-foreground">Bank:</strong> {paymentDetails.bankName}</div>
+                            <div><strong className="text-muted-foreground">Account No:</strong> {paymentDetails.accountNumber}</div>
+                        </div>
 
-                <div className="grid md:grid-cols-2 gap-8">
-                    <div>
-                        <h3 className="text-lg font-semibold mb-4 text-green-600">Earnings</h3>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Description</TableHead>
-                                    <TableHead className="text-right">Amount</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {earnings.map((item, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell>{item.description}</TableCell>
-                                        <TableCell className="text-right">{formatCurrency(item.amount)}</TableCell>
+                        {/* Earnings and Deductions */}
+                        <div className="grid md:grid-cols-2 gap-8 mb-6">
+                            <div>
+                                <h3 className="text-lg font-semibold mb-2 text-green-600 border-b pb-1">Earnings</h3>
+                                <Table>
+                                    <TableBody>
+                                        {earnings.map((item, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell className="py-2">{item.description}</TableCell>
+                                                <TableCell className="text-right py-2">{formatCurrency(item.amount)}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                                <div className="flex justify-between items-center mt-2 p-2 bg-muted rounded-md font-semibold">
+                                    <span>Total Earnings</span>
+                                    <span>{formatCurrency(totalEarnings)}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold mb-2 text-red-600 border-b pb-1">Deductions</h3>
+                                <Table>
+                                    <TableBody>
+                                        {deductions.map((item, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell className="py-2">{item.description}</TableCell>
+                                                <TableCell className="text-right py-2">{formatCurrency(item.amount)}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                                 <div className="flex justify-between items-center mt-2 p-2 bg-muted rounded-md font-semibold">
+                                    <span>Total Deductions</span>
+                                    <span>{formatCurrency(totalDeductions)}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <Separator className="my-6"/>
+
+                        {/* Leave Summary */}
+                        <div className="mb-6">
+                            <h3 className="text-lg font-semibold mb-2">Leave Summary</h3>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Leave Type</TableHead>
+                                        <TableHead className="text-center">Opening</TableHead>
+                                        <TableHead className="text-center">Availed</TableHead>
+                                        <TableHead className="text-center">Closing</TableHead>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                         <div className="flex justify-between items-center mt-4 p-2 bg-muted rounded-md">
-                            <span className="font-semibold">Total Earnings</span>
-                            <span className="font-semibold text-green-600">{formatCurrency(totalEarnings)}</span>
+                                </TableHeader>
+                                <TableBody>
+                                    {leaveSummary.map((leave, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell>{leave.type}</TableCell>
+                                            <TableCell className="text-center">{leave.opening}</TableCell>
+                                            <TableCell className="text-center">{leave.availed}</TableCell>
+                                            <TableCell className="text-center">{leave.closing}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
                         </div>
-                    </div>
-                    <div>
-                         <h3 className="text-lg font-semibold mb-4 text-red-600">Deductions</h3>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Description</TableHead>
-                                    <TableHead className="text-right">Amount</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {deductions.map((item, index) => (
-                                    <TableRow key={index}>
-                                        <TableCell>{item.description}</TableCell>
-                                        <TableCell className="text-right">{formatCurrency(item.amount)}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                         <div className="flex justify-between items-center mt-4 p-2 bg-muted rounded-md">
-                            <span className="font-semibold">Total Deductions</span>
-                            <span className="font-semibold text-red-600">{formatCurrency(totalDeductions)}</span>
+                        
+                        {/* Net Pay */}
+                        <div className="bg-primary/10 text-primary-foreground p-4 rounded-lg flex items-center justify-between">
+                            <h3 className="text-lg font-bold text-primary">Net Pay</h3>
+                            <p className="text-2xl font-bold text-primary">{formatCurrency(netSalary)}</p>
                         </div>
-                    </div>
-                </div>
-                
-                <Separator className="my-6" />
+                        <p className="text-sm text-muted-foreground mt-2 text-right">Net pay in words: One Lakh Forty Five Thousand Rupees only.</p>
 
-                <div className="flex justify-end">
-                    <div className="w-full max-w-sm space-y-2">
-                        <div className="flex justify-between">
-                            <span className="text-muted-foreground">Total Earnings:</span>
-                            <span>{formatCurrency(totalEarnings)}</span>
+                        <div className="text-center mt-8 text-xs text-muted-foreground">
+                            This is a computer-generated payslip and does not require a signature.
                         </div>
-                        <div className="flex justify-between">
-                            <span className="text-muted-foreground">Total Deductions:</span>
-                            <span>{formatCurrency(totalDeductions)}</span>
-                        </div>
-                        <Separator />
-                        <div className="flex justify-between text-lg font-bold">
-                            <span>Net Salary:</span>
-                            <span>{formatCurrency(netSalary)}</span>
-                        </div>
-                    </div>
-                </div>
-                <div className="text-center mt-8 text-sm text-muted-foreground">
-                    This is a computer-generated payslip and does not require a signature.
-                </div>
-            </CardContent>
-        </Card>
+
+                    </CardContent>
+                </Card>
+            </div>
+            <div className="lg:col-span-3">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Actions</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                        <Button className="w-full justify-start gap-2" variant="outline"><Printer /> Print</Button>
+                        <Button className="w-full justify-start gap-2" variant="outline"><Save /> Save as PDF</Button>
+                        <Button className="w-full justify-start gap-2" variant="outline"><Download /> Download</Button>
+                        <Button className="w-full justify-start gap-2"><Send /> Send via Email</Button>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
     );
 }
