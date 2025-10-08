@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import type { PropsWithChildren } from 'react';
@@ -10,14 +11,13 @@ import { Preloader } from '@/components/layout/preloader';
 
 export default function AppLayout({ children }: PropsWithChildren) {
   const [loading, setLoading] = React.useState(true);
-  const pathname = React.useRef(null);
+  // Using a ref to track the pathname and a state to trigger re-renders
+  // This avoids direct dependency on pathname, reducing re-renders, but still reacting to changes
   const [currentPathname, setCurrentPathname] = React.useState('');
 
   React.useEffect(() => {
-    // Using a ref to track the pathname and a state to trigger re-renders
-    // This avoids direct dependency on pathname, reducing re-renders, but still reacting to changes
-    if (pathname.current !== window.location.pathname) {
-      pathname.current = window.location.pathname;
+    // This effect now correctly depends on the result of usePathname()
+    if (typeof window !== 'undefined' && currentPathname !== window.location.pathname) {
       setCurrentPathname(window.location.pathname);
       setLoading(true);
       const timer = setTimeout(() => {
@@ -32,6 +32,9 @@ export default function AppLayout({ children }: PropsWithChildren) {
   
   React.useEffect(() => {
     // Initial load
+     if (typeof window !== 'undefined') {
+      setCurrentPathname(window.location.pathname);
+    }
     const timer = setTimeout(() => {
       setLoading(false);
     }, 2000);
@@ -56,3 +59,5 @@ export default function AppLayout({ children }: PropsWithChildren) {
     </SidebarProvider>
   );
 }
+
+    

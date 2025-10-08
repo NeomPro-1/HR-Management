@@ -1,4 +1,5 @@
 
+
 import Image from "next/image";
 import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -45,8 +46,8 @@ export default function LandingPage() {
   return (
     <div className="flex-1">
       {/* Hero Section */}
-      <section className="container grid grid-cols-1 gap-12 items-center py-12 md:py-24">
-        <div className="flex flex-col items-center gap-6 text-center">
+      <section className="container grid grid-cols-1 gap-12 items-center justify-items-center text-center py-12 md:py-24">
+        <div className="flex flex-col items-center gap-6">
           <h1 className="text-4xl font-bold tracking-tighter md:text-5xl lg:text-6xl font-headline">
             The All-in-One Platform for Modern HR & Payroll
           </h1>
@@ -156,3 +157,4 @@ export default function LandingPage() {
     </div>
   );
 }
+    
