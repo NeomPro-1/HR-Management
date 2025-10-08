@@ -17,6 +17,9 @@ import {
   ClipboardList,
   BookUser,
   FileText,
+  ReceiptText,
+  FilePlus,
+  List,
 } from 'lucide-react';
 import {
   SidebarContent,
@@ -45,7 +48,6 @@ const DynamicSidebarMenuSkeleton = dynamic(() => import('@/components/ui/sidebar
 const navItems = [
   { href: '/recruitment', icon: Briefcase, label: 'Recruitment' },
   { href: '/helpdesk', icon: MessageCircle, label: 'Helpdesk' },
-  { href: '/payroll', icon: CircleDollarSign, label: 'Payroll' },
 ];
 
 const hrmNavItems = [
@@ -61,11 +63,18 @@ const hrmNavItems = [
     { href: '/hr/holidays', label: 'Holidays', icon: CalendarDays },
 ];
 
+const payrollNavItems = [
+    { href: '/payroll/items', label: 'Payroll Items', icon: List },
+    { href: '/payroll/payslip', label: 'Payslip', icon: ReceiptText },
+    { href: '/payroll/create-payslip', label: 'Create Payslip', icon: FilePlus },
+];
+
 export function AppSidebar() {
   const pathname = usePathname();
   const { open } = useSidebar();
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
   const isHRSectionActive = pathname.startsWith('/hr');
+  const isPayrollSectionActive = pathname.startsWith('/payroll');
 
   // Hydration fix
   const [mounted, setMounted] = useState(false);
@@ -112,7 +121,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent className="p-2">
         <SidebarMenu>
-          <Collapsible asChild defaultOpen={isHRSectionActive}>
+           <Collapsible asChild defaultOpen={isHRSectionActive}>
             <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
                     <SidebarMenuButton
@@ -156,6 +165,37 @@ export function AppSidebar() {
               </Link>
             </SidebarMenuItem>
           ))}
+           <Collapsible asChild defaultOpen={isPayrollSectionActive}>
+            <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                    <SidebarMenuButton
+                        isActive={isPayrollSectionActive}
+                        tooltip={{ children: 'Payroll', side: 'right' }}
+                        className="justify-between"
+                        isDropdown
+                    >
+                        <div className="flex items-center gap-2">
+                            <CircleDollarSign />
+                            <span>Payroll</span>
+                        </div>
+                    </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent asChild>
+                  <SidebarMenuSub>
+                    {payrollNavItems.map((item) => (
+                      <SidebarMenuItem key={`${item.href}-${item.label}`}>
+                        <Link href={item.href}>
+                            <SidebarMenuSubButton isActive={pathname === item.href}>
+                                <item.icon className="h-4 w-4" />
+                                <span>{item.label}</span>
+                            </SidebarMenuSubButton>
+                        </Link>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+            </SidebarMenuItem>
+          </Collapsible>
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border p-2 mt-auto">

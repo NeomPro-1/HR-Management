@@ -183,3 +183,25 @@ export const employeeDetailData = {
     mfaEnabled: false,
   }
 };
+
+export const payslipData = {
+    id: "PAYSLIP-001",
+    employee: {
+        name: "Alisha Sharma",
+        id: "EMP001",
+        department: "Engineering",
+        designation: "Senior Frontend Developer",
+        joiningDate: "15 Aug 2021",
+    },
+    payPeriod: "July 2024",
+    earnings: [
+        { description: "Basic Salary", amount: 120000 },
+        { description: "House Rent Allowance", amount: 20000 },
+        { description: "Conveyance Allowance", amount: 10000 },
+    ],
+    deductions: [
+        { description: "Income Tax", amount: 15000 },
+        { description: "Provident Fund", amount: 8000 },
+    ],
+};
+
