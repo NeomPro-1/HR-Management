@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -12,27 +13,66 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Search, Bell } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { Search, Bell, ChevronLeft } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { cn } from '@/lib/utils';
 
 function getPageTitle(pathname: string) {
-  const segment = pathname.split('/').pop() || 'dashboard';
-  return segment.charAt(0).toUpperCase() + segment.slice(1);
+  const segment = pathname.split('/').pop()?.replace(/-/g, ' ') || 'dashboard';
+  // Capitalize first letter of each word
+  return segment.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }
+
+const topLevelPages = [
+  '/hr/employee-dashboard',
+  '/recruitment',
+  '/helpdesk',
+  '/payroll/items',
+  '/',
+  '/hr',
+  '/payroll'
+];
+
 
 export function AppHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const pageTitle = getPageTitle(pathname);
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
+  const showBackButton = !topLevelPages.includes(pathname);
 
   return (
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-4 border-b border-border bg-background/80 px-4 backdrop-blur-sm lg:px-6">
       <SidebarTrigger className="md:hidden" />
 
-      <div className="flex-1">
-        <h1 className="text-lg font-semibold md:text-2xl font-headline">{pageTitle}</h1>
+      <div className="flex-1 flex items-center gap-2">
+         {showBackButton && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.back()}
+            className="md:hidden"
+          >
+            <ChevronLeft className="h-5 w-5" />
+            <span className="sr-only">Back</span>
+          </Button>
+        )}
+        <div className="flex items-center gap-3">
+            {showBackButton && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.back()}
+                className="hidden md:flex"
+              >
+                <ChevronLeft className="mr-1 h-4 w-4" />
+                Back
+              </Button>
+            )}
+            <h1 className={cn("text-lg font-semibold md:text-2xl font-headline", showBackButton && "hidden md:block")}>{pageTitle}</h1>
+        </div>
       </div>
 
       <div className="flex flex-1 items-center justify-end gap-2 md:gap-4">
