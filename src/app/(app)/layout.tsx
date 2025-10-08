@@ -1,11 +1,10 @@
-
 'use client';
 
 import type { PropsWithChildren } from 'react';
+import * as React from 'react';
 import { AppHeader } from '@/components/layout/app-header';
 import { AppSidebar } from '@/components/layout/app-sidebar';
-import { Sidebar, SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import * as React from 'react';
+import { SidebarProvider } from '@/components/ui/sidebar';
 import { Preloader } from '@/components/layout/preloader';
 
 export default function AppLayout({ children }: PropsWithChildren) {
@@ -25,15 +24,20 @@ export default function AppLayout({ children }: PropsWithChildren) {
 
   return (
     <SidebarProvider>
-      <Sidebar collapsible="icon" variant="sidebar">
-        <AppSidebar />
-        <SidebarInset className="flex-1 flex flex-col">
-            <>
-              <AppHeader />
-              <main className="flex-1 overflow-y-auto p-4 lg:p-6">{children}</main>
-            </>
-        </SidebarInset>
-      </Sidebar>
+      <div className="flex min-h-screen w-full bg-background">
+        {/* Sidebar */}
+        <aside className="w-64 border-r bg-card hidden md:block">
+          <AppSidebar />
+        </aside>
+
+        {/* Main Section */}
+        <div className="flex flex-1 flex-col">
+          <AppHeader />
+          <main className="flex-1 overflow-y-auto p-6 lg:p-8">
+            {children}
+          </main>
+        </div>
+      </div>
     </SidebarProvider>
   );
 }
