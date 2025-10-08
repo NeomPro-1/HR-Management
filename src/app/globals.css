@@ -83,12 +83,14 @@
   }
   body {
     @apply bg-background text-foreground;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
   }
 }
 
 @layer components {
   .preloader-container {
-    @apply fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm;
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm;
   }
   .preloader-content {
     @apply flex flex-col items-center gap-4;
