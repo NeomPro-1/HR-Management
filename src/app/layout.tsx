@@ -1,8 +1,10 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
+import { ClientOnly } from '@/components/client-only';
 
 export const metadata: Metadata = {
   title: 'SynergyHR',
@@ -35,9 +37,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider>
-            {children}
-          </SidebarProvider>
+          <ClientOnly>
+            <SidebarProvider>
+              {children}
+            </SidebarProvider>
+          </ClientOnly>
           <Toaster />
         </ThemeProvider>
       </body>
