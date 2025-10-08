@@ -20,9 +20,6 @@ export default function PublicLayout({
           </Link>
           <nav className="flex items-center gap-4 text-sm text-muted-foreground ml-auto">
             <Button variant="ghost" asChild>
-                <Link href="#">Contact</Link>
-            </Button>
-            <Button variant="ghost" asChild>
                 <Link href="/login">Log In</Link>
             </Button>
             <Button asChild>
