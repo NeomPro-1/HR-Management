@@ -109,11 +109,11 @@ export default function BiometricAttendancePage() {
                 <Table>
                     <TableHeader className="bg-muted/50">
                         <TableRow>
-                            <TableHead>ID</TableHead>
+                            <TableHead className="hidden sm:table-cell">ID</TableHead>
                             <TableHead>Employee</TableHead>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Clock In</TableHead>
-                            <TableHead>Clock Out</TableHead>
+                            <TableHead className="hidden md:table-cell">Date</TableHead>
+                            <TableHead className="hidden lg:table-cell">Clock In</TableHead>
+                            <TableHead className="hidden lg:table-cell">Clock Out</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Action</TableHead>
                         </TableRow>
@@ -121,7 +121,7 @@ export default function BiometricAttendancePage() {
                     <TableBody>
                         {attendanceData.map((entry) => (
                             <TableRow key={entry.id}>
-                                <TableCell className="font-medium text-muted-foreground">{entry.id}</TableCell>
+                                <TableCell className="font-medium text-muted-foreground hidden sm:table-cell">{entry.id}</TableCell>
                                 <TableCell>
                                     <div className="flex items-center gap-3">
                                         <Avatar className="h-8 w-8">
@@ -131,9 +131,9 @@ export default function BiometricAttendancePage() {
                                         <span className="font-medium">{entry.name}</span>
                                     </div>
                                 </TableCell>
-                                <TableCell>{entry.date}</TableCell>
-                                <TableCell>{entry.clockIn}</TableCell>
-                                <TableCell>{entry.clockOut}</TableCell>
+                                <TableCell className="hidden md:table-cell">{entry.date}</TableCell>
+                                <TableCell className="hidden lg:table-cell">{entry.clockIn}</TableCell>
+                                <TableCell className="hidden lg:table-cell">{entry.clockOut}</TableCell>
                                 <TableCell>
                                     <Badge variant={getStatusVariant(entry.status)} className={cn("font-semibold", getStatusClass(entry.status))}>
                                         {entry.status}
