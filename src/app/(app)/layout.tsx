@@ -10,15 +10,11 @@ import { Preloader } from '@/components/layout/preloader';
 
 export default function AppLayout({ children }: PropsWithChildren) {
   const [mounted, setMounted] = React.useState(false);
-  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     setMounted(true);
-    const timer = setTimeout(() => setLoading(false), 500);
-    return () => clearTimeout(timer);
   }, []);
 
-  // Prevent SSR mismatch by returning null on the server.
   if (!mounted) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center">
@@ -32,14 +28,10 @@ export default function AppLayout({ children }: PropsWithChildren) {
       <Sidebar collapsible="icon" variant="sidebar">
         <AppSidebar />
         <SidebarInset className="flex-1 flex flex-col">
-          {loading ? (
-            <Preloader />
-          ) : (
             <>
               <AppHeader />
               <main className="flex-1 overflow-y-auto p-4 lg:p-6">{children}</main>
             </>
-          )}
         </SidebarInset>
       </Sidebar>
     </SidebarProvider>
