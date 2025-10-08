@@ -13,6 +13,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
+    // This effect runs once on mount to simulate an initial load.
     const timer = setTimeout(() => {
       setLoading(false);
     }, 500); 
