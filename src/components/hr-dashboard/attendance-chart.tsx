@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { DashboardCardSkeleton } from "./dashboard-card-skeleton";
 
 const initialData = [
   { name: "Mon", total: 0 },
@@ -13,21 +14,30 @@ const initialData = [
   { name: "Sun", total: 0 },
 ];
 
-export function AttendanceChart() {
+interface AttendanceChartProps {
+  isLoading: boolean;
+}
+
+export function AttendanceChart({ isLoading }: AttendanceChartProps) {
   const [data, setData] = React.useState(initialData);
 
   React.useEffect(() => {
-    // Client-side only effect to prevent hydration mismatch
-    setData([
-      { name: "Mon", total: Math.floor(Math.random() * 100) + 80 },
-      { name: "Tue", total: Math.floor(Math.random() * 100) + 80 },
-      { name: "Wed", total: Math.floor(Math.random() * 100) + 80 },
-      { name: "Thu", total: Math.floor(Math.random() * 100) + 80 },
-      { name: "Fri", total: Math.floor(Math.random() * 100) + 80 },
-      { name: "Sat", total: Math.floor(Math.random() * 100) + 80 },
-      { name: "Sun", total: Math.floor(Math.random() * 100) + 80 },
-    ]);
-  }, []);
+    if (!isLoading) {
+      setData([
+        { name: "Mon", total: Math.floor(Math.random() * 100) + 80 },
+        { name: "Tue", total: Math.floor(Math.random() * 100) + 80 },
+        { name: "Wed", total: Math.floor(Math.random() * 100) + 80 },
+        { name: "Thu", total: Math.floor(Math.random() * 100) + 80 },
+        { name: "Fri", total: Math.floor(Math.random() * 100) + 80 },
+        { name: "Sat", total: Math.floor(Math.random() * 100) + 80 },
+        { name: "Sun", total: Math.floor(Math.random() * 100) + 80 },
+      ]);
+    }
+  }, [isLoading]);
+
+  if (isLoading) {
+    return <DashboardCardSkeleton />;
+  }
 
   return (
     <ResponsiveContainer width="100%" height={350}>

@@ -1,6 +1,7 @@
 "use client"
 
 import { Pie, PieChart, ResponsiveContainer, Cell, Legend } from "recharts"
+import { DashboardCardSkeleton } from "./dashboard-card-skeleton";
 
 const data = [
   { name: "Engineering", value: 45, color: "hsl(var(--chart-1))" },
@@ -10,7 +11,15 @@ const data = [
   { name: "Others", value: 10, color: "hsl(var(--chart-5))"  },
 ]
 
-export function HeadcountChart() {
+interface HeadcountChartProps {
+  isLoading: boolean;
+}
+
+export function HeadcountChart({ isLoading }: HeadcountChartProps) {
+  if (isLoading) {
+    return <DashboardCardSkeleton />;
+  }
+
   return (
     <ResponsiveContainer width="100%" height={250}>
       <PieChart>

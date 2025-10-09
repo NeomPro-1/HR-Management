@@ -9,9 +9,17 @@ import {
 } from "@/components/ui/table"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { DashboardCardSkeleton } from "./dashboard-card-skeleton"
 
+interface LeaveRequestsProps {
+  isLoading: boolean;
+}
 
-export function LeaveRequests() {
+export function LeaveRequests({ isLoading }: LeaveRequestsProps) {
+  if (isLoading) {
+    return <DashboardCardSkeleton />;
+  }
+  
   return (
     <Table>
       <TableHeader>
