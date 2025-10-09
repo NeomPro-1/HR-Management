@@ -43,8 +43,7 @@ export default function EmployeesPage() {
   React.useEffect(() => {
     const timer = setTimeout(() => {
       // In a real app, you would fetch data here.
-      // For now, we just switch off the loading state.
-      setEmployees([]); // Still no data to show
+      setEmployees([]); 
       setIsLoading(false);
     }, 2000);
     return () => clearTimeout(timer);
@@ -270,5 +269,3 @@ export default function EmployeesPage() {
     </Card>
   );
 }
-
-    

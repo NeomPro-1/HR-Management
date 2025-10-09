@@ -10,6 +10,8 @@ import { Preloader } from '@/components/layout/preloader';
 import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 export default function AppLayout({ children }: PropsWithChildren) {
   const [mounted, setMounted] = React.useState(false);
   const { user, isUserLoading } = useUser();
