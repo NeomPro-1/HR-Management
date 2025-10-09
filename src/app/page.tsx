@@ -1,5 +1,4 @@
 
-
 import Image from "next/image";
 import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -42,7 +41,6 @@ const testimonials = [
 export default function LandingPage() {
   const heroImage = PlaceHolderImages.find(p => p.id === "landing-hero");
   const featureImageLg = PlaceHolderImages.find(p => p.id === "dashboard-full");
-  const featureImageSm = PlaceHolderImages.find(p => p.id === "dashboard-mobile");
 
   return (
     <div className="flex-1">
@@ -91,30 +89,16 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="mx-auto grid max-w-5xl items-center gap-8 py-12 lg:grid-cols-2 lg:gap-12">
-            <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex items-center justify-center">
               {featureImageLg && (
-                  <div className="w-full sm:w-2/3">
-                      <Image
-                          src={featureImageLg.imageUrl}
-                          alt="SynergyHR Dashboard Screenshot"
-                          width={600}
-                          height={400}
-                          className="rounded-xl shadow-lg w-full"
-                          data-ai-hint={featureImageLg.imageHint}
-                      />
-                  </div>
-              )}
-              {featureImageSm && (
-                  <div className="w-full sm:w-1/3">
-                      <Image
-                          src={featureImageSm.imageUrl}
-                          alt="SynergyHR Mobile View Screenshot"
-                          width={240}
-                          height={480}
-                          className="rounded-xl shadow-lg mx-auto"
-                          data-ai-hint={featureImageSm.imageHint}
-                      />
-                  </div>
+                  <Image
+                      src={featureImageLg.imageUrl}
+                      alt="SynergyHR Dashboard Screenshot"
+                      width={600}
+                      height={450}
+                      className="rounded-xl shadow-lg w-full"
+                      data-ai-hint={featureImageLg.imageHint}
+                  />
               )}
             </div>
             <ul className="grid gap-4">
