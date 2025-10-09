@@ -15,25 +15,25 @@
     {
       "id": "emp2-avatar",
       "description": "Employee 2 avatar",
-      "imageUrl": "https://images.unsplash.com/photo-1583692331507-fc0bd348695d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYW4lMjBmYWNlfGVufDB8fHx8MTc1OTQ1NTc5M3ww&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1583692331507-fc0bd348695d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYW4lMjBmYWNlfGVufDB8fHx8MTc1OTQ1NTc5M3ww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "man face"
     },
     {
       "id": "emp3-avatar",
       "description": "Employee 3 avatar",
-      "imageUrl": "https://images.unsplash.com/photo-1544717304-a2db4a7b16ee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx3b21hbiUyMGZhY2V8ZW58MHx8fHwxNzU5NDQxNjY2fDA&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1544717304-a2db4a7b16ee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx3b21hbiUyMGZhY2V8ZW58MHx8fHwxNzU5NDQxNjY2fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woman face"
     },
     {
       "id": "emp4-avatar",
       "description": "Employee 4 avatar",
-      "imageUrl": "https://images.unsplash.com/photo-1611608822772-43a28a830759?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtYW4lMjBmYWNlfGVufDB8fHx8MTc1OTQ1NTc5M3ww&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1611608822772-43a28a830759?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtYW4lMjBmYWNlfGVufDB8fHx8MTc1OTQ1NTc5M3ww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "man face"
     },
     {
       "id": "emp5-avatar",
       "description": "Employee 5 avatar",
-      "imageUrl": "https://images.unsplash.com/photo-1594369428909-cf575675ca9a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3b21hbiUyMGZhY2V8ZW58MHx8fHwxNzU5NDQxNjY2fDA&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1594369428909-cf575675ca9a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3b21hbiUyMGZhY2V8ZW58MHx8fHwxNzU5NDQxNjY2fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woman face"
     },
     {
@@ -63,19 +63,19 @@
     {
       "id": "landing-hero",
       "description": "Hero image for landing page showing dashboard",
-      "imageUrl": "https://storage.googleapis.com/aai-web-samples/pro-features/dashboard-full.png",
+      "imageUrl": "https://images.unsplash.com/photo-1600880292210-f79a4a70371c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbWlsaW5nJTIwY29sbGVhZ3VlcyUyMGluJTIwb2ZmaWNlfGVufDB8fHx8MTc1OTU0NDc5NHww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "dashboard interface"
     },
     {
       "id": "dashboard-full",
       "description": "Full screenshot of the employee dashboard.",
-      "imageUrl": "https://storage.googleapis.com/aai-web-samples/pro-features/dashboard-full.png",
+      "imageUrl": "https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBkYXNoYm9hcmR8ZW58MHx8fHwxNzU5NTQ1MTA2fDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "dashboard screenshot"
     },
     {
       "id": "dashboard-mobile",
       "description": "Mobile screenshot of the employee dashboard.",
-      "imageUrl": "https://storage.googleapis.com/aai-web-samples/pro-features/dashboard-mobile.png",
+      "imageUrl": "https://images.unsplash.com/photo-1618227768504-4b3f837a1334?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb2JpbGUlMjB1aSUyMGRhc2hib2FyZHxlbnwwfHx8fDE3NTk1NDUxNDd8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "mobile dashboard"
     }
   ]
