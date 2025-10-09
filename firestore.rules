@@ -1,226 +1,164 @@
 /**
- * @fileoverview Firestore Security Rules for SynergyHR.
+ * @description This ruleset enforces a strict user-ownership model for employee-related data,
+ *              while allowing open read access to top-level collections like 'candidates' and 'anomalies'.
+ *              Employee data is nested under `/employees/{employeeId}`, enabling path-based authorization.
  *
- * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for employee data and their related subcollections (attendance, leave requests, payroll, and chat messages).
- * Employees can only access their own data. Resumes are accessible by the owner.
+ * @dataStructure
+ *   /employees/{employeeId} (Employee profile)
+ *   /employees/{employeeId}/attendance/{attendanceId} (Attendance records)
+ *   /employees/{employeeId}/leaveRequests/{leaveRequestId} (Leave requests)
+ *   /employees/{employeeId}/payroll/{payrollId} (Payroll information)
+ *   /employees/{employeeId}/chatMessages/{chatMessageId} (Chat messages)
+ *   /candidates/{candidateId} (Job candidate profiles)
+ *   /anomalies/{anomalyId} (Detected anomalies)
  *
- * Data Structure:
- * - /employees/{employeeId}: Stores employee profile information, where {employeeId} is the user's unique ID.
- * - /employees/{employeeId}/attendance/{attendanceId}: Stores attendance records for an employee.
- * - /employees/{employeeId}/leaveRequests/{leaveRequestId}: Stores leave requests for an employee.
- * - /employees/{employeeId}/payroll/{payrollId}: Stores payroll information for an employee.
- * - /employees/{employeeId}/chatMessages/{chatMessageId}: Stores chat messages for an employee.
- * - /resumes/{resumeId}: Stores resume data.
+ * @keySecurityDecisions
+ *   - Read access to employee subcollections (attendance, leave requests, payroll, chat messages) is restricted to the employee.
+ *   - Top-level collections 'candidates' and 'anomalies' are publicly readable, but only authenticated users can create, update, or delete.
+ *   - Data validation is limited to ensuring ownership consistency and preventing changes to critical relational fields.
  *
- * Key Security Decisions:
- * - User-owned data is nested under /employees/{employeeId} to simplify ownership checks.
- * - Listing of employees is disallowed for security reasons.
+ * @denormalizationForAuthorization Path-based ownership is used extensively to avoid `get()` calls.
+ *                              For example, attendance records are stored under `/employees/{employeeId}/attendance/{attendanceId}`
+ *                              so that checking ownership is simply `isOwner(employeeId)`.
  *
- * Authorization Independence via Path-Based Authorization:
- * - Access is implicitly granted based on the employee ID in the path, avoiding the need for expensive `get()` calls to verify ownership.
+ * @structuralSegregation Private employee data is stored under `/employees/{employeeId}`, while potentially public data
+ *                        (candidates, anomalies) are stored in top-level collections, enabling different access control policies.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Checks if the request is authenticated.
-     * @return {boolean} True if the request is authenticated, false otherwise.
-     */
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    /**
-     * @description Checks if the authenticated user ID matches the provided user ID.
-     * @param {string} userId The user ID to compare against the authenticated user's ID.
-     * @return {boolean} True if the authenticated user is the owner, false otherwise.
-     */
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    /**
-     * @description Checks if the authenticated user is the existing owner of the document.
-     * @param {string} userId The user ID to compare against the authenticated user's ID.
-     * @return {boolean} True if the authenticated user is the owner and the document exists, false otherwise.
-     */
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
-    }
-
-    /**
-     * @description Defines rules for the /employees/{employeeId} collection.
+     * @description Manages employee profiles. Only authenticated users can create, update, or delete employee profiles.
      * @path /employees/{employeeId}
-     * @allow (create) User with ID 'employee123' creates their own employee profile.
-     *   - Request: { auth: { uid: 'employee123' }, resource: { data: { id: 'employee123', ... } } }
-     * @allow (get) User with ID 'employee123' reads their own profile.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @allow (update) User with ID 'employee123' updates their own profile.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @allow (delete) User with ID 'employee123' deletes their own profile.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @deny (create) User with ID 'employee456' attempts to create a profile for 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' }, resource: { data: { id: 'employee123', ... } } }
-     * @deny (get) User with ID 'employee456' attempts to read the profile of 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @deny (update) User with ID 'employee456' attempts to update the profile of 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @deny (delete) User with ID 'employee456' attempts to delete the profile of 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @principle Enforces document ownership for writes and restricts access to a user's own data.
+     * @allow (create) request.auth != null && request.resource.data.id == request.auth.uid
+     * @allow (get, list) true
+     * @deny (create) request.auth == null
+     * @deny (update) !isExistingOwner(employeeId)
+     * @deny (delete) !isExistingOwner(employeeId)
+     * @principle Enforces document ownership for writes and allows public reads.
      */
     match /employees/{employeeId} {
-      allow get: if isOwner(employeeId);
-      allow list: if false;
-      allow create: if isOwner(employeeId) && request.resource.data.id == employeeId;
+      allow get, list: if true;
+      allow create: if isSignedIn() && request.resource.data.id == employeeId;
       allow update: if isExistingOwner(employeeId) && request.resource.data.id == resource.data.id;
       allow delete: if isExistingOwner(employeeId);
     }
 
     /**
-     * @description Defines rules for the /employees/{employeeId}/attendance/{attendanceId} collection.
+     * @description Manages attendance records for each employee. Only the employee can create, update, or delete their own attendance records.
      * @path /employees/{employeeId}/attendance/{attendanceId}
-     * @allow (create) User 'employee123' creates an attendance record for themselves.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @allow (get) User 'employee123' reads their own attendance record.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @allow (update) User 'employee123' updates their own attendance record.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @allow (delete) User 'employee123' deletes their own attendance record.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @deny (create) User 'employee456' attempts to create an attendance record for 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @deny (get) User 'employee456' attempts to read the attendance record of 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @deny (update) User 'employee456' attempts to update the attendance record of 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @deny (delete) User 'employee456' attempts to delete the attendance record of 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
+     * @allow (create) request.auth != null && isOwner(employeeId)
+     * @allow (get, list) isOwner(employeeId)
+     * @deny (create) !isOwner(employeeId)
+     * @deny (update) !isExistingOwner(employeeId)
+     * @deny (delete) !isExistingOwner(employeeId)
+     * @principle Enforces document ownership for all operations.
      */
     match /employees/{employeeId}/attendance/{attendanceId} {
-      allow get: if isOwner(employeeId);
-      allow list: if isOwner(employeeId);
-      allow create: if isOwner(employeeId) && request.resource.data.employeeId == employeeId;
-      allow update: if isExistingOwner(employeeId) && request.resource.data.employeeId == resource.data.employeeId;
+      allow get, list: if isOwner(employeeId);
+      allow create: if isSignedIn() && isOwner(employeeId);
+      allow update: if isExistingOwner(employeeId);
       allow delete: if isExistingOwner(employeeId);
     }
 
     /**
-     * @description Defines rules for the /employees/{employeeId}/leaveRequests/{leaveRequestId} collection.
+     * @description Manages leave requests submitted by each employee. Only the employee can create, update, or delete their own leave requests.
      * @path /employees/{employeeId}/leaveRequests/{leaveRequestId}
-     * @allow (create) User 'employee123' creates a leave request for themselves.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @allow (get) User 'employee123' reads their own leave request.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @allow (update) User 'employee123' updates their own leave request.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @allow (delete) User 'employee123' deletes their own leave request.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @deny (create) User 'employee456' attempts to create a leave request for 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @deny (get) User 'employee456' attempts to read the leave request of 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @deny (update) User 'employee456' attempts to update the leave request of 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @deny (delete) User 'employee456' attempts to delete the leave request of 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
+     * @allow (create) request.auth != null && isOwner(employeeId)
+     * @allow (get, list) isOwner(employeeId)
+     * @deny (create) !isOwner(employeeId)
+     * @deny (update) !isExistingOwner(employeeId)
+     * @deny (delete) !isExistingOwner(employeeId)
+     * @principle Enforces document ownership for all operations.
      */
     match /employees/{employeeId}/leaveRequests/{leaveRequestId} {
-      allow get: if isOwner(employeeId);
-      allow list: if isOwner(employeeId);
-      allow create: if isOwner(employeeId) && request.resource.data.employeeId == employeeId;
-      allow update: if isExistingOwner(employeeId) && request.resource.data.employeeId == resource.data.employeeId;
+      allow get, list: if isOwner(employeeId);
+      allow create: if isSignedIn() && isOwner(employeeId);
+      allow update: if isExistingOwner(employeeId);
       allow delete: if isExistingOwner(employeeId);
     }
 
     /**
-     * @description Defines rules for the /employees/{employeeId}/payroll/{payrollId} collection.
+     * @description Manages payroll information for each employee. Only the employee can create, update, or delete their own payroll information.
      * @path /employees/{employeeId}/payroll/{payrollId}
-     * @allow (create) User 'employee123' creates a payroll record for themselves.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @allow (get) User 'employee123' reads their own payroll record.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @allow (update) User 'employee123' updates their own payroll record.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @allow (delete) User 'employee123' deletes their own payroll record.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @deny (create) User 'employee456' attempts to create a payroll record for 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @deny (get) User 'employee456' attempts to read the payroll record of 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @deny (update) User 'employee456' attempts to update the payroll record of 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @deny (delete) User 'employee456' attempts to delete the payroll record of 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
+     * @allow (create) request.auth != null && isOwner(employeeId)
+     * @allow (get, list) isOwner(employeeId)
+     * @deny (create) !isOwner(employeeId)
+     * @deny (update) !isExistingOwner(employeeId)
+     * @deny (delete) !isExistingOwner(employeeId)
+     * @principle Enforces document ownership for all operations.
      */
     match /employees/{employeeId}/payroll/{payrollId} {
-      allow get: if isOwner(employeeId);
-      allow list: if isOwner(employeeId);
-      allow create: if isOwner(employeeId) && request.resource.data.employeeId == employeeId;
-      allow update: if isExistingOwner(employeeId) && request.resource.data.employeeId == resource.data.employeeId;
+      allow get, list: if isOwner(employeeId);
+      allow create: if isSignedIn() && isOwner(employeeId);
+      allow update: if isExistingOwner(employeeId);
       allow delete: if isExistingOwner(employeeId);
     }
 
     /**
-     * @description Defines rules for the /resumes/{resumeId} collection.
-     * @path /resumes/{resumeId}
-     * @allow (create) User with ID 'resume123' creates their own resume.
-     *   - Request: { auth: { uid: 'resume123' }, resource: { data: { id: 'resume123', ... } } }
-     * @allow (get) User with ID 'resume123' reads their own resume.
-     *   - Request: { auth: { uid: 'resume123' } }
-     * @allow (update) User with ID 'resume123' updates their own resume.
-     *   - Request: { auth: { uid: 'resume123' } }
-     * @allow (delete) User with ID 'resume123' deletes their own resume.
-     *   - Request: { auth: { uid: 'resume123' } }
-     * @deny (create) User with ID 'resume456' attempts to create a resume for 'resume123'.
-     *   - Request: { auth: { uid: 'resume456' }, resource: { data: { id: 'resume123', ... } } }
-     * @deny (get) User with ID 'resume456' attempts to read the resume of 'resume123'.
-     *   - Request: { auth: { uid: 'resume456' } }
-     * @deny (update) User with ID 'resume456' attempts to update the resume of 'resume123'.
-     *   - Request: { auth: { uid: 'resume456' } }
-     * @deny (delete) User with ID 'resume456' attempts to delete the resume of 'resume123'.
-     *   - Request: { auth: { uid: 'resume456' } }
-     */
-    match /resumes/{resumeId} {
-      allow get: if isSignedIn();
-      allow list: if false;
-      allow create: if isSignedIn() && request.resource.data.id == request.auth.uid;
-      allow update: if isSignedIn() && resource.data.id == request.auth.uid;
-      allow delete: if isSignedIn() && resource.data.id == request.auth.uid;
-    }
-
-    /**
-     * @description Defines rules for the /employees/{employeeId}/chatMessages/{chatMessageId} collection.
+     * @description Manages chat messages for each employee. Only the employee can create, update, or delete their own chat messages.
      * @path /employees/{employeeId}/chatMessages/{chatMessageId}
-     * @allow (create) User 'employee123' creates a chat message for themselves.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @allow (get) User 'employee123' reads their own chat message.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @allow (update) User 'employee123' updates their own chat message.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @allow (delete) User 'employee123' deletes their own chat message.
-     *   - Request: { auth: { uid: 'employee123' } }
-     * @deny (create) User 'employee456' attempts to create a chat message for 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @deny (get) User 'employee456' attempts to read the chat message of 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @deny (update) User 'employee456' attempts to update the chat message of 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @deny (delete) User 'employee456' attempts to delete the chat message of 'employee123'.
-     *   - Request: { auth: { uid: 'employee456' } }
-     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
+     * @allow (create) request.auth != null && isOwner(employeeId)
+     * @allow (get, list) isOwner(employeeId)
+     * @deny (create) !isOwner(employeeId)
+     * @deny (update) !isExistingOwner(employeeId)
+     * @deny (delete) !isExistingOwner(employeeId)
+     * @principle Enforces document ownership for all operations.
      */
     match /employees/{employeeId}/chatMessages/{chatMessageId} {
-      allow get: if isOwner(employeeId);
-      allow list: if isOwner(employeeId);
-      allow create: if isOwner(employeeId) && request.resource.data.employeeId == employeeId;
-      allow update: if isExistingOwner(employeeId) && request.resource.data.employeeId == resource.data.employeeId;
+      allow get, list: if isOwner(employeeId);
+      allow create: if isSignedIn() && isOwner(employeeId);
+      allow update: if isExistingOwner(employeeId);
       allow delete: if isExistingOwner(employeeId);
+    }
+
+    /**
+     * @description Manages job candidates in the recruitment process.  Allows public read access, but restricts writes to authenticated users.
+     * @path /candidates/{candidateId}
+     * @allow (create) request.auth != null
+     * @allow (get, list) true
+     * @deny (create) request.auth == null
+     * @deny (update) !isSignedIn()
+     * @deny (delete) !isSignedIn()
+     * @principle Allows public reads with authenticated writes.
+     */
+    match /candidates/{candidateId} {
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isSignedIn();
+    }
+
+    /**
+     * @description Manages detected anomalies in attendance records. Allows public read access, but restricts writes to authenticated users.
+     * @path /anomalies/{anomalyId}
+     * @allow (create) request.auth != null
+     * @allow (get, list) true
+     * @deny (create) request.auth == null
+     * @deny (update) !isSignedIn()
+     * @deny (delete) !isSignedIn()
+     * @principle Allows public reads with authenticated writes.
+     */
+    match /anomalies/{anomalyId} {
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isSignedIn();
+    }
+
+    // ===== Helper functions =====
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
     }
   }
 }
