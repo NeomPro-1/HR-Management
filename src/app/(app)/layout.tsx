@@ -44,7 +44,9 @@ export default function AppLayout({ children }: PropsWithChildren) {
         <div className="flex flex-1 flex-col">
           <AppHeader />
           <main className="flex-1 overflow-y-auto p-6 lg:p-8">
-            {children}
+            <React.Suspense fallback={<Preloader />}>
+              {children}
+            </React.Suspense>
           </main>
         </div>
       </div>
