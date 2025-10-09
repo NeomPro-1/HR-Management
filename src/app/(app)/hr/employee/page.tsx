@@ -42,7 +42,7 @@ export default function HREmployeesPage() {
   const firestore = useFirestore();
   const employeesQuery = useMemoFirebase(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'employees'));
+    return query(collection(firestore, 'users'));
   }, [firestore]);
 
   const { data: employees, isLoading } = useCollection<Employee>(employeesQuery);
@@ -196,7 +196,7 @@ export default function HREmployeesPage() {
                         </Badge>
                         </TableCell>
                         <TableCell>
-                        {new Date(employee.dateOfJoining).toLocaleDateString()}
+                          {employee.dateOfJoining ? new Date(employee.dateOfJoining).toLocaleDateString() : ''}
                         </TableCell>
                         <TableCell>
                         <DropdownMenu>
@@ -229,3 +229,5 @@ export default function HREmployeesPage() {
     </Card>
   );
 }
+
+    
