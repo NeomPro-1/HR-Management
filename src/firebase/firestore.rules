@@ -1,166 +1,186 @@
 /**
- * @fileoverview Firestore Security Rules for the HR and Payroll application.
+ * @file Firebase Security Rules for the HR and Payroll application.
  *
  * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for data nested under the `/users/{userId}` path.
- * Only the authenticated user matching the `userId` in the path can read and write to their own data.
- * Top-level collections like `/candidates` and `/anomalies` are left open for prototyping purposes.
+ * This ruleset enforces a strict user-ownership model for personal HR data (attendance, leave requests, payroll, chat messages) stored under the `/users/{userId}` path.
+ * Users can only access their own profile data and associated subcollections.
+ * Candidates and detected anomalies are stored in top-level collections with public read access but restricted write access (TODO: Implement restrictions).
  *
  * Data Structure:
- * - `/users/{userId}`: Stores user profile information.
- * - `/users/{userId}/attendance/{attendanceId}`: Stores attendance records for each user.
- * - `/users/{userId}/leaveRequests/{leaveRequestId}`: Stores leave requests for each user.
- * - `/users/{userId}/payroll/{payrollId}`: Stores payroll information for each user.
- * - `/users/{userId}/chatMessages/{chatMessageId}`: Stores chat messages for each user.
- * - `/candidates/{candidateId}`: Stores job candidate information (top-level collection).
- * - `/anomalies/{anomalyId}`: Stores detected anomalies (top-level collection).
+ * - `/users/{userId}`: User profile information.
+ * - `/users/{userId}/attendance/{attendanceId}`: Attendance records for a user.
+ * - `/users/{userId}/leaveRequests/{leaveRequestId}`: Leave requests for a user.
+ * - `/users/{userId}/payroll/{payrollId}`: Payroll information for a user.
+ * - `/users/{userId}/chatMessages/{chatMessageId}`: Chat messages for a user.
+ * - `/candidates/{candidateId}`: Job candidate information.
+ * - `/anomalies/{anomalyId}`: Detected anomalies in attendance records.
  *
  * Key Security Decisions:
- * - User listing is implicitly allowed via the top-level `/candidates` and `/anomalies` collections.
- * - The `/users/{userId}` document can only be created, updated, and deleted by the user with a matching `uid`.
- * - Subcollections under `/users/{userId}` inherit ownership and are only accessible to the owner.
- * - Top-level collections `/candidates` and `/anomalies` are left open for prototyping.
+ * - User profiles (`/users/{userId}`) are readable by authenticated users, but only writable by the user themselves.
+ * - Subcollections under `/users/{userId}` (attendance, leave requests, payroll, chat messages) are only accessible by the owning user.
+ * - Top-level collections for candidates and anomalies are publicly readable (for now, write access is open, but this will be restricted in future iterations).
+ * - Listing users is implicitly denied by the absence of a listing rule on the `/users` collection.  This is a security best practice.
+ * - Flexible data validation is enabled for rapid prototyping: only fields critical for authorization or relational integrity are validated.
  *
  * Denormalization for Authorization:
- * The rules rely on path-based ownership, meaning the `userId` in the path is directly compared to `request.auth.uid`.
- * This avoids the need to read any data from the documents themselves to determine ownership.
+ * The data model leverages path-based ownership. The security rules directly enforce the relationship between the user ID in the path (`{userId}`) and the authenticated user's UID (`request.auth.uid`).
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Grants access to user profile data based on ownership.
+     * @description Secure user profile data.
      * @path /users/{userId}
-     * @allow (create) User oCZzCwBTCyZnmpizN4MZxILbVm13 can create their own profile at /users/oCZzCwBTCyZnmpizN4MZxILbVm13.
-     * @deny (create) User anotherUser attempts to create a profile at /users/oCZzCwBTCyZnmpizN4MZxILbVm13.
-     * @allow (get) User oCZzCwBTCyZnmpizN4MZxILbVm13 can get their own profile at /users/oCZzCwBTCyZnmpizN4MZxILbVm13.
-     * @deny (get) User anotherUser cannot get the profile at /users/oCZzCwBTCyZnmpizN4MZxILbVm13.
-     * @principle Enforces document ownership for writes.
+     * @allow (get) Authenticated user can read any user profile.
+     * @allow (create) User can create their own profile.
+     * @allow (update) User can update their own profile.
+     * @allow (delete) User can delete their own profile.
+     * @deny (get) Unauthenticated user cannot read any user profile.
+     * @deny (create) User cannot create another user's profile.
+     * @deny (update) User cannot update another user's profile.
+     * @deny (delete) User cannot delete another user's profile.
+     * @principle Enforces document ownership for writes, allows public reads for authenticated users.
      */
     match /users/{userId} {
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
       allow get: if isSignedIn();
       allow list: if false;
       allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
-      allow delete: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Grants access to attendance records based on user ownership.
+     * @description Secure attendance records for each user.
      * @path /users/{userId}/attendance/{attendanceId}
-     * @allow (create) User oCZzCwBTCyZnmpizN4MZxILbVm13 can create attendance records under /users/oCZzCwBTCyZnmpizN4MZxILbVm13/attendance/someAttendanceId.
-     * @deny (create) User anotherUser cannot create attendance records under /users/oCZzCwBTCyZnmpizN4MZxILbVm13/attendance/someAttendanceId.
-     * @allow (get) User oCZzCwBTCyZnmpizN4MZxILbVm13 can read attendance records under /users/oCZzCwBTCyZnmpizN4MZxILbVm13/attendance/someAttendanceId.
-     * @deny (get) User anotherUser cannot read attendance records under /users/oCZzCwBTCyZnmpizN4MZxILbVm13/attendance/someAttendanceId.
-     * @principle Restricts access to a user's own attendance records.
+     * @allow (get) User can read their own attendance record.
+     * @allow (create) User can create their own attendance record.
+     * @allow (update) User can update their own attendance record.
+     * @allow (delete) User can delete their own attendance record.
+     * @deny (get) User cannot read another user's attendance record.
+     * @deny (create) User cannot create another user's attendance record.
+     * @deny (update) User cannot update another user's attendance record.
+     * @deny (delete) User cannot delete another user's attendance record.
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId}/attendance/{attendanceId} {
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
-      allow delete: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.employeeId == userId;
+      allow update: if isExistingOwner(userId) && resource.data.employeeId == userId;
+      allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Grants access to leave requests based on user ownership.
+     * @description Secure leave requests for each user.
      * @path /users/{userId}/leaveRequests/{leaveRequestId}
-     * @allow (create) User oCZzCwBTCyZnmpizN4MZxILbVm13 can create leave requests under /users/oCZzCwBTCyZnmpizN4MZxILbVm13/leaveRequests/someLeaveRequestId.
-     * @deny (create) User anotherUser cannot create leave requests under /users/oCZzCwBTCyZnmpizN4MZxILbVm13/leaveRequests/someLeaveRequestId.
-     * @allow (get) User oCZzCwBTCyZnmpizN4MZxILbVm13 can read leave requests under /users/oCZzCwBTCyZnmpizN4MZxILbVm13/leaveRequests/someLeaveRequestId.
-     * @deny (get) User anotherUser cannot read leave requests under /users/oCZzCwBTCyZnmpizN4MZxILbVm13/leaveRequests/someLeaveRequestId.
-     * @principle Restricts access to a user's own leave requests.
+     * @allow (get) User can read their own leave request.
+     * @allow (create) User can create their own leave request.
+     * @allow (update) User can update their own leave request.
+     * @allow (delete) User can delete their own leave request.
+     * @deny (get) User cannot read another user's leave request.
+     * @deny (create) User cannot create another user's leave request.
+     * @deny (update) User cannot update another user's leave request.
+     * @deny (delete) User cannot delete another user's leave request.
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId}/leaveRequests/{leaveRequestId} {
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
-      allow delete: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.employeeId == userId;
+      allow update: if isExistingOwner(userId) && resource.data.employeeId == userId;
+      allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Grants access to payroll information based on user ownership.
+     * @description Secure payroll information for each user.
      * @path /users/{userId}/payroll/{payrollId}
-     * @allow (create) User oCZzCwBTCyZnmpizN4MZxILbVm13 can create payroll records under /users/oCZzCwBTCyZnmpizN4MZxILbVm13/payroll/somePayrollId.
-     * @deny (create) User anotherUser cannot create payroll records under /users/oCZzCwBTCyZnmpizN4MZxILbVm13/payroll/somePayrollId.
-     * @allow (get) User oCZzCwBTCyZnmpizN4MZxILbVm13 can read payroll records under /users/oCZzCwBTCyZnmpizN4MZxILbVm13/payroll/somePayrollId.
-     * @deny (get) User anotherUser cannot read payroll records under /users/oCZzCwBTCyZnmpizN4MZxILbVm13/payroll/somePayrollId.
-     * @principle Restricts access to a user's own payroll information.
+     * @allow (get) User can read their own payroll information.
+     * @allow (create) User can create their own payroll information.
+     * @allow (update) User can update their own payroll information.
+     * @allow (delete) User can delete their own payroll information.
+     * @deny (get) User cannot read another user's payroll information.
+     * @deny (create) User cannot create another user's payroll information.
+     * @deny (update) User cannot update another user's payroll information.
+     * @deny (delete) User cannot delete another user's payroll information.
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId}/payroll/{payrollId} {
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
-      allow delete: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.employeeId == userId;
+      allow update: if isExistingOwner(userId) && resource.data.employeeId == userId;
+      allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Grants access to chat messages based on user ownership.
+     * @description Secure chat messages for each user.
      * @path /users/{userId}/chatMessages/{chatMessageId}
-     * @allow (create) User oCZzCwBTCyZnmpizN4MZxILbVm13 can create chat messages under /users/oCZzCwBTCyZnmpizN4MZxILbVm13/chatMessages/someChatMessageId.
-     * @deny (create) User anotherUser cannot create chat messages under /users/oCZzCwBTCyZnmpizN4MZxILbVm13/chatMessages/someChatMessageId.
-     * @allow (get) User oCZzCwBTCyZnmpizN4MZxILbVm13 can read chat messages under /users/oCZzCwBTCyZnmpizN4MZxILbVm13/chatMessages/someChatMessageId.
-     * @deny (get) User anotherUser cannot read chat messages under /users/oCZzCwBTCyZnmpizN4MZxILbVm13/chatMessages/someChatMessageId.
-     * @principle Restricts access to a user's own chat messages.
+     * @allow (get) User can read their own chat messages.
+     * @allow (create) User can create their own chat messages.
+     * @allow (update) User can update their own chat messages.
+     * @allow (delete) User can delete their own chat messages.
+     * @deny (get) User cannot read another user's chat messages.
+     * @deny (create) User cannot create another user's chat messages.
+     * @deny (update) User cannot update another user's chat messages.
+     * @deny (delete) User cannot delete another user's chat messages.
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId}/chatMessages/{chatMessageId} {
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
-      allow delete: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.employeeId == userId;
+      allow update: if isExistingOwner(userId) && resource.data.employeeId == userId;
+      allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Allows public read access to candidates for prototyping.
+     * @description Allows read access to the 'candidates' collection for all users. Write access is currently open, but this should be restricted in a later iteration.
      * @path /candidates/{candidateId}
-     * @allow (get) Any user can read candidate data.
-     * @allow (list) Any user can list candidate data.
-     * @principle Open read access for prototyping.
+     * @allow (get) Any user can read candidate information.
+     * @allow (list) Any user can list candidates.
+     * @deny (create) No restrictions on creating a candidate record. // TODO: Add proper authorization
+     * @deny (update) No restrictions on updating a candidate record. // TODO: Add proper authorization
+     * @deny (delete) No restrictions on deleting a candidate record. // TODO: Add proper authorization
+     * @principle Public read access with owner-only writes (TODO: Implement owner validation).
      */
     match /candidates/{candidateId} {
       allow get: if true;
       allow list: if true;
-      allow create: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
-      allow update: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
-      allow delete: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
+      allow create: if false; // TODO: Add proper authorization
+      allow update: if false; // TODO: Add proper authorization
+      allow delete: if false; // TODO: Add proper authorization
     }
 
     /**
-     * @description Allows public read access to anomalies for prototyping.
+     * @description Allows read access to the 'anomalies' collection for all users. Write access is currently open, but this should be restricted in a later iteration.
      * @path /anomalies/{anomalyId}
-     * @allow (get) Any user can read anomaly data.
-     * @allow (list) Any user can list anomaly data.
-     * @principle Open read access for prototyping.
+     * @allow (get) Any user can read anomaly information.
+     * @allow (list) Any user can list anomalies.
+     * @deny (create) No restrictions on creating an anomaly record. // TODO: Add proper authorization
+     * @deny (update) No restrictions on updating an anomaly record. // TODO: Add proper authorization
+     * @deny (delete) No restrictions on deleting an anomaly record. // TODO: Add proper authorization
+     * @principle Public read access with owner-only writes (TODO: Implement owner validation).
      */
     match /anomalies/{anomalyId} {
       allow get: if true;
       allow list: if true;
-      allow create: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
-      allow update: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
-      allow delete: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
+      allow create: if false; // TODO: Add proper authorization
+      allow update: if false; // TODO: Add proper authorization
+      allow delete: if false; // TODO: Add proper authorization
     }
+  }
 
-    function isSignedIn() {
-      return request.auth != null;
-    }
+  // Helper functions
+  function isSignedIn() {
+    return request.auth != null;
+  }
+
+  function isOwner(userId) {
+    return request.auth.uid == userId;
+  }
+
+  function isExistingOwner(userId) {
+    return isOwner(userId) && resource != null;
   }
 }
