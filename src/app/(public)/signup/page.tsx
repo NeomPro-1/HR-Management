@@ -41,11 +41,12 @@ export default function SignupPage() {
 
       if (userCredential && userCredential.user) {
         const userProfileRef = doc(firestore, 'users', userCredential.user.uid);
-        await setDocumentNonBlocking(userProfileRef, {
+        // Use non-blocking set with merge to ensure document is created/updated
+        setDocumentNonBlocking(userProfileRef, {
           firstName,
           lastName,
           email,
-        }, {});
+        }, { merge: true });
       }
       
     } catch (err: any) {
