@@ -17,6 +17,7 @@ import { useAuth, useUser, initiateEmailSignIn } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
+import { signOut } from 'firebase/auth';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,6 +34,10 @@ export default function LoginPage() {
     setError(null);
     setIsSubmitting(true);
     try {
+      // First, sign out to clear any expired or invalid tokens.
+      if (auth.currentUser) {
+        await signOut(auth);
+      }
       // Non-blocking sign-in, state will be handled by useUser hook
       await initiateEmailSignIn(auth, email, password);
     } catch (err: any) {
