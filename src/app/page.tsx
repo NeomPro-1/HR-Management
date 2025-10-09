@@ -91,9 +91,9 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="mx-auto grid max-w-5xl items-center gap-8 py-12 lg:grid-cols-2 lg:gap-12">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
+            <div className="flex items-center gap-4">
               {featureImageLg && (
-                  <div className="md:col-span-3">
+                  <div className="w-2/3">
                       <Image
                           src={featureImageLg.imageUrl}
                           alt="SynergyHR Dashboard Screenshot"
@@ -105,7 +105,7 @@ export default function LandingPage() {
                   </div>
               )}
               {featureImageSm && (
-                  <div className="md:col-span-2">
+                  <div className="w-1/3">
                       <Image
                           src={featureImageSm.imageUrl}
                           alt="SynergyHR Mobile View Screenshot"
