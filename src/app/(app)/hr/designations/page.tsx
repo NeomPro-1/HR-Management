@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, MoreHorizontal } from "lucide-react";
@@ -22,7 +23,8 @@ const designations = [
   { id: 3, title: "HR Manager", department: "HR", reportsTo: "CEO" },
 ];
 
-export default function DesignationsPage() {
+export default async function DesignationsPage() {
+  await new Promise(resolve => setTimeout(resolve, 2000));
   return (
       <Card>
         <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -72,3 +74,5 @@ export default function DesignationsPage() {
       </Card>
   );
 }
+
+    

@@ -17,6 +17,11 @@ import { useToast } from "@/hooks/use-toast";
 import { ClientOnly } from "@/components/client-only";
 
 export default function CreatePayslipPage() {
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+        }, 2000);
+        return () => clearTimeout(timer);
+    }, []);
     const { toast } = useToast();
     const [employee, setEmployee] = React.useState({ id: "EMP001", name: "Alisha Sharma" });
     const [payPeriod, setPayPeriod] = React.useState("2024-07");
@@ -238,3 +243,5 @@ export default function CreatePayslipPage() {
         </Card>
     );
 }
+
+    

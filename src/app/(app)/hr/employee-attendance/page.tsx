@@ -1,3 +1,4 @@
+
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -12,7 +13,8 @@ const attendanceLog = [
 ];
 
 
-export default function HREmployeeAttendancePage() {
+export default async function HREmployeeAttendancePage() {
+    await new Promise(resolve => setTimeout(resolve, 2000));
     return (
         <div className="grid gap-6 lg:grid-cols-5">
             <div className="lg:col-span-3 space-y-6">
@@ -66,3 +68,5 @@ export default function HREmployeeAttendancePage() {
         </div>
     );
 }
+
+    

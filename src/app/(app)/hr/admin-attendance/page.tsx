@@ -1,9 +1,11 @@
+
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 
-export default function AdminAttendancePage() {
+export default async function AdminAttendancePage() {
+  await new Promise(resolve => setTimeout(resolve, 2000));
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <Card>
@@ -39,3 +41,5 @@ export default function AdminAttendancePage() {
     </div>
   );
 }
+
+    

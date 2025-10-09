@@ -1,3 +1,4 @@
+
 import { PersonalInfo } from "@/components/employee-details/personal-info";
 import { WorkExperience } from "@/components/employee-details/work-experience";
 import { Education } from "@/components/employee-details/education";
@@ -7,7 +8,8 @@ import { BankDetails } from "@/components/employee-details/bank-details";
 import { AccessInfo } from "@/components/employee-details/access-info";
 import { employeeDetailData } from "@/lib/placeholder-data";
 
-export default function EmployeeDetailsPage() {
+export default async function EmployeeDetailsPage() {
+    await new Promise(resolve => setTimeout(resolve, 2000));
     const employee = employeeDetailData;
   return (
     <div className="space-y-6">
@@ -34,3 +36,5 @@ export default function EmployeeDetailsPage() {
     </div>
   );
 }
+
+    

@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, MoreHorizontal } from "lucide-react";
@@ -22,7 +23,8 @@ const holidays = [
     { id: 3, date: "2024-11-01", name: "Diwali", optional: false },
 ];
 
-export default function HolidaysPage() {
+export default async function HolidaysPage() {
+  await new Promise(resolve => setTimeout(resolve, 2000));
   return (
     <Card>
       <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -70,3 +72,5 @@ export default function HolidaysPage() {
     </Card>
   );
 }
+
+    

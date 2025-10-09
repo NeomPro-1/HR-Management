@@ -9,7 +9,14 @@ import { HeadcountChart } from "@/components/hr-dashboard/headcount-chart";
 import { DashboardCardSkeleton } from '@/components/hr-dashboard/dashboard-card-skeleton';
 
 export default function EmployeeDashboardPage() {
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -66,3 +73,5 @@ export default function EmployeeDashboardPage() {
     </div>
   );
 }
+
+    

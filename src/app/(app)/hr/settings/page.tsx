@@ -1,6 +1,8 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function HRSettingsPage() {
+export default async function HRSettingsPage() {
+  await new Promise(resolve => setTimeout(resolve, 2000));
   return (
     <div className="space-y-8">
       <Card>
@@ -19,3 +21,5 @@ export default function HRSettingsPage() {
     </div>
   );
 }
+
+    

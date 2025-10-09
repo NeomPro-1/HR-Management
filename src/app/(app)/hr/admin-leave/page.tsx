@@ -1,3 +1,4 @@
+
 import {
   Table,
   TableBody,
@@ -13,7 +14,8 @@ import { Check, X } from "lucide-react";
 import { leaveRequests } from "@/lib/placeholder-data";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
-export default function AdminLeavePage() {
+export default async function AdminLeavePage() {
+  await new Promise(resolve => setTimeout(resolve, 2000));
   return (
     <Card>
       <CardHeader>
@@ -78,3 +80,5 @@ export default function AdminLeavePage() {
     </Card>
   );
 }
+
+    

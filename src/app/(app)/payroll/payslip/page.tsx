@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Separator } from "@/components/ui/separator";
 import { payslipData } from "@/lib/placeholder-data";
 import { Printer, Save, Download, Send } from "lucide-react";
+import React from 'react';
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-IN', {
@@ -16,6 +17,12 @@ const formatCurrency = (amount: number) => {
 };
 
 export default function PayslipPage() {
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+        }, 2000);
+        return () => clearTimeout(timer);
+    }, []);
+
     const { employee, payPeriod, payDate, earnings, deductions, leaveSummary, paymentDetails } = payslipData;
     const totalEarnings = earnings.reduce((sum, item) => sum + item.amount, 0);
     const totalDeductions = deductions.reduce((sum, item) => sum + item.amount, 0);
@@ -158,3 +165,5 @@ export default function PayslipPage() {
         </div>
     );
 }
+
+    

@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -22,6 +22,11 @@ const formatCurrency = (amount: number) => {
 };
 
 export default function PayrollItemsPage() {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
   const [selectedMonth, setSelectedMonth] = useState('July 2024');
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
@@ -132,3 +137,5 @@ export default function PayrollItemsPage() {
     </div>
   );
 }
+
+    

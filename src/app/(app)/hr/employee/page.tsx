@@ -37,8 +37,18 @@ interface UserProfile {
 }
 
 export default function HREmployeesPage() {
-  const employees: UserProfile[] = [];
-  const isLoading = false;
+  const [employees, setEmployees] = React.useState<UserProfile[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      // In a real app, you would fetch data here.
+      // For now, we just switch off the loading state.
+      setEmployees([]); // Still no data to show
+      setIsLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const renderSkeletonRow = (isMobile: boolean, key: number) => (
     isMobile ? (
@@ -73,6 +83,46 @@ export default function HREmployeesPage() {
       </TableRow>
     )
   );
+  
+  if (isLoading) {
+    return (
+       <Card>
+          <CardHeader>
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <CardTitle>HR Employee Management</CardTitle>
+                    <CardDescription>View, add, and manage employee profiles for HR.</CardDescription>
+                </div>
+              <Button>
+                <PlusCircle className="mr-2 h-4 w-4" /> Add Employee
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="md:hidden">
+              {[...Array(3)].map((_, i) => renderSkeletonRow(true, i))}
+            </div>
+            <div className="hidden md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Employee</TableHead>
+                    <TableHead>Department</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Joining Date</TableHead>
+                    <TableHead><span className="sr-only">Actions</span></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[...Array(5)].map((_, i) => renderSkeletonRow(false, i))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+       </Card>
+    )
+  }
 
   return (
     <Card>
@@ -90,7 +140,6 @@ export default function HREmployeesPage() {
       <CardContent className="p-0">
         {/* Mobile View */}
         <div className="md:hidden">
-          {isLoading && [...Array(1)].map((_, i) => renderSkeletonRow(true, i))}
           {!isLoading && employees?.map((employee) => {
              const fullName = `${employee.firstName} ${employee.lastName}`;
              return (
@@ -164,7 +213,6 @@ export default function HREmployeesPage() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {isLoading && [...Array(1)].map((_, i) => renderSkeletonRow(false, i))}
                 {!isLoading && employees?.map((employee) => {
                   const fullName = `${employee.firstName} ${employee.lastName}`;
                   return (
@@ -222,3 +270,5 @@ export default function HREmployeesPage() {
     </Card>
   );
 }
+
+    

@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
@@ -23,7 +24,8 @@ const leaveBalances = [
     { type: "Personal Leave", used: 1, total: 5 },
 ]
 
-export default function EmployeeLeavePage() {
+export default async function EmployeeLeavePage() {
+  await new Promise(resolve => setTimeout(resolve, 2000));
   return (
     <div className="space-y-6">
         <Card>
@@ -91,3 +93,5 @@ export default function EmployeeLeavePage() {
     </div>
   );
 }
+
+    

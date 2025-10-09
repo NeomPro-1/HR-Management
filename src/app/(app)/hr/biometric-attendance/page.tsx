@@ -73,6 +73,11 @@ const getStatusClass = (status: AttendanceStatus) => {
 
 
 export default function BiometricAttendancePage() {
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+        }, 2000);
+        return () => clearTimeout(timer);
+    }, []);
     return (
         <Card>
             <CardHeader>
