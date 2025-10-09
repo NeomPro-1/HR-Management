@@ -3,43 +3,46 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // User Profiles: Authenticated users can read all profiles, but only write to their own.
+
+    // Helper functions
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Rules for UserProfile
     match /users/{userId} {
       allow read: if request.auth != null;
-      allow write: if request.auth.uid == userId;
+      allow write: if isOwner(userId);
     }
 
-    // Attendance: User-specific, only accessible by the owner.
+    // Rules for Attendance
     match /users/{userId}/attendance/{attendanceId} {
-      allow read, write: if request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
     }
 
-    // Leave Requests: User-specific, only accessible by the owner.
+    // Rules for LeaveRequest
     match /users/{userId}/leaveRequests/{leaveRequestId} {
-      allow read, write: if request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
     }
 
-    // Payroll: User-specific, only accessible by the owner.
+    // Rules for Payroll
     match /users/{userId}/payroll/{payrollId} {
-      allow read, write: if request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
     }
 
-    // Chat Messages: User-specific, only accessible by the owner.
+    // Rules for ChatMessage
     match /users/{userId}/chatMessages/{chatMessageId} {
-      allow read, write: if request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
     }
 
-    // Candidates: Allow read for any authenticated user, assuming it's for HR/admins.
-    // More restrictive rules might be needed later (e.g., role-based access).
+    // Rules for Candidate
     match /candidates/{candidateId} {
-      allow read: if request.auth != null;
-      // allow write: if isHR_Admin(); // Example of a more restrictive rule
+      allow read, write: if request.auth != null; // Example: Allow any logged-in user
     }
 
-    // Anomalies: Allow read for any authenticated user, assuming it's for HR/admins.
+    // Rules for Anomaly
     match /anomalies/{anomalyId} {
-      allow read: if request.auth != null;
-      // allow write: if isHR_Admin(); // Example of a more restrictive rule
+      allow read, write: if request.auth != null; // Example: Allow any logged-in user
     }
   }
 }
