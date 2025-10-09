@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { PropsWithChildren } from 'react';
@@ -6,15 +7,25 @@ import { AppHeader } from '@/components/layout/app-header';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SidebarProvider, Sidebar } from '@/components/ui/sidebar';
 import { Preloader } from '@/components/layout/preloader';
+import { useUser } from '@/firebase';
+import { useRouter } from 'next/navigation';
 
 export default function AppLayout({ children }: PropsWithChildren) {
   const [mounted, setMounted] = React.useState(false);
+  const { user, isUserLoading } = useUser();
+  const router = useRouter();
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
+  React.useEffect(() => {
+    if (!isUserLoading && !user && mounted) {
+      router.push('/login');
+    }
+  }, [isUserLoading, user, router, mounted]);
+
+  if (!mounted || isUserLoading || !user) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-background">
         <Preloader />
@@ -28,8 +39,6 @@ export default function AppLayout({ children }: PropsWithChildren) {
         <Sidebar>
           <AppSidebar />
         </Sidebar>
-
-        {/* Main Section */}
         <div className="flex flex-1 flex-col">
           <AppHeader />
           <main className="flex-1 overflow-y-auto p-6 lg:p-8">

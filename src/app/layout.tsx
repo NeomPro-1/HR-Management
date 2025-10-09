@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { usePathname } from 'next/navigation';
 import { AppHeader } from '@/components/layout/app-header';
+import { FirebaseClientProvider } from '@/firebase';
 
 export default function RootLayout({
   children,
@@ -40,7 +41,9 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              {children}
+              <FirebaseClientProvider>
+                {children}
+              </FirebaseClientProvider>
               <Toaster />
             </ThemeProvider>
         </body>
@@ -71,6 +74,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <FirebaseClientProvider>
             <div className="flex min-h-screen flex-col">
               <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                 <div className="container flex h-14 items-center">
@@ -100,6 +104,7 @@ export default function RootLayout({
                 </div>
               </footer>
             </div>
+            </FirebaseClientProvider>
           <Toaster />
         </ThemeProvider>
       </body>

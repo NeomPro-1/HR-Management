@@ -13,13 +13,14 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Search, Bell, ChevronLeft } from 'lucide-react';
+import { Search, Bell, ChevronLeft, LogOut } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/firebase';
 
 function getPageTitle(pathname: string) {
   const segment = pathname.split('/').pop()?.replace(/-/g, ' ') || 'dashboard';
@@ -41,6 +42,7 @@ const topLevelPages = [
 export function AppHeader() {
   const pathname = usePathname();
   const router = useRouter();
+  const auth = useAuth();
   const pageTitle = getPageTitle(pathname);
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
   const isMobile = useIsMobile();
@@ -50,6 +52,11 @@ export function AppHeader() {
   React.useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleLogout = async () => {
+    await auth.signOut();
+    router.push('/login');
+  };
 
   if (!mounted) {
     return (
@@ -114,7 +121,10 @@ export function AppHeader() {
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem>Support</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Logout</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Logout</span>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
