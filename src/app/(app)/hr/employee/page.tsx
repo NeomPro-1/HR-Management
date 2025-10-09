@@ -47,9 +47,9 @@ export default function HREmployeesPage() {
 
   const { data: employees, isLoading } = useCollection<Employee>(employeesQuery);
 
-  const renderSkeletonRow = (isMobile: boolean) => (
+  const renderSkeletonRow = (isMobile: boolean, key: number) => (
     isMobile ? (
-       <div className="border-b p-4">
+       <div key={key} className="border-b p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Skeleton className="h-10 w-10 rounded-full" />
@@ -65,7 +65,7 @@ export default function HREmployeesPage() {
         </div>
       </div>
     ) : (
-      <TableRow>
+      <TableRow key={key}>
         <TableCell>
           <div className="flex items-center gap-3">
             <Skeleton className="h-10 w-10 rounded-full" />
@@ -97,7 +97,7 @@ export default function HREmployeesPage() {
       <CardContent className="p-0">
         {/* Mobile View */}
         <div className="md:hidden">
-          {isLoading && [...Array(3)].map((_, i) => renderSkeletonRow(true))}
+          {isLoading && [...Array(3)].map((_, i) => renderSkeletonRow(true, i))}
           {!isLoading && employees?.map((employee) => {
              const fullName = `${employee.firstName} ${employee.lastName}`;
              return (
@@ -171,7 +171,7 @@ export default function HREmployeesPage() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {isLoading && [...Array(5)].map((_, i) => renderSkeletonRow(false))}
+                {isLoading && [...Array(5)].map((_, i) => renderSkeletonRow(false, i))}
                 {!isLoading && employees?.map((employee) => {
                   const fullName = `${employee.firstName} ${employee.lastName}`;
                   return (
@@ -229,5 +229,3 @@ export default function HREmployeesPage() {
     </Card>
   );
 }
-
-    
