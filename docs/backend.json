@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Employee": {
@@ -47,6 +48,11 @@
         "address": {
           "type": "string",
           "description": "Address of the employee."
+        },
+        "avatarUrl": {
+          "type": "string",
+          "description": "URL of the employee's profile picture.",
+          "format": "uri"
         }
       },
       "required": [
