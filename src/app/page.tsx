@@ -41,7 +41,8 @@ const testimonials = [
 
 export default function LandingPage() {
   const heroImage = PlaceHolderImages.find(p => p.id === "landing-hero");
-  const featureImage = PlaceHolderImages.find(p => p.id === "landing-feature");
+  const featureImageLg = PlaceHolderImages.find(p => p.id === "dashboard-full");
+  const featureImageSm = PlaceHolderImages.find(p => p.id === "dashboard-mobile");
 
   return (
     <div className="flex-1">
@@ -90,16 +91,30 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="mx-auto grid max-w-5xl items-center gap-8 py-12 lg:grid-cols-2 lg:gap-12">
-            <div className="w-full max-w-md mx-auto">
-              {featureImage && (
-                <Image
-                  src={featureImage.imageUrl}
-                  alt="Feature Image"
-                  width={600}
-                  height={400}
-                  className="rounded-xl shadow-lg"
-                  data-ai-hint={featureImage.imageHint}
-                />
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
+              {featureImageLg && (
+                  <div className="md:col-span-3">
+                      <Image
+                          src={featureImageLg.imageUrl}
+                          alt="SynergyHR Dashboard Screenshot"
+                          width={600}
+                          height={400}
+                          className="rounded-xl shadow-lg w-full"
+                          data-ai-hint={featureImageLg.imageHint}
+                      />
+                  </div>
+              )}
+              {featureImageSm && (
+                  <div className="md:col-span-2">
+                      <Image
+                          src={featureImageSm.imageUrl}
+                          alt="SynergyHR Mobile View Screenshot"
+                          width={240}
+                          height={480}
+                          className="rounded-xl shadow-lg mx-auto"
+                          data-ai-hint={featureImageSm.imageHint}
+                      />
+                  </div>
               )}
             </div>
             <ul className="grid gap-4">

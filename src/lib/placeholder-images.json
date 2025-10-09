@@ -67,10 +67,16 @@
       "imageHint": "dashboard interface"
     },
     {
-      "id": "landing-feature",
-      "description": "Feature image for landing page",
-      "imageUrl": "https://picsum.photos/seed/2/600/400",
-      "imageHint": "team collaboration"
+      "id": "dashboard-full",
+      "description": "Full screenshot of the employee dashboard.",
+      "imageUrl": "https://storage.googleapis.com/aai-web-samples/pro-features/dashboard-full.png",
+      "imageHint": "dashboard screenshot"
+    },
+    {
+      "id": "dashboard-mobile",
+      "description": "Mobile screenshot of the employee dashboard.",
+      "imageUrl": "https://storage.googleapis.com/aai-web-samples/pro-features/dashboard-mobile.png",
+      "imageHint": "mobile dashboard"
     }
   ]
 }
