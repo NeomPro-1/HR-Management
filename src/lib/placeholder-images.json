@@ -62,15 +62,15 @@
     },
     {
       "id": "landing-hero",
-      "description": "Hero image for landing page showing the app dashboard",
-      "imageUrl": "https://images.unsplash.com/photo-1698223444232-a128c89a9333?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxkYXNoYm9hcmQlMjB1aXxlbnwwfHx8fDE3NTk1NDI2MTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "dashboard ui"
+      "description": "Hero image for landing page showing a modern CRM dashboard.",
+      "imageUrl": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&h=800&fit=crop",
+      "imageHint": "analytics dashboard"
     },
     {
       "id": "dashboard-full",
-      "description": "Full screenshot of the application dashboard.",
-      "imageUrl": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhbmFseXRpY3MlMjBkYXNoYm9hcmR8ZW58MHx8fHwxNzU5NDg1NzAyfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "analytics dashboard"
+      "description": "Full screenshot of a professional analytics dashboard.",
+      "imageUrl": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=600&h=450&fit=crop",
+      "imageHint": "dashboard ui"
     }
   ]
 }
