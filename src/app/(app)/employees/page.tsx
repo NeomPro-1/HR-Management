@@ -22,8 +22,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query } from 'firebase/firestore';
+import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { doc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface Employee {
@@ -40,12 +40,15 @@ interface Employee {
 
 export default function EmployeesPage() {
   const firestore = useFirestore();
-  const employeesQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'users'));
-  }, [firestore]);
+  const { user } = useUser();
 
-  const { data: employees, isLoading } = useCollection<Employee>(employeesQuery);
+  const employeeDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
+  const { data: employee, isLoading } = useDoc<Employee>(employeeDocRef);
+  const employees = employee ? [employee] : [];
 
   const renderSkeletonRow = (isMobile: boolean, key: number) => (
     isMobile ? (
@@ -97,7 +100,7 @@ export default function EmployeesPage() {
       <CardContent className="p-0">
         {/* Mobile View */}
         <div className="md:hidden">
-          {isLoading && [...Array(3)].map((_, i) => renderSkeletonRow(true, i))}
+          {isLoading && [...Array(1)].map((_, i) => renderSkeletonRow(true, i))}
           {!isLoading && employees?.map((employee) => {
             const fullName = `${employee.firstName} ${employee.lastName}`;
             return (
@@ -171,7 +174,7 @@ export default function EmployeesPage() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {isLoading && [...Array(5)].map((_, i) => renderSkeletonRow(false, i))}
+                {isLoading && [...Array(1)].map((_, i) => renderSkeletonRow(false, i))}
                 {!isLoading && employees?.map((employee) => {
                   const fullName = `${employee.firstName} ${employee.lastName}`;
                   return (
@@ -222,10 +225,12 @@ export default function EmployeesPage() {
         </div>
          {!isLoading && (!employees || employees.length === 0) && (
             <div className="text-center p-8 text-muted-foreground">
-                No employees found. Click "Add Employee" to add your first one.
+                No employees found.
             </div>
         )}
       </CardContent>
     </Card>
   );
 }
+
+    
