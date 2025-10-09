@@ -22,11 +22,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { doc } from 'firebase/firestore';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 
-interface Employee {
+interface UserProfile {
   id: string;
   firstName: string;
   lastName: string;
@@ -39,16 +37,8 @@ interface Employee {
 }
 
 export default function HREmployeesPage() {
-  const firestore = useFirestore();
-  const { user } = useUser();
-
-  const employeeDocRef = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return doc(firestore, 'users', user.uid);
-  }, [firestore, user]);
-
-  const { data: employee, isLoading } = useDoc<Employee>(employeeDocRef);
-  const employees = employee ? [employee] : [];
+  const employees: UserProfile[] = [];
+  const isLoading = false;
 
   const renderSkeletonRow = (isMobile: boolean, key: number) => (
     isMobile ? (
@@ -232,5 +222,3 @@ export default function HREmployeesPage() {
     </Card>
   );
 }
-
-    
