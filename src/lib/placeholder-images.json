@@ -62,21 +62,21 @@
     },
     {
       "id": "landing-hero",
-      "description": "Hero image for landing page showing dashboard",
-      "imageUrl": "https://images.unsplash.com/photo-1600880292210-f79a4a70371c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbWlsaW5nJTIwY29sbGVhZ3VlcyUyMGluJTIwb2ZmaWNlfGVufDB8fHx8MTc1OTU0NDc5NHww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "dashboard interface"
+      "description": "Hero image for landing page showing smiling people in an office",
+      "imageUrl": "https://picsum.photos/seed/hr-meeting/1200/800",
+      "imageHint": "office meeting"
     },
     {
       "id": "dashboard-full",
       "description": "Full screenshot of the employee dashboard.",
-      "imageUrl": "https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBkYXNoYm9hcmR8ZW58MHx8fHwxNzU5NTQ1MTA2fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "dashboard screenshot"
+      "imageUrl": "https://picsum.photos/seed/dashboard-main/600/400",
+      "imageHint": "dashboard ui"
     },
     {
       "id": "dashboard-mobile",
       "description": "Mobile screenshot of the employee dashboard.",
-      "imageUrl": "https://images.unsplash.com/photo-1618227768504-4b3f837a1334?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb2JpbGUlMjB1aSUyMGRhc2hib2FyZHxlbnwwfHx8fDE3NTk1NDUxNDd8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "mobile dashboard"
+      "imageUrl": "https://picsum.photos/seed/dashboard-mobile/240/480",
+      "imageHint": "mobile ui"
     }
   ]
 }
