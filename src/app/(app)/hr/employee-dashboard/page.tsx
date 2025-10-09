@@ -1,6 +1,4 @@
 
-'use client';
-import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { DashboardStats } from "@/components/hr-dashboard/dashboard-stats";
 import { AttendanceChart } from "@/components/hr-dashboard/attendance-chart";
@@ -8,15 +6,9 @@ import { LeaveRequests } from "@/components/hr-dashboard/leave-requests";
 import { HeadcountChart } from "@/components/hr-dashboard/headcount-chart";
 import { DashboardCardSkeleton } from '@/components/hr-dashboard/dashboard-card-skeleton';
 
-export default function EmployeeDashboardPage() {
-  const [isLoading, setIsLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
+export default async function EmployeeDashboardPage() {
+  await new Promise(resolve => setTimeout(resolve, 2000));
+  const isLoading = false;
 
   return (
     <div className="space-y-6">
@@ -73,5 +65,3 @@ export default function EmployeeDashboardPage() {
     </div>
   );
 }
-
-    
