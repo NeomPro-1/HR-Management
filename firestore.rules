@@ -1,172 +1,257 @@
 /**
- * @fileoverview Firestore Security Rules for the HR Management System.
+ * @fileoverview Firestore Security Rules for the HR Management App.
  *
  * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for all data nested under `/users/{userId}`.
- * Only the authenticated user matching the `userId` in the path can read or write their own data.
- * Top-level collections (`/candidates` and `/anomalies`) are intended for administrative use and have open read permissions,
- * but write permissions should be restricted to authorized personnel (this is a TODO item).
+ * This ruleset enforces a strict user-ownership model for personal HR data
+ * (attendance, leave requests, payroll, chat messages). Only the authenticated user
+ * can access their own data. The `UserProfile` document is also protected by
+ * ownership. The `candidates` and `anomalies` collections are open for reads.
  *
  * Data Structure:
- * - `/users/{userId}`: Root document for each user's profile.
- * - `/users/{userId}/attendance/{attendanceId}`: Attendance records for a specific user.
- * - `/users/{userId}/leaveRequests/{leaveRequestId}`: Leave requests for a specific user.
- * - `/users/{userId}/payroll/{payrollId}`: Payroll information for a specific user.
- * - `/users/{userId}/chatMessages/{chatMessageId}`: Chat messages for a specific user.
+ * - `/users/{userId}`: User profile information, where `{userId}` must match the
+ *   authenticated user's UID.
+ * - `/users/{userId}/attendance/{attendanceId}`: Attendance records for the user.
+ * - `/users/{userId}/leaveRequests/{leaveRequestId}`: Leave requests submitted by the user.
+ * - `/users/{userId}/payroll/{payrollId}`: Payroll information for the user.
+ * - `/users/{userId}/chatMessages/{chatMessageId}`: Chat messages for the user.
  * - `/candidates/{candidateId}`: Job candidate information (top-level collection).
- * - `/anomalies/{anomalyId}`: Detected anomalies in attendance records (top-level collection).
+ * - `/anomalies/{anomalyId}`: Anomaly records in attendance (top-level collection).
  *
  * Key Security Decisions:
- * - User listing is explicitly denied for security reasons. Individual user profiles can be accessed via their specific `userId`.
- * - All user-owned subcollections enforce strict path-based ownership, where the `userId` in the path must match the authenticated user's UID.
- * - Top-level collections (`/candidates` and `/anomalies`) have public read permissions for prototyping but will need stricter write rules in production.
- * - Flexible data shapes are permitted to allow rapid iteration in the prototyping phase.
+ * - User listing is explicitly denied at the root level. Listing is only supported
+ *   within the user's own subcollections.
+ * - Public read access is granted to the `candidates` and `anomalies` collections,
+ *   assuming all data in these collections is considered public.
+ * - Strict ownership is enforced for all user-specific data through path-based rules.
+ *   This avoids the need for complex `get()` calls or document-level checks.
+ * - Schema validation is relaxed in this prototyping phase, focusing on authorization.
+ *
+ * Denormalization for Authorization:
+ * - The data model is designed to avoid `get()` calls. User-specific data is nested
+ *   under the `/users/{userId}` path, allowing direct access control based on the
+ *   authenticated user's UID.
+ *
+ * Structural Segregation:
+ * - User-specific data is stored under the `/users/{userId}` path, while public data
+ *   (candidates, anomalies) is stored in top-level collections. This separation
+ *   simplifies security rules and improves query performance.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Checks if the request is authenticated.
-     * @path N/A
-     * @allow N/A
-     * @deny N/A
-     * @principle Authentication is required for nearly all operations.
+     * @description Prevents listing all users at the root level.
+     * @path /users
+     * @allow (list) N/A - Listing all users is not permitted.
+     * @deny (list) Attempting to list all users.
+     * @principle Prevents unauthorized enumeration of all user profiles.
      */
-    function isSignedIn() {
-      return request.auth != null;
+    match /users {
+      allow list: if false;
     }
 
     /**
-     * @description Checks if the authenticated user ID matches the provided user ID.
-     * @path N/A
-     * @allow N/A
-     * @deny N/A
-     * @principle Enforces user-based ownership.
-     */
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    /**
-     * @description Checks if the authenticated user is the owner of an existing document.
-     * @path N/A
-     * @allow N/A
-     * @deny N/A
-     * @principle Protects against modifying or deleting non-existent documents.
-     */
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
-    }
-
-    /**
-     * @description Enforces user-ownership for user profiles.
+     * @description Controls access to user profile information.
      * @path /users/{userId}
-     * @allow (create) User with UID 'user123' creates their own profile at /users/user123.
-     * @deny (create) User with UID 'user123' tries to create a profile for another user at /users/user456.
-     * @principle Enforces document ownership for writes.
+     * @allow (get) Authenticated user requesting their own profile data.
+     * @allow (create) Authenticated user creating their own profile (userId matches auth.uid).
+     * @allow (update) Authenticated user updating their own profile (userId matches auth.uid).
+     * @allow (delete) Authenticated user deleting their own profile (userId matches auth.uid).
+     * @deny (get) Authenticated user requesting another user's profile data.
+     * @deny (create) Authenticated user attempting to create a profile with a mismatched userId.
+     * @deny (update) Authenticated user attempting to update another user's profile.
+     * @deny (delete) Authenticated user attempting to delete another user's profile.
+     * @principle Enforces document ownership for user profiles.
      */
     match /users/{userId} {
-      allow get: if false;
-      allow list: if false; // Listing all users is not permitted
+      function isSignedIn() {
+        return request.auth != null;
+      }
 
-      allow create: if isOwner(userId) && request.resource.data.id == userId;
-      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      function isOwner(userId) {
+        return isSignedIn() && request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+          return isOwner(userId) && resource.data != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Enforces user-ownership for attendance records.
+     * @description Controls access to user-specific attendance records.
      * @path /users/{userId}/attendance/{attendanceId}
-     * @allow (create) User with UID 'user123' creates an attendance record at /users/user123/attendance/record1.
-     * @deny (create) User with UID 'user123' tries to create an attendance record for another user at /users/user456/attendance/record1.
-     * @principle Enforces document ownership for writes.
+     * @allow (get) Authenticated user requesting their own attendance record.
+     * @allow (list) Authenticated user listing their own attendance records.
+     * @allow (create) Authenticated user creating an attendance record for themselves.
+     * @allow (update) Authenticated user updating their own attendance record.
+     * @allow (delete) Authenticated user deleting their own attendance record.
+     * @deny (get) Authenticated user requesting another user's attendance record.
+     * @deny (list) Authenticated user listing another user's attendance records.
+     * @deny (create) Authenticated user attempting to create an attendance record for another user.
+     * @deny (update) Authenticated user attempting to update another user's attendance record.
+     * @deny (delete) Authenticated user attempting to delete another user's attendance record.
+     * @principle Enforces document ownership for attendance records.
      */
     match /users/{userId}/attendance/{attendanceId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return isSignedIn() && request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource.data != null;
+      }
+
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-
       allow create: if isOwner(userId);
       allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Enforces user-ownership for leave requests.
+     * @description Controls access to user-specific leave requests.
      * @path /users/{userId}/leaveRequests/{leaveRequestId}
-     * @allow (create) User with UID 'user123' creates a leave request at /users/user123/leaveRequests/request1.
-     * @deny (create) User with UID 'user123' tries to create a leave request for another user at /users/user456/leaveRequests/request1.
-     * @principle Enforces document ownership for writes.
+     * @allow (get) Authenticated user requesting their own leave request.
+     * @allow (list) Authenticated user listing their own leave requests.
+     * @allow (create) Authenticated user creating a leave request for themselves.
+     * @allow (update) Authenticated user updating their own leave request.
+     * @allow (delete) Authenticated user deleting their own leave request.
+     * @deny (get) Authenticated user requesting another user's leave request.
+     * @deny (list) Authenticated user listing another user's leave requests.
+     * @deny (create) Authenticated user attempting to create a leave request for another user.
+     * @deny (update) Authenticated user attempting to update another user's leave request.
+     * @deny (delete) Authenticated user attempting to delete another user's leave request.
+     * @principle Enforces document ownership for leave requests.
      */
     match /users/{userId}/leaveRequests/{leaveRequestId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return isSignedIn() && request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource.data != null;
+      }
+
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-
       allow create: if isOwner(userId);
       allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Enforces user-ownership for payroll information.
+     * @description Controls access to user-specific payroll information.
      * @path /users/{userId}/payroll/{payrollId}
-     * @allow (create) User with UID 'user123' creates payroll information at /users/user123/payroll/payroll1.
-     * @deny (create) User with UID 'user123' tries to create payroll information for another user at /users/user456/payroll/payroll1.
-     * @principle Enforces document ownership for writes.
+     * @allow (get) Authenticated user requesting their own payroll information.
+     * @allow (list) Authenticated user listing their own payroll information.
+     * @allow (create) Authenticated user creating payroll information for themselves.
+     * @allow (update) Authenticated user updating their own payroll information.
+     * @allow (delete) Authenticated user deleting their own payroll information.
+     * @deny (get) Authenticated user requesting another user's payroll information.
+     * @deny (list) Authenticated user listing another user's payroll information.
+     * @deny (create) Authenticated user attempting to create payroll information for another user.
+     * @deny (update) Authenticated user attempting to update another user's payroll information.
+     * @deny (delete) Authenticated user attempting to delete another user's payroll information.
+     * @principle Enforces document ownership for payroll information.
      */
     match /users/{userId}/payroll/{payrollId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return isSignedIn() && request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource.data != null;
+      }
+
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-
       allow create: if isOwner(userId);
       allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Enforces user-ownership for chat messages.
+     * @description Controls access to user-specific chat messages.
      * @path /users/{userId}/chatMessages/{chatMessageId}
-     * @allow (create) User with UID 'user123' creates a chat message at /users/user123/chatMessages/message1.
-     * @deny (create) User with UID 'user123' tries to create a chat message for another user at /users/user456/chatMessages/message1.
-     * @principle Enforces document ownership for writes.
+     * @allow (get) Authenticated user requesting their own chat message.
+     * @allow (list) Authenticated user listing their own chat messages.
+     * @allow (create) Authenticated user creating a chat message for themselves.
+     * @allow (update) Authenticated user updating their own chat message.
+     * @allow (delete) Authenticated user deleting their own chat message.
+     * @deny (get) Authenticated user requesting another user's chat message.
+     * @deny (list) Authenticated user listing another user's chat messages.
+     * @deny (create) Authenticated user attempting to create a chat message for another user.
+     * @deny (update) Authenticated user attempting to update another user's chat message.
+     * @deny (delete) Authenticated user attempting to delete another user's chat message.
+     * @principle Enforces document ownership for chat messages.
      */
     match /users/{userId}/chatMessages/{chatMessageId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return isSignedIn() && request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource.data != null;
+      }
+
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-
       allow create: if isOwner(userId);
       allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Allows public read access to candidate information, but restricts write access.
+     * @description Allows public read access to job candidate information, with no write restrictions.
      * @path /candidates/{candidateId}
-     * @allow (get) Any user can read candidate information.
+     * @allow (get) Any user can read a candidate's information.
      * @allow (list) Any user can list candidates.
-     * @deny (create) Without write permission, no users can create candidates.
-     * @principle Allows public reads, restricts writes.
+     * @allow (create) No restrictions on creating candidates. // TODO: Review if write restrictions are needed.
+     * @allow (update) No restrictions on updating candidates. // TODO: Review if write restrictions are needed.
+     * @allow (delete) No restrictions on deleting candidates. // TODO: Review if write restrictions are needed.
+     * @principle Provides open access to candidate data.
      */
     match /candidates/{candidateId} {
-      allow get: if true;
-      allow list: if true;
-
-      allow create, update, delete: if false; // TODO: Add admin/HR validation.
+        allow get, list: if true;
+        allow create, update, delete: if request.auth != null; // TODO: Add owner validation once the schema is updated with an ownership field.
     }
 
     /**
-     * @description Allows public read access to anomaly information, but restricts write access.
+     * @description Allows public read access to anomaly records, with no write restrictions.
      * @path /anomalies/{anomalyId}
-     * @allow (get) Any user can read anomaly information.
-     * @allow (list) Any user can list anomalies.
-     * @deny (create) Without write permission, no users can create anomalies.
-     * @principle Allows public reads, restricts writes.
+     * @allow (get) Any user can read an anomaly record.
+     * @allow (list) Any user can list anomaly records.
+     * @allow (create) No restrictions on creating anomaly records. // TODO: Review if write restrictions are needed.
+     * @allow (update) No restrictions on updating anomaly records. // TODO: Review if write restrictions are needed.
+     * @allow (delete) No restrictions on deleting anomaly records. // TODO: Review if write restrictions are needed.
+     * @principle Provides open access to anomaly data.
      */
     match /anomalies/{anomalyId} {
-      allow get: if true;
-      allow list: if true;
-
-      allow create, update, delete: if false; // TODO: Add admin/HR validation.
+        allow get, list: if true;
+        allow create, update, delete: if request.auth != null; // TODO: Add owner validation once the schema is updated with an ownership field.
     }
   }
 }
