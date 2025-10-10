@@ -24,8 +24,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AddEmployeeForm } from '@/components/hr/add-employee-form';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { useDoc, useFirestore, useUser, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 
 interface UserProfile {
   id: string;
@@ -40,9 +40,17 @@ interface UserProfile {
 }
 
 export default function HREmployeesPage() {
+  const { user } = useUser();
   const firestore = useFirestore();
-  const usersCollectionRef = useMemoFirebase(() => collection(firestore, 'users'), [firestore]);
-  const { data: employees, isLoading } = useCollection<UserProfile>(usersCollectionRef);
+  
+  const userDocRef = useMemoFirebase(
+    () => (user ? doc(firestore, 'users', user.uid) : null),
+    [firestore, user]
+  );
+  
+  const { data: employee, isLoading } = useDoc<UserProfile>(userDocRef);
+  const employees = employee ? [employee] : [];
+
 
   const renderSkeletonRow = (isMobile: boolean, key: number) => (
     isMobile ? (

@@ -24,6 +24,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from '@/components/ui/skeleton';
 import { AddEmployeeForm } from '@/components/hr/add-employee-form';
+import { useDoc, useFirestore, useUser, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 
 interface UserProfile {
   id: string;
@@ -38,17 +40,17 @@ interface UserProfile {
 }
 
 export default function EmployeesPage() {
-  const [employees, setEmployees] = React.useState<UserProfile[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const { user } = useUser();
+  const firestore = useFirestore();
 
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      // In a real app, you would fetch data here.
-      setEmployees([]); 
-      setIsLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
+  const userDocRef = useMemoFirebase(
+    () => (user ? doc(firestore, 'users', user.uid) : null),
+    [firestore, user]
+  );
+  
+  const { data: employee, isLoading } = useDoc<UserProfile>(userDocRef);
+  const employees = employee ? [employee] : [];
+
 
   const renderSkeletonRow = (isMobile: boolean, key: number) => (
     isMobile ? (
