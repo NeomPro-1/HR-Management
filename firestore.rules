@@ -1,191 +1,218 @@
 /**
- * @fileoverview Firestore Security Rules for the HR application.
+ * @fileoverview Firestore Security Rules for the HR Management System.
  *
  * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for personal data
- * (attendance, leave requests, payroll, chat messages) and restricts access
- * to user profiles and associated data to the authenticated user. Top-level
- * collections (candidates, anomalies) are left open for prototyping but MUST
- * be secured appropriately for production.
+ * This ruleset enforces a strict user-ownership model for most data,
+ * ensuring that users can only access their own information. Top-level
+ * collections are used for data that requires broader access or
+ * administrative oversight.
  *
  * Data Structure:
- * - `/users/{userId}`: Stores public user profile information.
- * - `/users/{userId}/attendance/{attendanceId}`: Attendance records.
- * - `/users/{userId}/leaveRequests/{leaveRequestId}`: Leave requests.
- * - `/users/{userId}/payroll/{payrollId}`: Payroll information.
- * - `/users/{userId}/chatMessages/{chatMessageId}`: Chat messages.
- * - `/candidates/{candidateId}`: Job candidate information.
- * - `/anomalies/{anomalyId}`: Detected anomalies in attendance records.
+ * - User profiles and their related data (attendance, leave requests, payroll, chat messages)
+ *   are nested under `/users/{userId}`.
+ * - Candidates and Anomaly records are stored in top-level collections (`/candidates`, `/anomalies`).
  *
  * Key Security Decisions:
- * - Users can only read and write their own profile data.
- * - Users can only read and write data within their own user subcollections.
- * - Listing users is explicitly denied to prevent information disclosure.
- * - Candidate and anomaly data is currently open but MUST be secured in production.
+ * - Listing of all users is denied to prevent unauthorized data access.
+ * - Path-based ownership is used to simplify and secure access to user-specific data.
+ * - The rules are designed to be highly secure, focusing on authorization and relational integrity,
+ *   while relaxing validation on data shapes for rapid iteration.
  *
  * Denormalization for Authorization:
- *  - The data structure uses path-based ownership (`/users/{userId}/...`) which implicitly
- *    denormalizes the user ID onto all subcollection documents. This avoids the need for
- *    `get()` calls to verify ownership.
+ *  - The structure enforces Authorization Independence by leveraging path-based ownership for user-specific data, eliminating the need for `get()` calls in security rules.
  *
  * Structural Segregation:
- *  - User-specific data (attendance, leave requests, etc.) is stored in user subcollections
- *    while broader data (candidates, anomalies) is stored in top-level collections. This
- *    segregation allows for different access control policies for each type of data.
+ *  - Candidates and anomalies are stored in root-level collections, separate from user-specific data. This segregation enhances query performance and simplifies security rules.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Controls access to user profile documents.
+     * @description Checks if the requesting user is signed in.
+     * @return {boolean} True if the user is signed in, false otherwise.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Checks if the requesting user is the owner of the document.
+     * @param {string} userId The user ID to compare against the request's auth UID.
+     * @return {boolean} True if the user is the owner, false otherwise.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Checks if the requesting user is the owner of the document and the document exists.
+     * @param {string} userId The user ID to compare against the request's auth UID.
+     * @return {boolean} True if the user is the owner and the document exists, false otherwise.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Rules for the /users/{userId} collection.
      * @path /users/{userId}
-     * @allow (get, create, update) if the user is signed in and the userId matches the authenticated user's UID.
-     * @deny (create, update, delete) if the user is not signed in or the userId does not match the authenticated user's UID.
-     * @principle Enforces document ownership for writes and allows public reads.
+     * @allow (create) User with UID 'test_user' can create their profile if request.auth.uid == 'test_user'.
+     * @allow (get) User with UID 'test_user' can get their profile if request.auth.uid == 'test_user'.
+     * @allow (update) User with UID 'test_user' can update their profile if request.auth.uid == 'test_user'.
+     * @allow (delete) User with UID 'test_user' can delete their profile if request.auth.uid == 'test_user'.
+     * @deny (create) User with UID 'other_user' cannot create a profile for 'test_user'.
+     * @principle Enforces document ownership for writes and reads, ensuring users can only access their own profile data.
      */
     match /users/{userId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-
-      allow get: if isSignedIn();
-      allow list: if false; // Explicitly deny listing of users.
-
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && isOwner(userId); // Enforce immutability of userId
-      allow delete: if isSignedIn() && isOwner(userId);
-
+      // Only allow creating a user profile if the userId matches the authenticated user's UID.
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      // Allow reading a user profile if the userId matches the authenticated user's UID.
+      allow get: if isOwner(userId);
+      // Allow updating a user profile if the userId matches the authenticated user's UID and the ID doesn't change.
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      // Allow deleting a user profile if the userId matches the authenticated user's UID.
+      allow delete: if isExistingOwner(userId);
+      // Prevent listing all users.
+      allow list: if false;
     }
 
     /**
-     * @description Controls access to attendance records for a specific user.
+     * @description Rules for the /users/{userId}/attendance/{attendanceId} collection.
      * @path /users/{userId}/attendance/{attendanceId}
-     * @allow (create, update, delete) if the user is the owner of the parent user document.
-     * @deny (create, update, delete) if the user is not the owner of the parent user document.
-     * @principle Enforces user-based ownership for attendance data.
+     * @allow (create) User with UID 'test_user' can create an attendance record under their profile.
+     * @allow (get) User with UID 'test_user' can get an attendance record under their profile.
+     * @allow (update) User with UID 'test_user' can update an attendance record under their profile.
+     * @allow (delete) User with UID 'test_user' can delete an attendance record under their profile.
+     * @deny (create) User with UID 'other_user' cannot create an attendance record for 'test_user'.
+     * @principle Enforces document ownership for writes and reads, ensuring users can only access their own attendance records.
      */
     match /users/{userId}/attendance/{attendanceId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-
-      allow get: if isSignedIn() && isOwner(userId);
-      allow list: if isSignedIn() && isOwner(userId);
-
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && isOwner(userId);
-      allow delete: if isSignedIn() && isOwner(userId);
+      // Allow creating an attendance record if the userId matches the authenticated user's UID.
+      allow create: if isOwner(userId);
+      // Allow reading an attendance record if the userId matches the authenticated user's UID.
+      allow get: if isOwner(userId);
+      // Allow updating an attendance record if the userId matches the authenticated user's UID.
+      allow update: if isExistingOwner(userId);
+      // Allow deleting an attendance record if the userId matches the authenticated user's UID.
+      allow delete: if isExistingOwner(userId);
+      // Allow listing attendance records if the userId matches the authenticated user's UID.
+      allow list: if isOwner(userId);
     }
 
     /**
-     * @description Controls access to leave requests for a specific user.
+     * @description Rules for the /users/{userId}/leaveRequests/{leaveRequestId} collection.
      * @path /users/{userId}/leaveRequests/{leaveRequestId}
-     * @allow (create, update, delete) if the user is the owner of the parent user document.
-     * @deny (create, update, delete) if the user is not the owner of the parent user document.
-     * @principle Enforces user-based ownership for leave request data.
+     * @allow (create) User with UID 'test_user' can create a leave request under their profile.
+     * @allow (get) User with UID 'test_user' can get a leave request under their profile.
+     * @allow (update) User with UID 'test_user' can update a leave request under their profile.
+     * @allow (delete) User with UID 'test_user' can delete a leave request under their profile.
+     * @deny (create) User with UID 'other_user' cannot create a leave request for 'test_user'.
+     * @principle Enforces document ownership for writes and reads, ensuring users can only access their own leave requests.
      */
     match /users/{userId}/leaveRequests/{leaveRequestId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-
-      allow get: if isSignedIn() && isOwner(userId);
-      allow list: if isSignedIn() && isOwner(userId);
-
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && isOwner(userId);
-      allow delete: if isSignedIn() && isOwner(userId);
+      // Allow creating a leave request if the userId matches the authenticated user's UID.
+      allow create: if isOwner(userId);
+      // Allow reading a leave request if the userId matches the authenticated user's UID.
+      allow get: if isOwner(userId);
+      // Allow updating a leave request if the userId matches the authenticated user's UID.
+      allow update: if isExistingOwner(userId);
+      // Allow deleting a leave request if the userId matches the authenticated user's UID.
+      allow delete: if isExistingOwner(userId);
+      // Allow listing leave requests if the userId matches the authenticated user's UID.
+      allow list: if isOwner(userId);
     }
 
     /**
-     * @description Controls access to payroll records for a specific user.
+     * @description Rules for the /users/{userId}/payroll/{payrollId} collection.
      * @path /users/{userId}/payroll/{payrollId}
-     * @allow (create, update, delete) if the user is the owner of the parent user document.
-     * @deny (create, update, delete) if the user is not the owner of the parent user document.
-     * @principle Enforces user-based ownership for payroll data.
+     * @allow (create) User with UID 'test_user' can create a payroll record under their profile.
+     * @allow (get) User with UID 'test_user' can get a payroll record under their profile.
+     * @allow (update) User with UID 'test_user' can update a payroll record under their profile.
+     * @allow (delete) User with UID 'test_user' can delete a payroll record under their profile.
+     * @deny (create) User with UID 'other_user' cannot create a payroll record for 'test_user'.
+     * @principle Enforces document ownership for writes and reads, ensuring users can only access their own payroll records.
      */
     match /users/{userId}/payroll/{payrollId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-
-      allow get: if isSignedIn() && isOwner(userId);
-      allow list: if isSignedIn() && isOwner(userId);
-
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && isOwner(userId);
-      allow delete: if isSignedIn() && isOwner(userId);
+      // Allow creating a payroll record if the userId matches the authenticated user's UID.
+      allow create: if isOwner(userId);
+      // Allow reading a payroll record if the userId matches the authenticated user's UID.
+      allow get: if isOwner(userId);
+      // Allow updating a payroll record if the userId matches the authenticated user's UID.
+      allow update: if isExistingOwner(userId);
+      // Allow deleting a payroll record if the userId matches the authenticated user's UID.
+      allow delete: if isExistingOwner(userId);
+      // Allow listing payroll records if the userId matches the authenticated user's UID.
+      allow list: if isOwner(userId);
     }
 
     /**
-     * @description Controls access to chat messages for a specific user.
+     * @description Rules for the /users/{userId}/chatMessages/{chatMessageId} collection.
      * @path /users/{userId}/chatMessages/{chatMessageId}
-     * @allow (create, update, delete) if the user is the owner of the parent user document.
-     * @deny (create, update, delete) if the user is not the owner of the parent user document.
-     * @principle Enforces user-based ownership for chat message data.
+     * @allow (create) User with UID 'test_user' can create a chat message under their profile.
+     * @allow (get) User with UID 'test_user' can get a chat message under their profile.
+     * @allow (update) User with UID 'test_user' can update a chat message under their profile.
+     * @allow (delete) User with UID 'test_user' can delete a chat message under their profile.
+     * @deny (create) User with UID 'other_user' cannot create a chat message for 'test_user'.
+     * @principle Enforces document ownership for writes and reads, ensuring users can only access their own chat messages.
      */
     match /users/{userId}/chatMessages/{chatMessageId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-
-      allow get: if isSignedIn() && isOwner(userId);
-      allow list: if isSignedIn() && isOwner(userId);
-
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && isOwner(userId);
-      allow delete: if isSignedIn() && isOwner(userId);
+      // Allow creating a chat message if the userId matches the authenticated user's UID.
+      allow create: if isOwner(userId);
+      // Allow reading a chat message if the userId matches the authenticated user's UID.
+      allow get: if isOwner(userId);
+      // Allow updating a chat message if the userId matches the authenticated user's UID.
+      allow update: if isExistingOwner(userId);
+      // Allow deleting a chat message if the userId matches the authenticated user's UID.
+      allow delete: if isExistingOwner(userId);
+      // Allow listing chat messages if the userId matches the authenticated user's UID.
+      allow list: if isOwner(userId);
     }
 
     /**
-     * @description Controls access to candidate documents.
+     * @description Rules for the /candidates/{candidateId} collection.
      * @path /candidates/{candidateId}
-     * @allow get, list: if true; // Open access for prototyping. MUST be secured in production.
-     * @deny create, update, delete: if false; // TODO: Add appropriate authorization checks.
-     * @principle Placeholder for candidate security rules.
+     * @allow (get) Any signed-in user can read a candidate's profile.
+     * @allow (list) Any signed-in user can list candidate profiles.
+     * @deny (create) No one can create a candidate profile without specific authorization (e.g., admin role).
+     * @deny (update) No one can update a candidate profile without specific authorization.
+     * @deny (delete) No one can delete a candidate profile without specific authorization.
+     * @principle Public read access with restricted write access.
      */
     match /candidates/{candidateId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if false; // TODO: Add appropriate authorization checks.
-      allow update: if false; // TODO: Add appropriate authorization checks.
-      allow delete: if false; // TODO: Add appropriate authorization checks.
+      // Allow reading a candidate profile if the user is signed in.
+      allow get: if isSignedIn();
+      // Allow listing candidate profiles if the user is signed in.
+      allow list: if isSignedIn();
+      // Only allow creating a candidate profile under specific authorization (e.g., admin role).
+      allow create: if false; // TODO: Add admin role check.
+      // Only allow updating a candidate profile under specific authorization.
+      allow update: if false; // TODO: Add admin role check.
+      // Only allow deleting a candidate profile under specific authorization.
+      allow delete: if false; // TODO: Add admin role check.
     }
 
     /**
-     * @description Controls access to anomaly documents.
+     * @description Rules for the /anomalies/{anomalyId} collection.
      * @path /anomalies/{anomalyId}
-     * @allow get, list: if true; // Open access for prototyping. MUST be secured in production.
-     * @deny create, update, delete: if false; // TODO: Add appropriate authorization checks.
-     * @principle Placeholder for anomaly security rules.
+     * @allow (get) Any signed-in user can read an anomaly record.
+     * @allow (list) Any signed-in user can list anomaly records.
+     * @deny (create) No one can create an anomaly record without specific authorization (e.g., admin role).
+     * @deny (update) No one can update an anomaly record without specific authorization.
+     * @deny (delete) No one can delete an anomaly record without specific authorization.
+     * @principle Public read access with restricted write access.
      */
     match /anomalies/{anomalyId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if false; // TODO: Add appropriate authorization checks.
-      allow update: if false; // TODO: Add appropriate authorization checks.
-      allow delete: if false; // TODO: Add appropriate authorization checks.
+      // Allow reading an anomaly record if the user is signed in.
+      allow get: if isSignedIn();
+      // Allow listing anomaly records if the user is signed in.
+      allow list: if isSignedIn();
+      // Only allow creating an anomaly record under specific authorization (e.g., admin role).
+      allow create: if false; // TODO: Add admin role check.
+      // Only allow updating an anomaly record under specific authorization.
+      allow update: if false; // TODO: Add admin role check.
+      // Only allow deleting an anomaly record under specific authorization.
+      allow delete: if false; // TODO: Add admin role check.
     }
   }
 }
