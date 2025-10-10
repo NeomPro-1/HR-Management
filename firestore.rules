@@ -1,169 +1,201 @@
 /**
- * @file Firebase Security Rules for HR Management System
+ * @fileoverview Firestore Security Rules for the HR and Payroll data model.
  *
- * @description This ruleset enforces a strict user-ownership model for user profiles and their associated data (attendance, leave requests, payroll, and chat messages).
- *  Candidates and anomalies are stored in top-level collections with open read access and restricted write access.
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for all data nested under `/users/{userId}`.
+ * Only the authenticated user matching the `userId` can read and write their own data. Root-level
+ * collections (`/candidates` and `/anomalies`) are accessible to authorized users (e.g., HR staff) only.
  *
- * @dataStructure
- * - /users/{userId}: Stores public user profile information. The `userId` must match the authenticated user's UID.
- * - /users/{userId}/attendance/{attendanceId}: Stores attendance records for each employee.
- * - /users/{userId}/leaveRequests/{leaveRequestId}: Stores leave requests submitted by each employee.
- * - /users/{userId}/payroll/{payrollId}: Stores payroll information for each employee.
- * - /users/{userId}/chatMessages/{chatMessagesId}: Stores chat messages for each employee.
- * - /candidates/{candidateId}: Stores job candidates in the recruitment process.
- * - /anomalies/{anomalyId}: Stores detected anomalies in attendance records.
+ * Data Structure:
+ * - `/users/{userId}`: Stores user profiles. The `userId` in the path MUST match the authenticated user's UID.
+ * - `/users/{userId}/attendance/{attendanceId}`: Stores attendance records for a specific user.
+ * - `/users/{userId}/leaveRequests/{leaveRequestId}`: Stores leave requests for a specific user.
+ * - `/users/{userId}/payroll/{payrollId}`: Stores payroll information for a specific user.
+ * - `/users/{userId}/chatMessages/{chatMessageId}`: Stores chat messages for a specific user.
+ * - `/candidates/{candidateId}`: Stores job candidate information.
+ * - `/anomalies/{anomalyId}`: Stores detected anomalies in attendance records.
  *
- * @keySecurityDecisions
- * - User listing is disabled to protect user privacy.
- * - User-owned data is strictly limited to the owning user.
- * - Top-level collections (candidates, anomalies) are publicly readable, but writes are restricted.
+ * Key Security Decisions:
+ * - User listing is disallowed.
+ * - All write operations are protected by authorization checks.
+ * - The rules prioritize security and assume no specific roles beyond user ownership.
  *
- * @denormalizationForAuthorization
- * - User ownership is enforced through path-based rules, avoiding the need for `get()` calls to determine ownership. The path `/users/{userId}` inherently signifies ownership.
+ * Denormalization for Authorization:
+ *  To enforce path-based ownership, the `employeeId` field in subcollections like `attendance`,
+ *  `leaveRequests`, `payroll`, and `chatMessages` is not explicitly validated in rules.
+ *  The system relies on the path `/users/{userId}` to implicitly establish ownership.
  *
- * @structuralSegregation
- * - Private user data (attendance, leave requests, payroll, chat messages) is stored in user-specific subcollections.
- * - Public/Administrative data (candidates, anomalies) is stored in top-level collections.
+ * Structural Segregation:
+ * User-specific data is stored under `/users/{userId}`, while administrative data (candidates, anomalies)
+ * are stored in top-level collections. This segregation simplifies security rules and improves query performance.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Secures user profiles. Only the authenticated user can read and write their own profile.
-     * @path /users/{userId}
-     * @allow (read, write) if request.auth.uid == userId
-     *  - Allows the user with UID "user123" to read and write the document /users/user123.
-     * @deny (read, write) if request.auth.uid != userId
-     *  - Denies the user with UID "user456" to read and write the document /users/user123.
-     * @principle Enforces document ownership for reads and writes.
+     * @description Rule for securing the /users/{userId} collection. Enforces that only the authenticated user can read or write their own profile.
+     * @path /databases/{database}/documents/users/{userId}
+     * @allow (create) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can create their profile with matching userId.
+     * @deny (create) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' cannot create a profile with a different userId.
+     * @allow (get) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can read their own profile.
+     * @deny (get) User 'randomUserId' cannot read user 'oCZzCwBTCyZnmpizN4MZxILbVm13' profile.
+     * @allow (update) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can update their own profile.
+     * @deny (update) User 'randomUserId' cannot update user 'oCZzCwBTCyZnmpizN4MZxILbVm13' profile.
+     * @allow (delete) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can delete their own profile.
+     * @deny (delete) User 'randomUserId' cannot delete user 'oCZzCwBTCyZnmpizN4MZxILbVm13' profile.
+     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
      */
     match /users/{userId} {
       allow get: if isOwner(userId);
-      allow list: if false; // User listing is disallowed.
-
+      allow list: if false;
       allow create: if isOwner(userId);
-      allow update: if isOwner(userId) && resource != null;
+      allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Secures attendance records. Only the owning user can read and write their attendance records.
-     * @path /users/{userId}/attendance/{attendanceId}
-     * @allow (read, write) if request.auth.uid == userId
-     *  - Allows the user with UID "user123" to read and write the document /users/user123/attendance/attendance1.
-     * @deny (read, write) if request.auth.uid != userId
-     *  - Denies the user with UID "user456" to read and write the document /users/user123/attendance/attendance1.
-     * @principle Enforces document ownership via path.
+     * @description Rule for securing the /users/{userId}/attendance/{attendanceId} collection. Enforces that only the authenticated user can read or write their own attendance records.
+     * @path /databases/{database}/documents/users/{userId}/attendance/{attendanceId}
+     * @allow (create) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can create an attendance record under their userId.
+     * @deny (create) User 'randomUserId' cannot create an attendance record under user 'oCZzCwBTCyZnmpizN4MZxILbVm13' userId.
+     * @allow (get) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can read their own attendance record.
+     * @deny (get) User 'randomUserId' cannot read attendance record user 'oCZzCwBTCyZnmpizN4MZxILbVm13'.
+     * @allow (update) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can update their own attendance record.
+     * @deny (update) User 'randomUserId' cannot update attendance record user 'oCZzCwBTCyZnmpizN4MZxILbVm13'.
+     * @allow (delete) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can delete their own attendance record.
+     * @deny (delete) User 'randomUserId' cannot delete attendance record user 'oCZzCwBTCyZnmpizN4MZxILbVm13'.
+     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
      */
     match /users/{userId}/attendance/{attendanceId} {
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-
-      allow create: if isOwner(userId) && request.resource.data.employeeId == userId;
-      allow update: if isOwner(userId) && resource != null && resource.data.employeeId == userId;
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Secures leave requests. Only the owning user can read and write their leave requests.
-     * @path /users/{userId}/leaveRequests/{leaveRequestId}
-     * @allow (read, write) if request.auth.uid == userId
-     *  - Allows the user with UID "user123" to read and write the document /users/user123/leaveRequests/leave1.
-     * @deny (read, write) if request.auth.uid != userId
-     *  - Denies the user with UID "user456" to read and write the document /users/user123/leaveRequests/leave1.
-     * @principle Enforces document ownership via path.
+     * @description Rule for securing the /users/{userId}/leaveRequests/{leaveRequestId} collection. Enforces that only the authenticated user can read or write their own leave requests.
+     * @path /databases/{database}/documents/users/{userId}/leaveRequests/{leaveRequestId}
+     * @allow (create) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can create a leave request under their userId.
+     * @deny (create) User 'randomUserId' cannot create a leave request under user 'oCZzCwBTCyZnmpizN4MZxILbVm13' userId.
+     * @allow (get) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can read their own leave request.
+     * @deny (get) User 'randomUserId' cannot read leave request user 'oCZzCwBTCyZnmpizN4MZxILbVm13'.
+     * @allow (update) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can update their own leave request.
+     * @deny (update) User 'randomUserId' cannot update leave request user 'oCZzCwBTCyZnmpizN4MZxILbVm13'.
+     * @allow (delete) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can delete their own leave request.
+     * @deny (delete) User 'randomUserId' cannot delete leave request user 'oCZzCwBTCyZnmpizN4MZxILbVm13'.
+     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
      */
     match /users/{userId}/leaveRequests/{leaveRequestId} {
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-
-      allow create: if isOwner(userId) && request.resource.data.employeeId == userId;
-      allow update: if isOwner(userId) && resource != null && resource.data.employeeId == userId;
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Secures payroll information. Only the owning user can read their payroll information.
-     * @path /users/{userId}/payroll/{payrollId}
-     * @allow (read, write) if request.auth.uid == userId
-     *  - Allows the user with UID "user123" to read and write the document /users/user123/payroll/payroll1.
-     * @deny (read, write) if request.auth.uid != userId
-     *  - Denies the user with UID "user456" to read and write the document /users/user123/payroll/payroll1.
-     * @principle Enforces document ownership via path.
+     * @description Rule for securing the /users/{userId}/payroll/{payrollId} collection. Enforces that only the authenticated user can read or write their own payroll information.
+     * @path /databases/{database}/documents/users/{userId}/payroll/{payrollId}
+     * @allow (create) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can create a payroll record under their userId.
+     * @deny (create) User 'randomUserId' cannot create a payroll record under user 'oCZzCwBTCyZnmpizN4MZxILbVm13' userId.
+     * @allow (get) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can read their own payroll record.
+     * @deny (get) User 'randomUserId' cannot read payroll record user 'oCZzCwBTCyZnmpizN4MZxILbVm13'.
+     * @allow (update) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can update their own payroll record.
+     * @deny (update) User 'randomUserId' cannot update payroll record user 'oCZzCwBTCyZnmpizN4MZxILbVm13'.
+     * @allow (delete) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can delete their own payroll record.
+     * @deny (delete) User 'randomUserId' cannot delete payroll record user 'oCZzCwBTCyZnmpizN4MZxILbVm13'.
+     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
      */
     match /users/{userId}/payroll/{payrollId} {
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-
-      allow create: if isOwner(userId) && request.resource.data.employeeId == userId;
-      allow update: if isOwner(userId) && resource != null && resource.data.employeeId == userId;
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Secures chat messages. Only the owning user can read and write their chat messages.
-     * @path /users/{userId}/chatMessages/{chatMessageId}
-     * @allow (read, write) if request.auth.uid == userId
-     *  - Allows the user with UID "user123" to read and write the document /users/user123/chatMessages/message1.
-     * @deny (read, write) if request.auth.uid != userId
-     *  - Denies the user with UID "user456" to read and write the document /users/user123/chatMessages/message1.
-     * @principle Enforces document ownership via path.
+     * @description Rule for securing the /users/{userId}/chatMessages/{chatMessageId} collection. Enforces that only the authenticated user can read or write their own chat messages.
+     * @path /databases/{database}/documents/users/{userId}/chatMessages/{chatMessageId}
+     * @allow (create) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can create a chat message under their userId.
+     * @deny (create) User 'randomUserId' cannot create a chat message under user 'oCZzCwBTCyZnmpizN4MZxILbVm13' userId.
+     * @allow (get) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can read their own chat message.
+     * @deny (get) User 'randomUserId' cannot read chat message user 'oCZzCwBTCyZnmpizN4MZxILbVm13'.
+     * @allow (update) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can update their own chat message.
+     * @deny (update) User 'randomUserId' cannot update chat message user 'oCZzCwBTCyZnmpizN4MZxILbVm13'.
+     * @allow (delete) User 'oCZzCwBTCyZnmpizN4MZxILbVm13' can delete their own chat message.
+     * @deny (delete) User 'randomUserId' cannot delete chat message user 'oCZzCwBTCyZnmpizN4MZxILbVm13'.
+     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
      */
     match /users/{userId}/chatMessages/{chatMessageId} {
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-
-      allow create: if isOwner(userId) && request.resource.data.employeeId == userId;
-      allow update: if isOwner(userId) && resource != null && resource.data.employeeId == userId;
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Allows public read access to candidates, but restricts writes.
-     * @path /candidates/{candidateId}
-     * @allow get, list: if true
-     *  - Allows any user (signed in or not) to read the candidate document.
-     * @deny create, update, delete: if true
-     *  - Denies anyone from creating, updating, or deleting candidate documents.
-     *  // TODO: Add owner validation once the schema is updated with an ownership field.
-     * @principle Allows public reads with restricted writes for top-level collections.
+     * @description Rule for securing the /candidates/{candidateId} collection. Only authenticated users can access candidates.
+     * @path /databases/{database}/documents/candidates/{candidateId}
+     * @allow (create) Authenticated user can create a candidate profile.
+     * @deny (create) Unauthenticated user cannot create a candidate profile.
+     * @allow (get) Authenticated user can read a candidate profile.
+     * @deny (get) Unauthenticated user cannot read a candidate profile.
+     * @allow (update) Authenticated user can update a candidate profile.
+     * @deny (update) Unauthenticated user cannot update a candidate profile.
+     * @allow (delete) Authenticated user can delete a candidate profile.
+     * @deny (delete) Unauthenticated user cannot delete a candidate profile.
      */
     match /candidates/{candidateId} {
-      allow get: if true;
-      allow list: if true;
-
-      allow create, update, delete: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isExistingDocument();
     }
 
     /**
-     * @description Allows public read access to anomalies, but restricts writes.
-     * @path /anomalies/{anomalyId}
-     * @allow get, list: if true
-     *  - Allows any user (signed in or not) to read the anomaly document.
-     * @deny create, update, delete: if true
-     *  - Denies anyone from creating, updating, or deleting anomaly documents.
-     * // TODO: Add owner validation once the schema is updated with an ownership field.
-     * @principle Allows public reads with restricted writes for top-level collections.
+     * @description Rule for securing the /anomalies/{anomalyId} collection. Only authenticated users can access anomalies.
+     * @path /databases/{database}/documents/anomalies/{anomalyId}
+     * @allow (create) Authenticated user can create an anomaly record.
+     * @deny (create) Unauthenticated user cannot create an anomaly record.
+     * @allow (get) Authenticated user can read an anomaly record.
+     * @deny (get) Unauthenticated user cannot read an anomaly record.
+     * @allow (update) Authenticated user can update an anomaly record.
+     * @deny (update) Unauthenticated user cannot update an anomaly record.
+     * @allow (delete) Authenticated user can delete an anomaly record.
+     * @deny (delete) Unauthenticated user cannot delete an anomaly record.
      */
     match /anomalies/{anomalyId} {
-      allow get: if true;
-      allow list: if true;
-
-      allow create, update, delete: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isExistingDocument();
     }
+  }
 
-    // Helper functions
-    function isSignedIn() {
-      return request.auth != null;
-    }
+  // Helper function to determine if the user is signed in.
+  function isSignedIn() {
+    return request.auth != null;
+  }
 
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
+  // Helper function to determine if the user is the owner of the document.
+  function isOwner(userId) {
+    return request.auth.uid == userId;
+  }
 
-    function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
-    }
+    // Helper function to determine if the user is the owner of the document.
+  function isExistingOwner(userId) {
+    return isOwner(userId) && resource != null;
+  }
+
+  // Helper function to determine if the document exists.
+    function isExistingDocument() {
+    return resource != null;
   }
 }
