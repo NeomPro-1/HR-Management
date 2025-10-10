@@ -13,7 +13,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, PlusCircle } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AddEmployeeForm } from '@/components/hr/add-employee-form';
 
 interface UserProfile {
   id: string;
@@ -93,9 +94,7 @@ export default function HREmployeesPage() {
                     <CardTitle>HR Employee Management</CardTitle>
                     <CardDescription>View, add, and manage employee profiles for HR.</CardDescription>
                 </div>
-              <Button>
-                <PlusCircle className="mr-2 h-4 w-4" /> Add Employee
-              </Button>
+                <AddEmployeeForm />
             </div>
           </CardHeader>
           <CardContent className="p-0">
@@ -132,9 +131,7 @@ export default function HREmployeesPage() {
                 <CardTitle>HR Employee Management</CardTitle>
                 <CardDescription>View, add, and manage employee profiles for HR.</CardDescription>
             </div>
-          <Button>
-            <PlusCircle className="mr-2 h-4 w-4" /> Add Employee
-          </Button>
+            <AddEmployeeForm />
         </div>
       </CardHeader>
       <CardContent className="p-0">
@@ -270,5 +267,3 @@ export default function HREmployeesPage() {
     </Card>
   );
 }
-
-    
