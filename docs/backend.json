@@ -340,12 +340,7 @@
               "name": "userId",
               "description": "The unique identifier for the user, matching their Firebase Auth UID."
             }
-          ],
-          "access": {
-            "read": "request.auth.uid != null",
-            "list": "request.auth.uid != null",
-            "write": "request.auth.uid == userId"
-          }
+          ]
         }
       },
       {
