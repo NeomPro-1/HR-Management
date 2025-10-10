@@ -343,6 +343,7 @@
           ],
           "access": {
             "read": "request.auth != null",
+            "list": "request.auth != null",
             "write": "request.auth.uid == userId"
           }
         }
