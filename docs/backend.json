@@ -342,8 +342,8 @@
             }
           ],
           "access": {
-            "read": "request.auth != null",
-            "list": "request.auth != null",
+            "read": "request.auth.uid != null",
+            "list": "request.auth.uid != null",
             "write": "request.auth.uid == userId"
           }
         }
