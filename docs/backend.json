@@ -464,3 +464,5 @@
     "reasoning": "The Firestore structure is designed to organize HR and payroll data effectively, focusing on user-centric data organization and clear ownership. Each user has their own space for attendance, leave requests, payroll, and chat messages, ensuring data privacy and simplified security rules. Candidates and anomalies are stored in root-level collections, separate from user-specific data. This segregation enhances query performance and simplifies security rules. All user-owned subcollections reside under `/users/{userId}`, thus the security rules will be straightforward, path-based and very secure. This structure achieves Authorization Independence by leveraging path-based ownership for user-specific data, eliminating the need for `get()` calls in security rules. QAPs are supported through structural segregation: listing users is done at the root level (subject to appropriate access controls), and listing attendance or leave requests is confined to the user's document, thereby securing list operations."
   }
 }
+
+    
