@@ -28,6 +28,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
+import { useFirestore, addDocumentNonBlocking } from '@/firebase';
+import { collection } from 'firebase/firestore';
 
 const employeeFormSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -42,6 +44,8 @@ type EmployeeFormValues = z.infer<typeof employeeFormSchema>;
 export function AddEmployeeForm() {
   const [open, setOpen] = React.useState(false);
   const { toast } = useToast();
+  const firestore = useFirestore();
+
   const form = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeFormSchema),
     defaultValues: {
@@ -54,8 +58,13 @@ export function AddEmployeeForm() {
   });
 
   const onSubmit = (data: EmployeeFormValues) => {
-    // In a real app, you would save this data to your backend.
-    console.log(data);
+    const usersCollectionRef = collection(firestore, 'users');
+    addDocumentNonBlocking(usersCollectionRef, {
+      ...data,
+      employeeStatus: 'Active',
+      dateOfJoining: new Date().toISOString(),
+    });
+
     toast({
       title: 'Employee Added',
       description: `${data.firstName} ${data.lastName} has been added.`,

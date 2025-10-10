@@ -24,6 +24,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AddEmployeeForm } from '@/components/hr/add-employee-form';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
 
 interface UserProfile {
   id: string;
@@ -33,23 +35,14 @@ interface UserProfile {
   email: string;
   department: string;
   jobTitle: string;
-  employeeStatus: 'Active' | 'On Leave' | 'Inactive';
-  dateOfJoining: string;
+  employeeStatus?: 'Active' | 'On Leave' | 'Inactive';
+  dateOfJoining?: string;
 }
 
 export default function HREmployeesPage() {
-  const [employees, setEmployees] = React.useState<UserProfile[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      // In a real app, you would fetch data here.
-      // For now, we just switch off the loading state.
-      setEmployees([]); // Still no data to show
-      setIsLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
+  const firestore = useFirestore();
+  const usersCollectionRef = useMemoFirebase(() => collection(firestore, 'users'), [firestore]);
+  const { data: employees, isLoading } = useCollection<UserProfile>(usersCollectionRef);
 
   const renderSkeletonRow = (isMobile: boolean, key: number) => (
     isMobile ? (
@@ -180,13 +173,13 @@ export default function HREmployeesPage() {
                       <div className="text-muted-foreground">Status</div>
                       <div>
                         <Badge variant={employee.employeeStatus === "Active" ? "default" : "secondary"}>
-                          {employee.employeeStatus}
+                          {employee.employeeStatus || 'Active'}
                         </Badge>
                       </div>
                     </div>
                     <div>
                       <div className="text-muted-foreground">Joining Date</div>
-                      <div>{employee.dateOfJoining}</div>
+                      <div>{employee.dateOfJoining ? new Date(employee.dateOfJoining).toLocaleDateString() : 'N/A'}</div>
                     </div>
                   </div>
                 </div>
@@ -230,11 +223,11 @@ export default function HREmployeesPage() {
                         <TableCell>{employee.jobTitle}</TableCell>
                         <TableCell>
                         <Badge variant={employee.employeeStatus === "Active" ? "default" : "secondary"}>
-                            {employee.employeeStatus}
+                           {employee.employeeStatus || 'Active'}
                         </Badge>
                         </TableCell>
                         <TableCell>
-                          {employee.dateOfJoining ? new Date(employee.dateOfJoining).toLocaleDateString() : ''}
+                          {employee.dateOfJoining ? new Date(employee.dateOfJoining).toLocaleDateString() : 'N/A'}
                         </TableCell>
                         <TableCell>
                         <DropdownMenu>
@@ -260,7 +253,7 @@ export default function HREmployeesPage() {
         </div>
          {!isLoading && (!employees || employees.length === 0) && (
             <div className="text-center p-8 text-muted-foreground">
-                No employees found.
+                No employees found. Start by adding a new one.
             </div>
         )}
       </CardContent>
