@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -13,17 +12,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useAuth, useUser, initiateEmailSignUp, useFirestore, setDocumentNonBlocking } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { doc } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
 
 export default function SignupPage() {
   const router = useRouter();
-  const auth = useAuth();
-  const firestore = useFirestore();
-  const { user, isUserLoading } = useUser();
 
   const [firstName, setFirstName] = React.useState('');
   const [lastName, setLastName] = React.useState('');
@@ -31,43 +25,31 @@ export default function SignupPage() {
   const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isSignedUp, setIsSignedUp] = React.useState(false);
+
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsSubmitting(true);
-    try {
-      const userCredential = await initiateEmailSignUp(auth, email, password);
-
-      if (userCredential && userCredential.user) {
-        const userProfileRef = doc(firestore, 'users', userCredential.user.uid);
-        // Use non-blocking set with merge to ensure document is created/updated
-        setDocumentNonBlocking(userProfileRef, {
-          firstName,
-          lastName,
-          email,
-        }, { merge: true });
+    // Simulate a signup
+    setTimeout(() => {
+      if (firstName && lastName && email && password) {
+        setIsSignedUp(true);
+      } else {
+        setError("Please fill out all fields.");
       }
-      
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || 'An unexpected error occurred.');
-    } finally {
-        // Since we redirect on user change, we might not need to set isSubmitting to false here
-        // unless there's an error.
-        if (!user) {
-            setIsSubmitting(false);
-        }
-    }
+      setIsSubmitting(false);
+    }, 1000);
   };
 
   React.useEffect(() => {
-    if (user) {
+    if (isSignedUp) {
       router.push('/hr/employee-dashboard');
     }
-  }, [user, router]);
+  }, [isSignedUp, router]);
   
-  if (isUserLoading || user) {
+  if (isSubmitting || isSignedUp) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-10rem)]">
         <Loader2 className="h-8 w-8 animate-spin" />

@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -13,47 +12,42 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useAuth, useUser, initiateEmailSignIn } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
-import { signOut } from 'firebase/auth';
 
 export default function LoginPage() {
   const router = useRouter();
-  const auth = useAuth();
-  const { user, isUserLoading } = useUser();
 
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [email, setEmail] = React.useState('hr-admin@synergy.io');
+  const [password, setPassword] = React.useState('password123');
   const [error, setError] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsSubmitting(true);
-    try {
-      // First, sign out to clear any expired or invalid tokens.
-      if (auth.currentUser) {
-        await signOut(auth);
-      }
-      // Non-blocking sign-in, state will be handled by useUser hook
-      await initiateEmailSignIn(auth, email, password);
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || 'An unexpected error occurred.');
-      setIsSubmitting(false); // Only set to false on direct error
-    }
+    // Simulate a login
+    setTimeout(() => {
+        if (email && password) {
+            setIsLoggedIn(true);
+        } else {
+            setError("Please enter email and password.");
+        }
+        setIsSubmitting(false);
+    }, 1000);
   };
 
   React.useEffect(() => {
-    if (user) {
+    if (isLoggedIn) {
       router.push('/hr/employee-dashboard');
     }
-  }, [user, router]);
+  }, [isLoggedIn, router]);
 
-  if (isUserLoading || user) {
+  if (isSubmitting || isLoggedIn) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-10rem)]">
         <Loader2 className="h-8 w-8 animate-spin" />

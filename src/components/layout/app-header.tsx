@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -20,7 +19,6 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useAuth } from '@/firebase';
 
 function getPageTitle(pathname: string) {
   const segment = pathname.split('/').pop()?.replace(/-/g, ' ') || 'dashboard';
@@ -42,7 +40,6 @@ const topLevelPages = [
 export function AppHeader() {
   const pathname = usePathname();
   const router = useRouter();
-  const auth = useAuth();
   const pageTitle = getPageTitle(pathname);
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
   const isMobile = useIsMobile();
@@ -54,7 +51,6 @@ export function AppHeader() {
   }, []);
 
   const handleLogout = async () => {
-    await auth.signOut();
     router.push('/login');
   };
 

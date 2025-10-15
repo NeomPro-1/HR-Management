@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -14,7 +13,6 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { PlusCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,8 +26,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { useFirestore, addDocumentNonBlocking } from '@/firebase';
-import { collection } from 'firebase/firestore';
 
 const employeeFormSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -44,7 +40,6 @@ type EmployeeFormValues = z.infer<typeof employeeFormSchema>;
 export function AddEmployeeForm() {
   const [open, setOpen] = React.useState(false);
   const { toast } = useToast();
-  const firestore = useFirestore();
 
   const form = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeFormSchema),
@@ -58,16 +53,12 @@ export function AddEmployeeForm() {
   });
 
   const onSubmit = (data: EmployeeFormValues) => {
-    const usersCollectionRef = collection(firestore, 'users');
-    addDocumentNonBlocking(usersCollectionRef, {
-      ...data,
-      employeeStatus: 'Active',
-      dateOfJoining: new Date().toISOString(),
-    });
-
+    // This form no longer writes to the database.
+    // In a real application, you would add the new employee to your local state
+    // or send it to an API.
     toast({
-      title: 'Employee Added',
-      description: `${data.firstName} ${data.lastName} has been added.`,
+      title: 'Employee Added (Simulated)',
+      description: `${data.firstName} ${data.lastName} has been added to the list.`,
     });
     form.reset();
     setOpen(false);

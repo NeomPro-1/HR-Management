@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { PropsWithChildren } from 'react';
@@ -7,15 +6,12 @@ import { AppHeader } from '@/components/layout/app-header';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SidebarProvider, Sidebar } from '@/components/ui/sidebar';
 import { Preloader } from '@/components/layout/preloader';
-import { useUser } from '@/firebase';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
 export default function AppLayout({ children }: PropsWithChildren) {
   const [mounted, setMounted] = React.useState(false);
-  const { user, isUserLoading } = useUser();
-  const router = useRouter();
   const pathname = usePathname();
 
   const [isPageLoading, setIsPageLoading] = React.useState(false);
@@ -34,14 +30,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
     return () => clearTimeout(timer);
   }, [pathname]);
 
-  React.useEffect(() => {
-    if (!isUserLoading && !user && mounted) {
-      router.push('/login');
-    }
-  }, [isUserLoading, user, router, mounted]);
-
-  // This is the initial auth loading screen
-  if (!mounted || isUserLoading || !user) {
+  if (!mounted) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-background">
         <Preloader />

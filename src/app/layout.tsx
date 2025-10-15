@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { Metadata } from 'next';
@@ -8,8 +7,6 @@ import { ThemeProvider } from '@/components/theme-provider';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { usePathname } from 'next/navigation';
-import { AppHeader } from '@/components/layout/app-header';
-import { FirebaseClientProvider } from '@/firebase';
 
 export default function RootLayout({
   children,
@@ -17,9 +14,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const isAppRoute = !['/login', '/signup', '/'].includes(pathname) && !pathname.startsWith('/(public)');
+  const isPublicRoute = ['/login', '/signup', '/'].includes(pathname) || pathname.startsWith('/(public)');
   
-  if (isAppRoute) {
+  if (!isPublicRoute) {
     return (
       <html lang="en" suppressHydrationWarning>
         <head>
@@ -41,9 +38,7 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <FirebaseClientProvider>
                 {children}
-              </FirebaseClientProvider>
               <Toaster />
             </ThemeProvider>
         </body>
@@ -74,7 +69,6 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <FirebaseClientProvider>
             <div className="flex min-h-screen flex-col">
               <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                 <div className="container flex h-14 items-center justify-between pl-8 pr-8">
@@ -104,11 +98,9 @@ export default function RootLayout({
                 </div>
               </footer>
             </div>
-            </FirebaseClientProvider>
           <Toaster />
         </ThemeProvider>
       </body>
     </html>
   );
 }
-    

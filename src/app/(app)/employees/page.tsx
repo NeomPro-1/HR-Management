@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -24,30 +23,35 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from '@/components/ui/skeleton';
 import { AddEmployeeForm } from '@/components/hr/add-employee-form';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { employees as placeholderEmployees } from '@/lib/placeholder-data';
 
 interface UserProfile {
   id: string;
-  firstName: string;
-  lastName: string;
-  avatarUrl?: string;
+  name: string;
+  avatar?: string;
   email: string;
   department: string;
-  jobTitle: string;
-  employeeStatus: 'Active' | 'On Leave' | 'Inactive';
-  dateOfJoining: string;
+  role: string;
+  status: 'Active' | 'On Leave' | 'Inactive';
+  joiningDate: string;
 }
 
 export default function EmployeesPage() {
-  const firestore = useFirestore();
+  const [employees, setEmployees] = React.useState<UserProfile[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
 
-  const usersCollectionRef = useMemoFirebase(
-    () => (firestore ? collection(firestore, 'users') : null),
-    [firestore]
-  );
-  
-  const { data: employees, isLoading } = useCollection<UserProfile>(usersCollectionRef);
+  React.useEffect(() => {
+    // Simulate loading data
+    const timer = setTimeout(() => {
+       const formattedEmployees = placeholderEmployees.map(emp => ({
+        ...emp,
+        status: emp.status as 'Active' | 'On Leave' | 'Inactive'
+      }));
+      setEmployees(formattedEmployees);
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
 
   const renderSkeletonRow = (isMobile: boolean, key: number) => (
@@ -137,14 +141,15 @@ export default function EmployeesPage() {
         {/* Mobile View */}
         <div className="md:hidden">
           {!isLoading && employees?.map((employee) => {
-            const fullName = `${employee.firstName} ${employee.lastName}`;
+            const fullName = employee.name;
+            const fallback = fullName.split(' ').map(n => n[0]).join('');
             return (
               <div key={employee.id} className="border-b p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Avatar>
-                      <AvatarImage src={employee.avatarUrl} alt={fullName} data-ai-hint="person face" />
-                      <AvatarFallback>{employee.firstName?.charAt(0)}{employee.lastName?.charAt(0)}</AvatarFallback>
+                      <AvatarImage src={employee.avatar} alt={fullName} data-ai-hint="person face" />
+                      <AvatarFallback>{fallback}</AvatarFallback>
                     </Avatar>
                     <div>
                       <div className="font-medium">{fullName}</div>
@@ -173,19 +178,19 @@ export default function EmployeesPage() {
                   </div>
                   <div>
                     <div className="text-muted-foreground">Role</div>
-                    <div>{employee.jobTitle}</div>
+                    <div>{employee.role}</div>
                   </div>
                   <div>
                     <div className="text-muted-foreground">Status</div>
                     <div>
-                      <Badge variant={employee.employeeStatus === "Active" ? "default" : "secondary"}>
-                        {employee.employeeStatus}
+                      <Badge variant={employee.status === "Active" ? "default" : "secondary"}>
+                        {employee.status}
                       </Badge>
                     </div>
                   </div>
                   <div>
                     <div className="text-muted-foreground">Joining Date</div>
-                    <div>{employee.dateOfJoining}</div>
+                    <div>{employee.joiningDate}</div>
                   </div>
                 </div>
               </div>
@@ -210,14 +215,15 @@ export default function EmployeesPage() {
             </TableHeader>
             <TableBody>
                 {!isLoading && employees?.map((employee) => {
-                  const fullName = `${employee.firstName} ${employee.lastName}`;
+                  const fullName = employee.name;
+                   const fallback = fullName.split(' ').map(n => n[0]).join('');
                   return (
                     <TableRow key={employee.id}>
                         <TableCell>
                         <div className="flex items-center gap-3">
                             <Avatar>
-                            <AvatarImage src={employee.avatarUrl} alt={fullName} data-ai-hint="person face" />
-                            <AvatarFallback>{employee.firstName?.charAt(0)}{employee.lastName?.charAt(0)}</AvatarFallback>
+                            <AvatarImage src={employee.avatar} alt={fullName} data-ai-hint="person face" />
+                            <AvatarFallback>{fallback}</AvatarFallback>
                             </Avatar>
                             <div>
                                 <div className="font-medium">{fullName}</div>
@@ -226,14 +232,14 @@ export default function EmployeesPage() {
                         </div>
                         </TableCell>
                         <TableCell>{employee.department}</TableCell>
-                        <TableCell>{employee.jobTitle}</TableCell>
+                        <TableCell>{employee.role}</TableCell>
                         <TableCell>
-                        <Badge variant={employee.employeeStatus === "Active" ? "default" : "secondary"}>
-                            {employee.employeeStatus}
+                        <Badge variant={employee.status === "Active" ? "default" : "secondary"}>
+                            {employee.status}
                         </Badge>
                         </TableCell>
                         <TableCell>
-                        {employee.dateOfJoining ? new Date(employee.dateOfJoining).toLocaleDateString() : ''}
+                        {employee.joiningDate ? new Date(employee.joiningDate).toLocaleDateString() : ''}
                         </TableCell>
                         <TableCell>
                         <DropdownMenu>
