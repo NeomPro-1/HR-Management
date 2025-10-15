@@ -8,13 +8,14 @@ import { getFirestore } from 'firebase/firestore'
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
 export function initializeFirebase() {
-  if (getApps().length) {
+  if (typeof window !== 'undefined' && getApps().length > 0) {
     return getSdks(getApp());
   }
 
   try {
     // This will succeed when deployed to Firebase App Hosting.
-    return getSdks(initializeApp());
+    const app = initializeApp();
+    return getSdks(app);
   } catch (e) {
     if (process.env.NODE_ENV !== 'production') {
       console.warn(
@@ -25,7 +26,8 @@ export function initializeFirebase() {
       );
     }
     // This will be used in local development.
-    return getSdks(initializeApp(firebaseConfig));
+    const app = initializeApp(firebaseConfig);
+    return getSdks(app);
   }
 }
 
@@ -61,3 +63,4 @@ export * from './firestore/use-doc';
 export * from './non-blocking-updates';
 export * from './errors';
 export * from './error-emitter';
+
