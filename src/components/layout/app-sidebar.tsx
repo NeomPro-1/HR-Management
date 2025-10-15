@@ -4,10 +4,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Briefcase,
   CircleDollarSign,
   LayoutDashboard,
-  MessageCircle,
   Users,
   Fingerprint,
   UserCheck,
@@ -44,11 +42,6 @@ const DynamicSidebarMenuSkeleton = dynamic(() => import('@/components/ui/sidebar
   ssr: false,
 });
 
-
-const navItems = [
-  { href: '/recruitment', icon: Briefcase, label: 'Recruitment' },
-  { href: '/helpdesk', icon: MessageCircle, label: 'Helpdesk' },
-];
 
 const hrmNavItems = [
     { href: '/hr/employee-dashboard', label: 'Employee Dashboard', icon: LayoutDashboard },
@@ -158,19 +151,7 @@ export function AppSidebar() {
                 </CollapsibleContent>
             </SidebarMenuItem>
           </Collapsible>
-          {navItems.map((item) => (
-            <SidebarMenuItem key={item.href}>
-              <Link href={item.href} onClick={handleLinkClick}>
-                <SidebarMenuButton
-                  isActive={pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/')}
-                  tooltip={{ children: item.label, side: 'right' }}
-                >
-                  <item.icon />
-                  <span>{item.label}</span>
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
-          ))}
+          
            <Collapsible asChild defaultOpen={isPayrollSectionActive}>
             <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
