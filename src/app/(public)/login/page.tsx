@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -14,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,6 +25,7 @@ export default function LoginPage() {
   const [error, setError] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
 
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -90,14 +92,27 @@ export default function LoginPage() {
                     Forgot your password?
                 </Link>
                 </div>
-                <Input 
-                  id="password" 
-                  type="password" 
-                  required 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={isSubmitting}
-                />
+                <div className="relative">
+                  <Input 
+                    id="password" 
+                    type={showPassword ? 'text' : 'password'} 
+                    required 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isSubmitting}
+                    className="pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute inset-y-0 right-0 h-full px-3"
+                    onClick={() => setShowPassword(prev => !prev)}
+                  >
+                    {showPassword ? <EyeOff /> : <Eye />}
+                    <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
+                  </Button>
+                </div>
             </div>
             <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Login'}
