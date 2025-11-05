@@ -22,8 +22,8 @@ export default function LoginPage() {
   const router = useRouter();
   const { auth, user, isUserLoading } = useFirebase();
 
-  const [email, setEmail] = React.useState('hr-admin@synergy.io');
-  const [password, setPassword] = React.useState('password123');
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
