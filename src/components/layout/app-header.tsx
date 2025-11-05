@@ -19,6 +19,8 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useFirebase } from '@/firebase';
+import { signOut } from 'firebase/auth';
 
 function getPageTitle(pathname: string) {
   const segment = pathname.split('/').pop()?.replace(/-/g, ' ') || 'dashboard';
@@ -40,6 +42,7 @@ const topLevelPages = [
 export function AppHeader() {
   const pathname = usePathname();
   const router = useRouter();
+  const { auth } = useFirebase();
   const pageTitle = getPageTitle(pathname);
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
   const isMobile = useIsMobile();
@@ -51,6 +54,9 @@ export function AppHeader() {
   }, []);
 
   const handleLogout = async () => {
+    if (auth) {
+      await signOut(auth);
+    }
     router.push('/login');
   };
 
