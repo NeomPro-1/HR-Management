@@ -20,7 +20,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { auth, user, isUserLoading } = useFirebase();
+  const { auth } = useFirebase();
 
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -66,20 +66,6 @@ export default function LoginPage() {
         setIsSubmitting(false);
     }
   };
-
-  React.useEffect(() => {
-    if (!isUserLoading && user) {
-      router.push('/hr/employee-dashboard');
-    }
-  }, [user, isUserLoading, router]);
-
-  if (isUserLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-10rem)]">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] p-4">
