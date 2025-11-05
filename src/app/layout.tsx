@@ -1,12 +1,11 @@
-
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-    title: 'SynergyHR',
-    description: 'A modern HR & Payroll platform with AI-powered features.',
+  title: 'SynergyHR',
+  description: 'A modern HR & Payroll platform with AI-powered features.',
 };
 
 export default function RootLayout({
