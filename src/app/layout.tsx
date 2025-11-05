@@ -2,11 +2,6 @@ import type { Metadata } from 'next';
 import './globals.css';
 import ClientComponents from './client-components';
 
-export const metadata: Metadata = {
-  title: 'SynergyHR',
-  description: 'A modern HR & Payroll platform with AI-powered features.',
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
