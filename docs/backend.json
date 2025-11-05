@@ -1,0 +1,487 @@
+{
+  "entities": {
+    "Employee": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Employee",
+      "type": "object",
+      "description": "Represents an employee in the HR system.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Employee entity."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the employee."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the employee."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the employee.",
+          "format": "email"
+        },
+        "jobTitle": {
+          "type": "string",
+          "description": "The job title of the employee."
+        },
+        "department": {
+          "type": "string",
+          "description": "The department the employee belongs to."
+        },
+        "hireDate": {
+          "type": "string",
+          "description": "The date the employee was hired.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "jobTitle",
+        "department",
+        "hireDate"
+      ]
+    },
+    "Attendance": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Attendance",
+      "type": "object",
+      "description": "Represents an employee's attendance record.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Attendance entity."
+        },
+        "employeeId": {
+          "type": "string",
+          "description": "Reference to Employee. (Relationship: Employee 1:N Attendance)"
+        },
+        "date": {
+          "type": "string",
+          "description": "The date of the attendance record.",
+          "format": "date-time"
+        },
+        "checkInTime": {
+          "type": "string",
+          "description": "The time the employee checked in."
+        },
+        "checkOutTime": {
+          "type": "string",
+          "description": "The time the employee checked out."
+        }
+      },
+      "required": [
+        "id",
+        "employeeId",
+        "date",
+        "checkInTime",
+        "checkOutTime"
+      ]
+    },
+    "LeaveRequest": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "LeaveRequest",
+      "type": "object",
+      "description": "Represents an employee's request for leave.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the LeaveRequest entity."
+        },
+        "employeeId": {
+          "type": "string",
+          "description": "Reference to Employee. (Relationship: Employee 1:N LeaveRequest)"
+        },
+        "startDate": {
+          "type": "string",
+          "description": "The start date of the leave.",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "The end date of the leave.",
+          "format": "date-time"
+        },
+        "leaveType": {
+          "type": "string",
+          "description": "The type of leave requested (e.g., vacation, sick)."
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the leave request (e.g., pending, approved, rejected)."
+        }
+      },
+      "required": [
+        "id",
+        "employeeId",
+        "startDate",
+        "endDate",
+        "leaveType",
+        "status"
+      ]
+    },
+    "Payroll": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Payroll",
+      "type": "object",
+      "description": "Represents an employee's payroll information.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Payroll entity."
+        },
+        "employeeId": {
+          "type": "string",
+          "description": "Reference to Employee. (Relationship: Employee 1:N Payroll)"
+        },
+        "payPeriodStartDate": {
+          "type": "string",
+          "description": "The start date of the pay period.",
+          "format": "date-time"
+        },
+        "payPeriodEndDate": {
+          "type": "string",
+          "description": "The end date of the pay period.",
+          "format": "date-time"
+        },
+        "grossPay": {
+          "type": "number",
+          "description": "The employee's gross pay for the pay period."
+        },
+        "netPay": {
+          "type": "number",
+          "description": "The employee's net pay for the pay period."
+        },
+        "taxDeductions": {
+          "type": "number",
+          "description": "The amount of tax deducted from the employee's pay."
+        }
+      },
+      "required": [
+        "id",
+        "employeeId",
+        "payPeriodStartDate",
+        "payPeriodEndDate",
+        "grossPay",
+        "netPay",
+        "taxDeductions"
+      ]
+    },
+    "Resume": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Resume",
+      "type": "object",
+      "description": "Represents a resume uploaded to the system.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Resume entity."
+        },
+        "fileName": {
+          "type": "string",
+          "description": "The name of the resume file."
+        },
+        "fileData": {
+          "type": "string",
+          "description": "The Base64 encoded data of the resume file."
+        },
+        "uploadDate": {
+          "type": "string",
+          "description": "The date the resume was uploaded.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "fileName",
+        "fileData",
+        "uploadDate"
+      ]
+    },
+    "Candidate": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Candidate",
+      "type": "object",
+      "description": "Represents a job candidate in the system.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Candidate entity."
+        },
+        "resumeId": {
+          "type": "string",
+          "description": "Reference to Resume. (Relationship: Candidate 1:1 Resume)"
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the candidate."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the candidate."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the candidate.",
+          "format": "email"
+        },
+        "phone": {
+          "type": "string",
+          "description": "The phone number of the candidate."
+        }
+      },
+      "required": [
+        "id",
+        "resumeId",
+        "firstName",
+        "lastName",
+        "email",
+        "phone"
+      ]
+    },
+    "HRSupportTicket": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "HRSupportTicket",
+      "type": "object",
+      "description": "Represents a support ticket created by an employee.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the HRSupportTicket entity."
+        },
+        "employeeId": {
+          "type": "string",
+          "description": "Reference to Employee. (Relationship: Employee 1:N HRSupportTicket)"
+        },
+        "subject": {
+          "type": "string",
+          "description": "The subject of the support ticket."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the issue."
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the ticket (e.g., open, in progress, closed)."
+        },
+        "creationDate": {
+          "type": "string",
+          "description": "The date and time the ticket was created.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "employeeId",
+        "subject",
+        "description",
+        "status",
+        "creationDate"
+      ]
+    },
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the HR & Payroll Platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "employeeId": {
+          "type": "string",
+          "description": "Reference to Employee. (Relationship: User 1:1 Employee)"
+        },
+        "userName": {
+          "type": "string",
+          "description": "The username for the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        }
+      },
+      "required": [
+        "id",
+        "employeeId",
+        "userName",
+        "email"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profile information. This collection uses path-based ownership; each user document is only accessible by the authenticated user with the matching UID. Includes the user's email and userName.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/employees/{employeeId}",
+        "definition": {
+          "entityName": "Employee",
+          "schema": {
+            "$ref": "#/backend/entities/Employee"
+          },
+          "description": "Stores employee details. Only accessible by admins or the employee themselves (if linked to their user account).",
+          "params": [
+            {
+              "name": "employeeId",
+              "description": "Unique identifier for the employee."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/employees/{employeeId}/attendance/{attendanceId}",
+        "definition": {
+          "entityName": "Attendance",
+          "schema": {
+            "$ref": "#/backend/entities/Attendance"
+          },
+          "description": "Stores attendance records for each employee.  Accessible by admins and the employee themselves.",
+          "params": [
+            {
+              "name": "employeeId",
+              "description": "Unique identifier for the employee."
+            },
+            {
+              "name": "attendanceId",
+              "description": "Unique identifier for the attendance record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/employees/{employeeId}/leaveRequests/{leaveRequestId}",
+        "definition": {
+          "entityName": "LeaveRequest",
+          "schema": {
+            "$ref": "#/backend/entities/LeaveRequest"
+          },
+          "description": "Stores leave requests for each employee.  Accessible by admins and the employee themselves.",
+          "params": [
+            {
+              "name": "employeeId",
+              "description": "Unique identifier for the employee."
+            },
+            {
+              "name": "leaveRequestId",
+              "description": "Unique identifier for the leave request."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/employees/{employeeId}/payroll/{payrollId}",
+        "definition": {
+          "entityName": "Payroll",
+          "schema": {
+            "$ref": "#/backend/entities/Payroll"
+          },
+          "description": "Stores payroll information for each employee. Access should be highly restricted to authorized payroll personnel only.",
+          "params": [
+            {
+              "name": "employeeId",
+              "description": "Unique identifier for the employee."
+            },
+            {
+              "name": "payrollId",
+              "description": "Unique identifier for the payroll record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/candidates/{candidateId}",
+        "definition": {
+          "entityName": "Candidate",
+          "schema": {
+            "$ref": "#/backend/entities/Candidate"
+          },
+          "description": "Stores candidate information. Accessible by HR and recruitment personnel.",
+          "params": [
+            {
+              "name": "candidateId",
+              "description": "Unique identifier for the candidate."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/resumes/{resumeId}",
+        "definition": {
+          "entityName": "Resume",
+          "schema": {
+            "$ref": "#/backend/entities/Resume"
+          },
+          "description": "Stores resume files. Access controlled via association with the Candidate entity.",
+          "params": [
+            {
+              "name": "resumeId",
+              "description": "Unique identifier for the resume."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/hrSupportTickets/{ticketId}",
+        "definition": {
+          "entityName": "HRSupportTicket",
+          "schema": {
+            "$ref": "#/backend/entities/HRSupportTicket"
+          },
+          "description": "Stores HR support tickets.  Accessible by the employee who created the ticket and HR support staff. Includes 'employeeId' for identifying the ticket owner.",
+          "params": [
+            {
+              "name": "ticketId",
+              "description": "Unique identifier for the HR support ticket."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "roles_admin",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "This collection represents global admin roles. The *existence* of a document for a user ID in this collection grants admin privileges.  No data is stored in the document itself. Authorization is based solely on document existence. It enable Existence over Content.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "Based on the requirements for the SynergyHR platform, including the user's specific request to store login details, the following Firestore structure is recommended. However, it's crucial to emphasize that **storing passwords directly in Firestore is highly insecure and should be avoided.** Instead, Firebase Authentication should be used to handle user authentication and password management. This recommendation focuses on storing *user profile* information within Firestore, linked to the authenticated user. This design ensures Authorization Independence by storing all required authorization data within the documents themselves, eliminating the need for `get()` calls in security rules. It also follows the principle of Structural Segregation by keeping employee data separate from other data, thus simplifying rules. Path-Based Ownership is extensively used to define clear ownership boundaries."
+  }
+}

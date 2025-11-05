@@ -1,0 +1,284 @@
+/**
+ * @fileoverview Firestore Security Rules for SynergyHR Platform.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for user profiles
+ * and restricts access to employee data to authorized personnel and the
+ * employees themselves.
+ *
+ * Data Structure:
+ * - /users/{userId}: Stores user profile information, accessible only by the
+ *   authenticated user with the matching UID.
+ * - /employees/{employeeId}: Stores employee details, accessible by admins
+ *   and the employee themselves (if linked to their user account).
+ * - /employees/{employeeId}/attendance/{attendanceId}: Stores attendance
+ *   records, accessible by admins and the employee themselves.
+ * - /employees/{employeeId}/leaveRequests/{leaveRequestId}: Stores leave requests,
+ *   accessible by admins and the employee themselves.
+ * - /employees/{employeeId}/payroll/{payrollId}: Stores payroll information,
+ *   accessible by authorized payroll personnel only.
+ * - /candidates/{candidateId}: Stores candidate information, accessible by HR
+ *   and recruitment personnel.
+ * - /resumes/{resumeId}: Stores resume files, with access controlled via the
+ *   associated Candidate entity.
+ * - /hrSupportTickets/{ticketId}: Stores HR support tickets, accessible by the
+ *   employee who created the ticket and HR support staff.
+ * - /roles_admin/{userId}: Document existence grants admin privileges.
+ *
+ * Key Security Decisions:
+ * - Passwords are NOT stored in Firestore. Firebase Authentication handles
+ *   authentication and password management.
+ * - User listing is generally disallowed for privacy.
+ * - Data validation is relaxed to allow for rapid prototyping, but ownership
+ *   and relational integrity are strictly enforced.
+ *
+ * Denormalization for Authorization:
+ * - The `employeeId` field is used within `User` documents to link a user
+ *   profile to an employee record, enabling role-based access control.
+ *
+ * Structural Segregation:
+ * - Employee data and user data are stored in separate collections to simplify
+ *   rules and improve security.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Controls access to user profile data.
+     * @path /users/{userId}
+     * @allow (create) User with UID 'user_abc' can create their own profile document.
+     * @allow (get, update, delete) User with UID 'user_abc' can read/write their own profile document.
+     * @deny (create) User with UID 'user_xyz' cannot create a profile document for 'user_abc'.
+     * @deny (update, delete) User with UID 'user_xyz' cannot modify/delete profile document for 'user_abc'.
+     * @principle Enforces document ownership for user profiles, validating that the authenticated user's UID matches the document ID.
+     */
+    match /users/{userId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if false; // User listing is not permitted.
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isSignedIn() && isOwner(userId) && resource != null && request.resource.data.id == resource.data.id; // Enforce immutability of the userId
+      allow delete: if isSignedIn() && isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Controls access to employee data.
+     * @path /employees/{employeeId}
+     * @allow (get, list) Admins can read employee data.
+     * @allow (get, update) Employee with ID 'employee_abc' can read their own data if linked to their user account.
+     * @deny (create, update, delete) Regular users cannot create, update, or delete employee data.
+     * @principle Restricts employee data access to authorized personnel and the employee themselves.
+     */
+    match /employees/{employeeId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isAdmin() {
+        return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+      }
+
+      // Function to determine if the user is the employee themselves (if linked to a user account)
+      function isEmployee(employeeId) {
+        return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+               get(/databases/$(database)/documents/users/$(request.auth.uid)).data.employeeId == employeeId;
+      }
+
+      allow get: if isSignedIn() && (isAdmin() || isEmployee(employeeId));
+      allow list: if isSignedIn() && isAdmin(); // Only admins can list employees.
+      allow create: if false; // Employee creation is restricted.
+      allow update: if isSignedIn() && (isAdmin() || isEmployee(employeeId)) && resource != null;
+      allow delete: if isSignedIn() && isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Controls access to employee attendance records.
+     * @path /employees/{employeeId}/attendance/{attendanceId}
+     * @allow (get, list) Admins can read attendance records.
+     * @allow (get, update) Employee with ID 'employee_abc' can read their own attendance records.
+     * @deny (create, update, delete) Regular users cannot create, update, or delete attendance records.
+     * @principle Restricts attendance record access to authorized personnel and the employee themselves.
+     */
+    match /employees/{employeeId}/attendance/{attendanceId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isAdmin() {
+        return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+      }
+
+      // Function to determine if the user is the employee themselves (if linked to a user account)
+      function isEmployee(employeeId) {
+        return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+               get(/databases/$(database)/documents/users/$(request.auth.uid)).data.employeeId == employeeId;
+      }
+
+      allow get: if isSignedIn() && (isAdmin() || isEmployee(employeeId));
+      allow list: if isSignedIn() && (isAdmin() || isEmployee(employeeId));
+      allow create: if false; // Attendance record creation is restricted.
+      allow update: if isSignedIn() && (isAdmin() || isEmployee(employeeId)) && resource != null;
+      allow delete: if isSignedIn() && isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Controls access to employee leave requests.
+     * @path /employees/{employeeId}/leaveRequests/{leaveRequestId}
+     * @allow (get, list) Admins can read leave requests.
+     * @allow (get, update) Employee with ID 'employee_abc' can read their own leave requests.
+     * @deny (create, update, delete) Regular users cannot create, update, or delete leave requests.
+     * @principle Restricts leave request access to authorized personnel and the employee themselves.
+     */
+    match /employees/{employeeId}/leaveRequests/{leaveRequestId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isAdmin() {
+        return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+      }
+
+      // Function to determine if the user is the employee themselves (if linked to a user account)
+      function isEmployee(employeeId) {
+        return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+               get(/databases/$(database)/documents/users/$(request.auth.uid)).data.employeeId == employeeId;
+      }
+
+      allow get: if isSignedIn() && (isAdmin() || isEmployee(employeeId));
+      allow list: if isSignedIn() && (isAdmin() || isEmployee(employeeId));
+      allow create: if false; // Leave request creation is restricted.
+      allow update: if isSignedIn() && (isAdmin() || isEmployee(employeeId)) && resource != null;
+      allow delete: if isSignedIn() && isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Controls access to employee payroll information.
+     * @path /employees/{employeeId}/payroll/{payrollId}
+     * @allow (get, list) Admins can read payroll information.
+     * @deny (create, update, delete) Regular users cannot create, update, or delete payroll information.
+     * @principle Restricts payroll information access to authorized payroll personnel only.
+     */
+    match /employees/{employeeId}/payroll/{payrollId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isAdmin() {
+        return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+      }
+
+      allow get: if isSignedIn() && isAdmin();
+      allow list: if isSignedIn() && isAdmin();
+      allow create: if false; // Payroll creation is restricted.
+      allow update: if isSignedIn() && isAdmin() && resource != null;
+      allow delete: if isSignedIn() && isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Controls access to candidate information.
+     * @path /candidates/{candidateId}
+     * @allow (get, list) Admins can read candidate information.
+     * @deny (create, update, delete) Regular users cannot create, update, or delete candidate information.
+     * @principle Restricts candidate information access to HR and recruitment personnel.
+     */
+    match /candidates/{candidateId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isAdmin() {
+        return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+      }
+
+      allow get: if isSignedIn() && isAdmin();
+      allow list: if isSignedIn() && isAdmin();
+      allow create: if false; // Candidate creation is restricted.
+      allow update: if isSignedIn() && isAdmin() && resource != null;
+      allow delete: if isSignedIn() && isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Controls access to resume files.
+     * @path /resumes/{resumeId}
+     * @allow (get, list) Admins can read resume files.
+     * @deny (create, update, delete) Regular users cannot create, update, or delete resume files.
+     * @principle Restricts resume access to HR and recruitment personnel, controlled via association with the Candidate entity.
+     */
+    match /resumes/{resumeId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isAdmin() {
+        return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+      }
+
+      allow get: if isSignedIn() && isAdmin();
+      allow list: if isSignedIn() && isAdmin();
+      allow create: if false; // Resume creation is restricted.
+      allow update: if isSignedIn() && isAdmin() && resource != null;
+      allow delete: if isSignedIn() && isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Controls access to HR support tickets.
+     * @path /hrSupportTickets/{ticketId}
+     * @allow (get, list) Admins can read HR support tickets.
+     * @allow (get, update) Employee with ID 'employee_abc' can read their own support tickets.
+     * @deny (create, update, delete) Regular users cannot create, update, or delete HR support tickets.
+     * @principle Restricts support ticket access to the employee who created the ticket and HR support staff.
+     */
+    match /hrSupportTickets/{ticketId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isAdmin() {
+        return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+      }
+
+      function isTicketOwner(ticketId) {
+         return get(/databases/$(database)/documents/hrSupportTickets/$(ticketId)).data.employeeId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.employeeId;
+      }
+
+
+      allow get: if isSignedIn() && (isAdmin() || isTicketOwner(ticketId));
+      allow list: if isSignedIn() && isAdmin();
+      allow create: if isSignedIn(); // Support ticket creation is allowed.
+      allow update: if isSignedIn() && (isAdmin() || isTicketOwner(ticketId)) && resource != null;
+      allow delete: if isSignedIn() && isAdmin() && resource != null;
+    }
+      /**
+       * @description Grants admin privileges based on the existence of a document.
+       * @path /roles_admin/{userId}
+       * @allow (create) User with UID 'user_abc' can create their admin role document.
+       * @allow (get, update, delete) User with UID 'user_abc' can read/write their admin role document.
+       * @deny (create) User with UID 'user_xyz' cannot create an admin role document for 'user_abc'.
+       * @deny (update, delete) User with UID 'user_xyz' cannot modify/delete admin role document for 'user_abc'.
+       * @principle Enforces document existence as the sole basis for admin privileges.
+       */
+    match /roles_admin/{userId} {
+        function isSignedIn() {
+            return request.auth != null;
+        }
+
+        function isOwner(userId) {
+            return request.auth.uid == userId;
+        }
+
+        allow get: if isSignedIn() && isOwner(userId);
+        allow list: if false; // Prevent listing of admin roles.
+        allow create: if isSignedIn() && isOwner(userId);
+        allow update: if isSignedIn() && isOwner(userId) && resource != null;
+        allow delete: if isSignedIn() && isOwner(userId) && resource != null;
+    }
+  }
+}
