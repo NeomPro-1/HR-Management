@@ -49,8 +49,10 @@ export default function SignupPage() {
     }
 
     try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        // onAuthStateChanged will handle the redirect
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        if (userCredential.user) {
+          router.push('/hr/employee-dashboard');
+        }
     } catch (err: any) {
         let errorMessage = "An unknown error occurred.";
         if (err.code) {
@@ -80,7 +82,7 @@ export default function SignupPage() {
     }
   }, [user, isUserLoading, router]);
 
-  if (isUserLoading || (!isUserLoading && user)) {
+  if (isUserLoading) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-10rem)]">
         <Loader2 className="h-8 w-8 animate-spin" />
