@@ -16,7 +16,7 @@ import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { useFirebase } from '@/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -30,6 +30,21 @@ export default function SignupPage() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
 
+  const handleGoogleSignIn = async () => {
+    if (!auth) {
+      setError('Auth service not available.');
+      return;
+    }
+    const provider = new GoogleAuthProvider();
+    setIsSubmitting(true);
+    try {
+      await signInWithPopup(auth, provider);
+      router.push('/hr/employee-dashboard');
+    } catch (error) {
+      setError('Failed to sign in with Google.');
+      setIsSubmitting(false);
+    }
+  };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,12 +90,6 @@ export default function SignupPage() {
         setIsSubmitting(false);
     }
   };
-
-  React.useEffect(() => {
-    if (!isUserLoading && user) {
-      router.push('/hr/employee-dashboard');
-    }
-  }, [user, isUserLoading, router]);
 
   if (isUserLoading) {
     return (
@@ -155,7 +164,7 @@ export default function SignupPage() {
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Create an account'}
             </Button>
-            <Button variant="outline" className="w-full" disabled={isSubmitting}>
+            <Button variant="outline" className="w-full" disabled={isSubmitting} onClick={handleGoogleSignIn}>
                 Sign up with Google
             </Button>
             </form>
