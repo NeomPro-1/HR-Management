@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -16,15 +15,17 @@ import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { useFirebase } from '@/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { auth, user, isUserLoading } = useFirebase();
 
   const [email, setEmail] = React.useState('hr-admin@synergy.io');
   const [password, setPassword] = React.useState('password123');
   const [error, setError] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
 
 
@@ -32,24 +33,45 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     setIsSubmitting(true);
-    // Simulate a login
-    setTimeout(() => {
-        if (email && password) {
-            setIsLoggedIn(true);
-        } else {
-            setError("Please enter email and password.");
-        }
+    
+    if (!auth) {
+        setError("Auth service not available. Please try again later.");
         setIsSubmitting(false);
-    }, 1000);
+        return;
+    }
+
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        // onAuthStateChanged will handle the redirect
+    } catch (err: any) {
+        let errorMessage = "An unknown error occurred.";
+        if (err.code) {
+            switch (err.code) {
+                case "auth/user-not-found":
+                case "auth/wrong-password":
+                case "auth/invalid-credential":
+                    errorMessage = "Invalid email or password.";
+                    break;
+                case "auth/invalid-email":
+                    errorMessage = "Please enter a valid email address.";
+                    break;
+                default:
+                    errorMessage = "Failed to log in. Please try again.";
+                    break;
+            }
+        }
+        setError(errorMessage);
+        setIsSubmitting(false);
+    }
   };
 
   React.useEffect(() => {
-    if (isLoggedIn) {
+    if (!isUserLoading && user) {
       router.push('/hr/employee-dashboard');
     }
-  }, [isLoggedIn, router]);
+  }, [user, isUserLoading, router]);
 
-  if (isSubmitting || isLoggedIn) {
+  if (isUserLoading || (!isUserLoading && user)) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-10rem)]">
         <Loader2 className="h-8 w-8 animate-spin" />

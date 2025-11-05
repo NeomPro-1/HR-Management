@@ -6,19 +6,28 @@ import { AppHeader } from '@/components/layout/app-header';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SidebarProvider, Sidebar } from '@/components/ui/sidebar';
 import { Preloader } from '@/components/layout/preloader';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { FirebaseClientProvider, useUser } from '@/firebase';
 
 export const dynamic = 'force-dynamic';
 
-export default function AppLayout({ children }: PropsWithChildren) {
+function AuthenticatedAppLayout({ children }: PropsWithChildren) {
   const [mounted, setMounted] = React.useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, isUserLoading } = useUser();
 
   const [isPageLoading, setIsPageLoading] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
+  
+  React.useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isUserLoading, router]);
 
   // Effect to handle page loading state on navigation
   React.useEffect(() => {
@@ -30,7 +39,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
     return () => clearTimeout(timer);
   }, [pathname]);
 
-  if (!mounted) {
+  if (!mounted || isUserLoading || !user) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center bg-background">
         <Preloader />
@@ -53,4 +62,12 @@ export default function AppLayout({ children }: PropsWithChildren) {
       </div>
     </SidebarProvider>
   );
+}
+
+export default function AppLayout({ children }: PropsWithChildren) {
+  return (
+    <FirebaseClientProvider>
+      <AuthenticatedAppLayout>{children}</AuthenticatedAppLayout>
+    </FirebaseClientProvider>
+  )
 }

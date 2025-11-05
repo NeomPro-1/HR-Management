@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -16,9 +15,12 @@ import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { useFirebase } from '@/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 export default function SignupPage() {
   const router = useRouter();
+  const { auth, user, isUserLoading } = useFirebase();
 
   const [firstName, setFirstName] = React.useState('');
   const [lastName, setLastName] = React.useState('');
@@ -26,7 +28,6 @@ export default function SignupPage() {
   const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [isSignedUp, setIsSignedUp] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
 
 
@@ -34,24 +35,52 @@ export default function SignupPage() {
     e.preventDefault();
     setError(null);
     setIsSubmitting(true);
-    // Simulate a signup
-    setTimeout(() => {
-      if (firstName && lastName && email && password) {
-        setIsSignedUp(true);
-      } else {
-        setError("Please fill out all fields.");
-      }
-      setIsSubmitting(false);
-    }, 1000);
+
+    if (!auth) {
+        setError("Auth service not available. Please try again later.");
+        setIsSubmitting(false);
+        return;
+    }
+
+    if (password.length < 6) {
+        setError("Password must be at least 6 characters long.");
+        setIsSubmitting(false);
+        return;
+    }
+
+    try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        // onAuthStateChanged will handle the redirect
+    } catch (err: any) {
+        let errorMessage = "An unknown error occurred.";
+        if (err.code) {
+            switch (err.code) {
+                case "auth/email-already-in-use":
+                    errorMessage = "This email address is already in use.";
+                    break;
+                case "auth/invalid-email":
+                    errorMessage = "Please enter a valid email address.";
+                    break;
+                case "auth/weak-password":
+                    errorMessage = "The password is too weak.";
+                    break;
+                default:
+                    errorMessage = "Failed to create an account. Please try again.";
+                    break;
+            }
+        }
+        setError(errorMessage);
+        setIsSubmitting(false);
+    }
   };
 
   React.useEffect(() => {
-    if (isSignedUp) {
+    if (!isUserLoading && user) {
       router.push('/hr/employee-dashboard');
     }
-  }, [isSignedUp, router]);
-  
-  if (isSubmitting || isSignedUp) {
+  }, [user, isUserLoading, router]);
+
+  if (isUserLoading || (!isUserLoading && user)) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-10rem)]">
         <Loader2 className="h-8 w-8 animate-spin" />
