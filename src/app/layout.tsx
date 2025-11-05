@@ -27,9 +27,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <ClientComponents>
-          {children}
-        </ClientComponents>
+        <ClientComponents>{children}</ClientComponents>
       </body>
     </html>
   );
