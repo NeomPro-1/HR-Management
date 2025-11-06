@@ -38,39 +38,39 @@ export default async function HolidaysPage() {
         </Button>
       </CardHeader>
       <CardContent>
+        <div className="overflow-x-auto">
           <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Holiday Name</TableHead>
-              <TableHead><span className="sr-only">Actions</span></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {holidays.map((h) => (
-              <TableRow key={h.id}>
-                <TableCell className="font-medium">{new Date(h.date).toLocaleDateString('en-IN', { month: 'long', day: 'numeric', year: 'numeric' })}</TableCell>
-                <TableCell>{h.name}</TableCell>
-                <TableCell className="text-right">
-                    <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Holiday Name</TableHead>
+                <TableHead><span className="sr-only">Actions</span></TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {holidays.map((h) => (
+                <TableRow key={h.id}>
+                  <TableCell className="font-medium">{new Date(h.date).toLocaleDateString('en-IN', { month: 'long', day: 'numeric', year: 'numeric' })}</TableCell>
+                  <TableCell>{h.name}</TableCell>
+                  <TableCell className="text-right">
+                      <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button size="icon" variant="ghost">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
     </Card>
   );
 }
-
-    

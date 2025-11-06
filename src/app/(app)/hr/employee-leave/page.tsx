@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -75,30 +76,32 @@ export default function EmployeeLeavePage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Leave Type</TableHead>
-                <TableHead>Days</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {leaveHistory.map((leave) => (
-                <TableRow key={leave.id}>
-                  <TableCell className="font-medium">{formatDate(leave.date)}</TableCell>
-                  <TableCell>{leave.type}</TableCell>
-                  <TableCell>{leave.days}</TableCell>
-                  <TableCell>
-                    <Badge variant={leave.status === "Approved" ? "default" : "destructive"}>
-                      {leave.status}
-                    </Badge>
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Leave Type</TableHead>
+                  <TableHead>Days</TableHead>
+                  <TableHead>Status</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {leaveHistory.map((leave) => (
+                  <TableRow key={leave.id}>
+                    <TableCell className="font-medium">{formatDate(leave.date)}</TableCell>
+                    <TableCell>{leave.type}</TableCell>
+                    <TableCell>{leave.days}</TableCell>
+                    <TableCell>
+                      <Badge variant={leave.status === "Approved" ? "default" : "destructive"}>
+                        {leave.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>
