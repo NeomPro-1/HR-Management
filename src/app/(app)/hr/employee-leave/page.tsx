@@ -1,4 +1,6 @@
+'use client';
 
+import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
@@ -24,8 +26,17 @@ const leaveBalances = [
     { type: "Personal Leave", used: 1, total: 5 },
 ]
 
-export default async function EmployeeLeavePage() {
-  await new Promise(resolve => setTimeout(resolve, 2000));
+export default function EmployeeLeavePage() {
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const formatDate = (dateString: string) => {
+    if (!mounted) return null;
+    return new Date(dateString).toLocaleDateString();
+  };
+
   return (
     <div className="space-y-6">
         <Card>
@@ -76,7 +87,7 @@ export default async function EmployeeLeavePage() {
             <TableBody>
               {leaveHistory.map((leave) => (
                 <TableRow key={leave.id}>
-                  <TableCell className="font-medium">{new Date(leave.date).toLocaleDateString()}</TableCell>
+                  <TableCell className="font-medium">{formatDate(leave.date)}</TableCell>
                   <TableCell>{leave.type}</TableCell>
                   <TableCell>{leave.days}</TableCell>
                   <TableCell>
@@ -93,5 +104,3 @@ export default async function EmployeeLeavePage() {
     </div>
   );
 }
-
-    

@@ -39,8 +39,10 @@ interface UserProfile {
 export default function EmployeesPage() {
   const [employees, setEmployees] = React.useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
+    setMounted(true);
     // Simulate loading data
     const timer = setTimeout(() => {
        const formattedEmployees = placeholderEmployees.map(emp => ({
@@ -52,6 +54,11 @@ export default function EmployeesPage() {
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString();
+  };
 
 
   const renderSkeletonRow = (isMobile: boolean, key: number) => (
@@ -88,7 +95,7 @@ export default function EmployeesPage() {
     )
   );
 
-  if (isLoading) {
+  if (isLoading || !mounted) {
     return (
        <Card>
           <CardHeader>
@@ -190,7 +197,7 @@ export default function EmployeesPage() {
                   </div>
                   <div>
                     <div className="text-muted-foreground">Joining Date</div>
-                    <div>{employee.joiningDate}</div>
+                    <div>{formatDate(employee.joiningDate)}</div>
                   </div>
                 </div>
               </div>
@@ -239,7 +246,7 @@ export default function EmployeesPage() {
                         </Badge>
                         </TableCell>
                         <TableCell>
-                        {employee.joiningDate ? new Date(employee.joiningDate).toLocaleDateString() : ''}
+                          {formatDate(employee.joiningDate)}
                         </TableCell>
                         <TableCell>
                         <DropdownMenu>
