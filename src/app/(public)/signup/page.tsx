@@ -20,7 +20,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 export default function SignupPage() {
   const router = useRouter();
-  const { auth, isUserLoading } = useFirebase();
+  const { auth } = useFirebase();
 
   const [firstName, setFirstName] = React.useState('');
   const [lastName, setLastName] = React.useState('');
@@ -75,13 +75,6 @@ export default function SignupPage() {
     }
   };
 
-  if (isUserLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-10rem)]">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] p-4">

@@ -74,5 +74,3 @@ export default async function DesignationsPage() {
       </Card>
   );
 }
-
-    

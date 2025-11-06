@@ -68,5 +68,3 @@ export default async function HREmployeeAttendancePage() {
         </div>
     );
 }
-
-    
