@@ -33,7 +33,7 @@ export default function EmployeeLeavePage() {
   }, []);
 
   const formatDate = (dateString: string) => {
-    if (!mounted) return null;
+    if (!mounted) return '';
     return new Date(dateString).toLocaleDateString();
   };
 

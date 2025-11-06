@@ -56,7 +56,7 @@ export default function EmployeesPage() {
   }, []);
 
   const formatDate = (dateString?: string) => {
-    if (!dateString) return '';
+    if (!mounted || !dateString) return '';
     return new Date(dateString).toLocaleDateString();
   };
 
