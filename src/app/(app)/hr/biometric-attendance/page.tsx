@@ -111,53 +111,55 @@ export default function BiometricAttendancePage() {
                 </div>
             </CardHeader>
             <CardContent className="p-0">
-                <Table>
-                    <TableHeader className="bg-muted/50">
-                        <TableRow>
-                            <TableHead className="hidden sm:table-cell">ID</TableHead>
-                            <TableHead>Employee</TableHead>
-                            <TableHead className="hidden md:table-cell">Date</TableHead>
-                            <TableHead className="hidden lg:table-cell">Clock In</TableHead>
-                            <TableHead className="hidden lg:table-cell">Clock Out</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Action</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {attendanceData.map((entry) => (
-                            <TableRow key={entry.id}>
-                                <TableCell className="font-medium text-muted-foreground hidden sm:table-cell">{entry.id}</TableCell>
-                                <TableCell>
-                                    <div className="flex items-center gap-3">
-                                        <Avatar className="h-8 w-8">
-                                            <AvatarImage src={entry.avatar} alt={entry.name} data-ai-hint="person face" />
-                                            <AvatarFallback>{entry.name.charAt(0)}</AvatarFallback>
-                                        </Avatar>
-                                        <span className="font-medium">{entry.name}</span>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="hidden md:table-cell">{entry.date}</TableCell>
-                                <TableCell className="hidden lg:table-cell">{entry.clockIn}</TableCell>
-                                <TableCell className="hidden lg:table-cell">{entry.clockOut}</TableCell>
-                                <TableCell>
-                                    <Badge variant={getStatusVariant(entry.status)} className={cn("font-semibold", getStatusClass(entry.status))}>
-                                        {entry.status}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex gap-1">
-                                         <Button variant="ghost" size="icon" className="text-blue-500 hover:text-blue-700">
-                                            <Pencil className="h-4 w-4" />
-                                        </Button>
-                                        <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700">
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                </TableCell>
+                <div className="overflow-x-auto">
+                    <Table>
+                        <TableHeader className="bg-muted/50">
+                            <TableRow>
+                                <TableHead className="hidden sm:table-cell">ID</TableHead>
+                                <TableHead>Employee</TableHead>
+                                <TableHead className="hidden md:table-cell">Date</TableHead>
+                                <TableHead className="hidden lg:table-cell">Clock In</TableHead>
+                                <TableHead className="hidden lg:table-cell">Clock Out</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Action</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {attendanceData.map((entry) => (
+                                <TableRow key={entry.id}>
+                                    <TableCell className="font-medium text-muted-foreground hidden sm:table-cell">{entry.id}</TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-3">
+                                            <Avatar className="h-8 w-8">
+                                                <AvatarImage src={entry.avatar} alt={entry.name} data-ai-hint="person face" />
+                                                <AvatarFallback>{entry.name.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <span className="font-medium">{entry.name}</span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="hidden md:table-cell">{entry.date}</TableCell>
+                                    <TableCell className="hidden lg:table-cell">{entry.clockIn}</TableCell>
+                                    <TableCell className="hidden lg:table-cell">{entry.clockOut}</TableCell>
+                                    <TableCell>
+                                        <Badge variant={getStatusVariant(entry.status)} className={cn("font-semibold", getStatusClass(entry.status))}>
+                                            {entry.status}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex gap-1">
+                                            <Button variant="ghost" size="icon" className="text-blue-500 hover:text-blue-700">
+                                                <Pencil className="h-4 w-4" />
+                                            </Button>
+                                            <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700">
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
             </CardContent>
             <CardFooter className="flex items-center justify-between py-4">
                 <div className="text-sm text-muted-foreground">
@@ -174,7 +176,7 @@ export default function BiometricAttendancePage() {
                         <PaginationItem>
                             <PaginationLink href="#">2</PaginationLink>
                         </PaginationItem>
-                         <PaginationItem>
+                        <PaginationItem>
                             <PaginationLink href="#">3</PaginationLink>
                         </PaginationItem>
                         <PaginationItem>

@@ -40,6 +40,8 @@ export default function EmployeesPage() {
   const [employees, setEmployees] = React.useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [mounted, setMounted] = React.useState(false);
+  const [formattedDates, setFormattedDates] = React.useState<Record<string, string>>({});
+
 
   React.useEffect(() => {
     setMounted(true);
@@ -52,14 +54,17 @@ export default function EmployeesPage() {
       setEmployees(formattedEmployees);
       setIsLoading(false);
     }, 1000);
+
+    const dates: Record<string, string> = {};
+    placeholderEmployees.forEach(emp => {
+      if (emp.joiningDate) {
+        dates[emp.id] = new Date(emp.joiningDate).toLocaleDateString();
+      }
+    });
+    setFormattedDates(dates);
+
     return () => clearTimeout(timer);
   }, []);
-
-  const formatDate = (dateString?: string) => {
-    if (!mounted || !dateString) return '';
-    return new Date(dateString).toLocaleDateString();
-  };
-
 
   const renderSkeletonRow = (isMobile: boolean, key: number) => (
     isMobile ? (
@@ -197,7 +202,7 @@ export default function EmployeesPage() {
                   </div>
                   <div>
                     <div className="text-muted-foreground">Joining Date</div>
-                    <div>{formatDate(employee.joiningDate)}</div>
+                    <div>{formattedDates[employee.id] || ''}</div>
                   </div>
                 </div>
               </div>
@@ -246,7 +251,7 @@ export default function EmployeesPage() {
                         </Badge>
                         </TableCell>
                         <TableCell>
-                          {formatDate(employee.joiningDate)}
+                          {formattedDates[employee.id] || ''}
                         </TableCell>
                         <TableCell>
                         <DropdownMenu>

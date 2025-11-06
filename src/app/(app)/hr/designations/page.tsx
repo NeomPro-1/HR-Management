@@ -38,38 +38,40 @@ export default async function DesignationsPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Designation Title</TableHead>
-                <TableHead className="hidden md:table-cell">Department</TableHead>
-                <TableHead className="hidden lg:table-cell">Reports To</TableHead>
-                <TableHead><span className="sr-only">Actions</span></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {designations.map((d) => (
-                <TableRow key={d.id}>
-                  <TableCell className="font-medium">{d.title}</TableCell>
-                  <TableCell className="hidden md:table-cell">{d.department}</TableCell>
-                  <TableCell className="hidden lg:table-cell">{d.reportsTo}</TableCell>
-                  <TableCell className="text-right">
-                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button size="icon" variant="ghost">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Designation Title</TableHead>
+                  <TableHead className="hidden md:table-cell">Department</TableHead>
+                  <TableHead className="hidden lg:table-cell">Reports To</TableHead>
+                  <TableHead><span className="sr-only">Actions</span></TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {designations.map((d) => (
+                  <TableRow key={d.id}>
+                    <TableCell className="font-medium">{d.title}</TableCell>
+                    <TableCell className="hidden md:table-cell">{d.department}</TableCell>
+                    <TableCell className="hidden lg:table-cell">{d.reportsTo}</TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button size="icon" variant="ghost">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem>Edit</DropdownMenuItem>
+                          <DropdownMenuItem>Delete</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
   );

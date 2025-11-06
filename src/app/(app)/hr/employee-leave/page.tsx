@@ -28,14 +28,16 @@ const leaveBalances = [
 
 export default function EmployeeLeavePage() {
   const [mounted, setMounted] = React.useState(false);
+  const [formattedDates, setFormattedDates] = React.useState<Record<number, string>>({});
+
   React.useEffect(() => {
     setMounted(true);
+    const dates: Record<number, string> = {};
+    leaveHistory.forEach(leave => {
+        dates[leave.id] = new Date(leave.date).toLocaleDateString();
+    });
+    setFormattedDates(dates);
   }, []);
-
-  const formatDate = (dateString: string) => {
-    if (!mounted) return '';
-    return new Date(dateString).toLocaleDateString();
-  };
 
   return (
     <div className="space-y-6">
@@ -88,7 +90,7 @@ export default function EmployeeLeavePage() {
               <TableBody>
                 {leaveHistory.map((leave) => (
                   <TableRow key={leave.id}>
-                    <TableCell className="font-medium">{formatDate(leave.date)}</TableCell>
+                    <TableCell className="font-medium">{mounted ? formattedDates[leave.id] : ''}</TableCell>
                     <TableCell>{leave.type}</TableCell>
                     <TableCell>{leave.days}</TableCell>
                     <TableCell>

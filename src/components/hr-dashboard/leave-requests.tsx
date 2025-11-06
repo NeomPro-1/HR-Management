@@ -1,3 +1,4 @@
+'use client';
 import { leaveRequests } from "@/lib/placeholder-data"
 import {
   Table,

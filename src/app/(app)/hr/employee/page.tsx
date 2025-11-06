@@ -39,6 +39,7 @@ interface UserProfile {
 export default function HREmployeesPage() {
   const [employees, setEmployees] = React.useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [formattedDates, setFormattedDates] = React.useState<Record<string, string>>({});
   
   React.useEffect(() => {
     // Simulate loading data
@@ -48,6 +49,15 @@ export default function HREmployeesPage() {
         status: emp.status as 'Active' | 'On Leave' | 'Inactive'
       }));
       setEmployees(formattedEmployees);
+
+      const dates: Record<string, string> = {};
+      placeholderEmployees.forEach(emp => {
+        if (emp.joiningDate) {
+          dates[emp.id] = new Date(emp.joiningDate).toLocaleDateString();
+        }
+      });
+      setFormattedDates(dates);
+
       setIsLoading(false);
     }, 1000);
     return () => clearTimeout(timer);
@@ -189,7 +199,7 @@ export default function HREmployeesPage() {
                     </div>
                     <div>
                       <div className="text-muted-foreground">Joining Date</div>
-                      <div>{employee.joiningDate ? new Date(employee.joiningDate).toLocaleDateString() : 'N/A'}</div>
+                      <div>{formattedDates[employee.id] || 'N/A'}</div>
                     </div>
                   </div>
                 </div>
@@ -238,7 +248,7 @@ export default function HREmployeesPage() {
                         </Badge>
                         </TableCell>
                         <TableCell>
-                          {employee.joiningDate ? new Date(employee.joiningDate).toLocaleDateString() : 'N/A'}
+                          {formattedDates[employee.id] || 'N/A'}
                         </TableCell>
                         <TableCell>
                         <DropdownMenu>
