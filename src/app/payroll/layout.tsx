@@ -1,2 +1,2 @@
-import AuthenticatedAppLayout from '@/app/(authenticated)/layout';
-export default AuthenticatedAppLayout;
+import AppLayout from '@/app/(app)/layout';
+export default AppLayout;

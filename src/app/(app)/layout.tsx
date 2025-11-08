@@ -9,9 +9,7 @@ import { Preloader } from '@/components/layout/preloader';
 import { usePathname, useRouter } from 'next/navigation';
 import { useUser } from '@/firebase';
 
-export const dynamic = 'force-dynamic';
-
-export default function AuthenticatedAppLayout({ children }: PropsWithChildren) {
+export default function AppLayout({ children }: PropsWithChildren) {
   const [mounted, setMounted] = React.useState(false);
   const pathname = usePathname();
   const router = useRouter();
