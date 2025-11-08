@@ -30,8 +30,6 @@ function getPageTitle(pathname: string) {
 
 const topLevelPages = [
   '/hr/employee-dashboard',
-  '/recruitment',
-  '/helpdesk',
   '/payroll/items',
   '/',
   '/hr',
