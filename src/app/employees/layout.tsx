@@ -7,11 +7,11 @@ import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SidebarProvider, Sidebar } from '@/components/ui/sidebar';
 import { Preloader } from '@/components/layout/preloader';
 import { usePathname, useRouter } from 'next/navigation';
-import { FirebaseClientProvider, useUser } from '@/firebase';
+import { useUser } from '@/firebase';
 
 export const dynamic = 'force-dynamic';
 
-function AuthenticatedAppLayout({ children }: PropsWithChildren) {
+export default function AuthenticatedAppLayout({ children }: PropsWithChildren) {
   const [mounted, setMounted] = React.useState(false);
   const pathname = usePathname();
   const router = useRouter();
@@ -62,12 +62,4 @@ function AuthenticatedAppLayout({ children }: PropsWithChildren) {
       </div>
     </SidebarProvider>
   );
-}
-
-export default function AppLayout({ children }: PropsWithChildren) {
-  return (
-    <FirebaseClientProvider>
-      <AuthenticatedAppLayout>{children}</AuthenticatedAppLayout>
-    </FirebaseClientProvider>
-  )
 }

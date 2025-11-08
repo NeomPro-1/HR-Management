@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import ClientComponents from './client-components';
+import { FirebaseClientProvider } from '@/firebase';
 
 export default function RootLayout({
   children,
@@ -22,7 +23,9 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <ClientComponents>{children}</ClientComponents>
+        <FirebaseClientProvider>
+          <ClientComponents>{children}</ClientComponents>
+        </FirebaseClientProvider>
       </body>
     </html>
   );
