@@ -19,27 +19,27 @@ export function AccessInfo({ accessInfo }: AccessInfoProps) {
       </CardHeader>
       <CardContent className="grid md:grid-cols-2 gap-6">
         <div className="space-y-4">
-            <div className="grid grid-cols-3 items-center">
+            <div className="flex flex-col sm:grid sm:grid-cols-3 sm:items-center gap-1 sm:gap-4">
                 <Label className="text-muted-foreground">Username</Label>
                 <p className="col-span-2">{accessInfo.username}</p>
             </div>
-             <div className="grid grid-cols-3 items-center">
+             <div className="flex flex-col sm:grid sm:grid-cols-3 sm:items-center gap-1 sm:gap-4">
                 <Label className="text-muted-foreground">Email</Label>
                 <p className="col-span-2">{accessInfo.email}</p>
             </div>
-             <div className="grid grid-cols-3 items-center">
+             <div className="flex flex-col sm:grid sm:grid-cols-3 sm:items-center gap-1 sm:gap-4">
                 <Label className="text-muted-foreground">Password</Label>
                 <div className="col-span-2 flex items-center justify-between">
                     <p>••••••••</p>
                     <Button variant="link" size="sm" className="p-0 h-auto">Manage 2FA</Button>
                 </div>
             </div>
-             <div className="grid grid-cols-3 items-center">
+             <div className="flex flex-col sm:grid sm:grid-cols-3 sm:items-center gap-1 sm:gap-4">
                 <Label className="text-muted-foreground">Last Login</Label>
                 <p className="col-span-2">{accessInfo.lastLogin}</p>
             </div>
-            <div className="grid grid-cols-3 items-center">
-                <Label className="text-muted-foreground">Security Google</Label>
+            <div className="flex flex-col sm:grid sm:grid-cols-3 sm:items-center gap-1 sm:gap-4">
+                <Label className="text-muted-foreground">Security</Label>
                 <div className="col-span-2 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Progress value={80} className="w-24 h-2" indicatorClassName="bg-status-strong"/>
@@ -53,7 +53,7 @@ export function AccessInfo({ accessInfo }: AccessInfoProps) {
            <div className="flex items-center justify-between rounded-lg border p-4">
                 <div>
                     <Label htmlFor="account-status">Account Status</Label>
-                    <p className="text-xs text-muted-foreground">Enable or disable employee account access.</p>
+                    <p className="text-xs text-muted-foreground">Enable or disable access.</p>
                 </div>
                 <Switch id="account-status" checked={accessInfo.accountStatus === 'Active'} />
            </div>
@@ -67,7 +67,7 @@ export function AccessInfo({ accessInfo }: AccessInfoProps) {
            <div className="flex items-center justify-between rounded-lg border p-4">
                 <div>
                     <Label htmlFor="mfa-enabled">MFA Enabled</Label>
-                    <p className="text-xs text-muted-foreground">Require multi-factor authentication.</p>
+                    <p className="text-xs text-muted-foreground">Require multi-factor auth.</p>
                 </div>
                 <Switch id="mfa-enabled" checked={accessInfo.mfaEnabled} />
            </div>
