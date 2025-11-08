@@ -33,10 +33,10 @@ export function WorkExperience({ experience }: WorkExperienceProps) {
                     {exp.skills.map(skill => <Badge key={skill} variant="secondary">{skill}</Badge>)}
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground shrink-0">{exp.duration}</p>
+                <p className="text-sm text-muted-foreground shrink-0 mt-1 sm:mt-0">{exp.duration}</p>
               </div>
               <p className="mt-2 text-sm text-muted-foreground">{exp.description}</p>
-              <div className="mt-3 flex gap-2">
+              <div className="mt-3 flex flex-wrap gap-2">
                 <Button variant="outline" size="sm"><Pencil className="mr-2 h-3 w-3"/>Edit</Button>
                 <Button variant="destructive" size="sm"><Trash2 className="mr-2 h-3 w-3"/>Delete</Button>
               </div>
