@@ -28,11 +28,11 @@ export default async function DesignationsPage() {
   return (
       <Card>
         <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
+          <div className="flex-1">
             <CardTitle>Designations</CardTitle>
             <CardDescription>Define job roles, hierarchies, and responsibilities for your organization.</CardDescription>
           </div>
-          <Button>
+          <Button className="w-full md:w-auto">
             <PlusCircle className="mr-2 h-4 w-4" />
             Add Designation
           </Button>

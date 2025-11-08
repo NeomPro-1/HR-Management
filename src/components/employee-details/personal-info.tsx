@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -41,33 +42,33 @@ export function PersonalInfo({ employee }: PersonalInfoProps) {
         </div>
 
         <div className="mt-6 space-y-4 text-sm">
-            <div className="grid grid-cols-2">
-                <span className="font-medium text-muted-foreground">Employee ID</span>
-                <span className="text-right">{employee.employeeId}</span>
+            <div className="flex flex-col sm:flex-row">
+                <span className="w-full sm:w-1/3 font-medium text-muted-foreground">Employee ID</span>
+                <span className="w-full sm:w-2/3 sm:text-right">{employee.employeeId}</span>
             </div>
-             <div className="grid grid-cols-2">
-                <span className="font-medium text-muted-foreground">Date of Hire</span>
-                <span className="text-right">{employee.dateOfHire}</span>
+             <div className="flex flex-col sm:flex-row">
+                <span className="w-full sm:w-1/3 font-medium text-muted-foreground">Date of Hire</span>
+                <span className="w-full sm:w-2/3 sm:text-right">{employee.dateOfHire}</span>
             </div>
-             <div className="grid grid-cols-2">
-                <span className="font-medium text-muted-foreground">Email</span>
-                <span className="text-right">{employee.email}</span>
+             <div className="flex flex-col sm:flex-row">
+                <span className="w-full sm:w-1/3 font-medium text-muted-foreground">Email</span>
+                <span className="w-full sm:w-2/3 sm:text-right truncate">{employee.email}</span>
             </div>
-             <div className="grid grid-cols-2">
-                <span className="font-medium text-muted-foreground">Phone</span>
-                <span className="text-right">{employee.phone}</span>
+             <div className="flex flex-col sm:flex-row">
+                <span className="w-full sm:w-1/3 font-medium text-muted-foreground">Phone</span>
+                <span className="w-full sm:w-2/3 sm:text-right">{employee.phone}</span>
             </div>
-             <div className="grid grid-cols-2">
-                <span className="font-medium text-muted-foreground">Birthday</span>
-                <span className="text-right">{employee.birthday}</span>
+             <div className="flex flex-col sm:flex-row">
+                <span className="w-full sm:w-1/3 font-medium text-muted-foreground">Birthday</span>
+                <span className="w-full sm:w-2/3 sm:text-right">{employee.birthday}</span>
             </div>
-            <div className="grid grid-cols-2">
-                <span className="font-medium text-muted-foreground">Gender</span>
-                <span className="text-right">{employee.gender}</span>
+            <div className="flex flex-col sm:flex-row">
+                <span className="w-full sm:w-1/3 font-medium text-muted-foreground">Gender</span>
+                <span className="w-full sm:w-2/3 sm:text-right">{employee.gender}</span>
             </div>
-             <div className="grid grid-cols-2">
-                <span className="font-medium text-muted-foreground">Address</span>
-                <span className="text-right">{employee.address}</span>
+             <div className="flex flex-col sm:flex-row">
+                <span className="w-full sm:w-1/3 font-medium text-muted-foreground">Address</span>
+                <span className="w-full sm:w-2/3 sm:text-right">{employee.address}</span>
             </div>
         </div>
          <Button className="w-full mt-6">Send Message</Button>

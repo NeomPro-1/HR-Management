@@ -30,7 +30,7 @@ export default function PayslipPage() {
 
     return (
         <div className="grid lg:grid-cols-12 gap-8">
-            <div className="lg:col-span-9">
+            <div className="lg:col-span-9 space-y-8">
                 <Card>
                     <CardContent className="p-6">
                         {/* Header */}
@@ -167,3 +167,4 @@ export default function PayslipPage() {
 }
 
     
+
