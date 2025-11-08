@@ -21,15 +21,15 @@ export function Education({ education }: EducationProps) {
                <div className="absolute -left-[23px] top-1 flex h-10 w-10 items-center justify-center rounded-full bg-card border">
                  <GraduationCap className="h-5 w-5 text-muted-foreground" />
               </div>
-               <div className="flex items-start justify-between">
-                <div>
+               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-4">
+                <div className="flex-grow">
                     <h4 className="font-semibold">{edu.degree}</h4>
                     <p className="text-sm text-muted-foreground">{edu.institution}</p>
                 </div>
-                 <p className="text-sm text-muted-foreground">{edu.duration}</p>
+                 <p className="text-sm text-muted-foreground shrink-0">{edu.duration}</p>
               </div>
               <p className="mt-2 text-sm text-muted-foreground">{edu.details}</p>
-              <div className="mt-2 flex gap-2">
+              <div className="mt-2 flex flex-wrap gap-2">
                 {edu.courses.map(course => <Badge key={course} variant="outline">{course}</Badge>)}
               </div>
             </div>
